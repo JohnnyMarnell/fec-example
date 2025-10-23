@@ -15,13 +15,13 @@ import matplotlib.pyplot as plt
 if len(sys.argv) > 1:
     fec_csv_path = sys.argv[1]
 else:
-    fec_csv_path = 'TractorSupplyFECr.csv'
+    fec_csv_path = './csv/TractorSupplyFECr.csv'
 company_name = re.sub(r'FECr?$', '', Path(fec_csv_path).stem, flags=re.IGNORECASE).upper()
 
 # Load data
 fec = pd.read_csv(fec_csv_path)
-allpacs = pd.read_csv('AllPacs.xslx.csv')
-aristotle = pd.read_csv('Aristotle1.xlsx.csv')
+allpacs = pd.read_csv('./csv/AllPacs.xslx.csv')
+aristotle = pd.read_csv('./csv/Aristotle1.xlsx.csv')
 
 # Initialize DuckDB
 con = duckdb.connect(':memory:')
