@@ -9,7 +9,7 @@ import pandas as pd
 # API Configuration
 API_KEY = "Kgkivmpbsy1rehiCuTcd8gVHxzwQFRcSDsrVhQJm"
 BASE_URL = "https://api.open.fec.gov/v1/schedules/schedule_a/"
-OUTPUT_FILE = "tmp-TracktorSupplyFEC.csv"
+OUTPUT_FILE = "tmp-API-FETCH-TracktorSupplyFEC.csv"
 
 # Query parameters
 PARAMS = {
@@ -34,6 +34,8 @@ def fetch_page(page_number):
     params["page"] = page_number
 
     try:
+        params_str = '&'.join(f'{k}={v}' for k,v in params.items())
+        print(f"Calling FEC API:\nGET {BASE_URL}?{params_str}")
         response = requests.get(BASE_URL, headers=HEADERS, params=params)
         response.raise_for_status()
 
@@ -58,7 +60,7 @@ def main():
 
     # Fetch 2 pages
     all_results = []
-    for page in [1, 2]:
+    for page in range(1, 3):
         page_results = fetch_page(page)
         all_results.extend(page_results)
 
@@ -77,13 +79,12 @@ def main():
 
     # Pretty print first 10 rows
     print("\n" + "=" * 100)
-    print(f"FIRST 10 ROWS")
+    print(f"FIRST 10 ROWS, SOME COLUMNS (see {OUTPUT_FILE})")
     print("=" * 100)
 
-    # Show 8 columns with shortest names
-    num_cols_to_show = min(8, len(df.columns))
-    shortest_cols = sorted(df.columns, key=len)[:num_cols_to_show]
-    print(df[shortest_cols].head(10).to_string(index=False))
+    # Show a few columns and rows - find columns containing these keywords
+    cols = "contributor_name contribution_receipt_amount contributor_state contributor_zip".split(" ")
+    print(df[cols].head(10).to_string(index=False))
 
     print("=" * 100)
     print(f"\nFull data saved to: {OUTPUT_FILE}")
