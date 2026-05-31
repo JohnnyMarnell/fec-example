@@ -14,6 +14,7 @@
       border-radius: 0.5rem; padding: 1.25rem 1.5rem;
       border: 1px solid #e5e7eb;
     }
+    html { scroll-behavior: smooth; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
     .badge-d { background: #dbeafe; color: #1d4ed8; }
     .badge-r { background: #fee2e2; color: #b91c1c; }
@@ -83,21 +84,58 @@
   <nav class="bg-slate-800 px-6 py-2.5 flex gap-8 border-b border-slate-700/60"><a href="../index.html" class="text-slate-300 hover:text-white transition-colors text-sm">Home</a>  <a href="../notebook/" class="text-slate-300 hover:text-white transition-colors text-sm">Notebooks</a>  <a href="../design/sas-port/" class="text-slate-300 hover:text-white transition-colors text-sm">Design</a>  <a href="../data/" class="text-indigo-300 font-semibold border-b-2 border-indigo-400 pb-0.5 text-sm">Data</a>  <a href="../source/" class="text-slate-300 hover:text-white transition-colors text-sm">Source</a></nav>
   <main class="max-w-6xl mx-auto px-6 py-10 flex-1">
     
-    <div class="mb-8">
-      <h1 class="text-2xl font-bold text-slate-900">Data Files</h1>
-      <p class="text-slate-500 text-sm mt-1">
-        OpenFEC Schedule A contributions fetched via <code class="bg-slate-100 px-1 rounded text-xs">api-demo.py</code>.
-        CSV previews show the 8 most useful columns.
-      </p>
-    </div>
-    
-    <section class="mb-10">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-base font-semibold text-slate-800 font-mono">EXXON_MOBIL_2019-01-01_2020-12-31.csv</h2>
-        <a href="EXXON_MOBIL_2019-01-01_2020-12-31.csv" download
-           class="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors">
-          Download CSV (487 KB)
+    <div class="flex gap-8">
+      <aside class="hidden md:block w-52 flex-shrink-0">
+        <div class="sticky top-6">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Files</p>
+          
+      <div class="mb-4">
+        <a href="#EXXON_MOBIL_2019-01-01_2020-12-31"
+           class="block text-sm font-medium text-slate-700 hover:text-indigo-600 transition-colors leading-snug mb-1.5">
+          EXXON MOBIL
         </a>
+        <div class="flex items-center gap-3 pl-0.5"><a href="EXXON_MOBIL_2019-01-01_2020-12-31.csv" download class="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> csv</a><a href="EXXON_MOBIL_2019-01-01_2020-12-31.json" download class="inline-flex items-center gap-1 text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> json</a></div>
+      </div>
+      <div class="mb-4">
+        <a href="#MICROSOFT_2019-01-01_2020-12-31"
+           class="block text-sm font-medium text-slate-700 hover:text-indigo-600 transition-colors leading-snug mb-1.5">
+          MICROSOFT
+        </a>
+        <div class="flex items-center gap-3 pl-0.5"><a href="MICROSOFT_2019-01-01_2020-12-31.csv" download class="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> csv</a><a href="MICROSOFT_2019-01-01_2020-12-31.json" download class="inline-flex items-center gap-1 text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> json</a></div>
+      </div>
+      <div class="mb-4">
+        <a href="#TRACTOR_SUPPLY_2019-01-01_2020-12-31"
+           class="block text-sm font-medium text-slate-700 hover:text-indigo-600 transition-colors leading-snug mb-1.5">
+          TRACTOR SUPPLY
+        </a>
+        <div class="flex items-center gap-3 pl-0.5"><a href="TRACTOR_SUPPLY_2019-01-01_2020-12-31.csv" download class="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> csv</a><a href="TRACTOR_SUPPLY_2019-01-01_2020-12-31.json" download class="inline-flex items-center gap-1 text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> json</a></div>
+      </div>
+      <div class="mb-4">
+        <a href="#WALMART_2019-01-01_2020-12-31"
+           class="block text-sm font-medium text-slate-700 hover:text-indigo-600 transition-colors leading-snug mb-1.5">
+          WALMART
+        </a>
+        <div class="flex items-center gap-3 pl-0.5"><a href="WALMART_2019-01-01_2020-12-31.csv" download class="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> csv</a><a href="WALMART_2019-01-01_2020-12-31.json" download class="inline-flex items-center gap-1 text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> json</a></div>
+      </div>
+        </div>
+      </aside>
+      <div class="flex-1 min-w-0">
+        <div class="mb-8">
+          <h1 class="text-2xl font-bold text-slate-900">Data Files</h1>
+          <p class="text-slate-500 text-sm mt-1">
+            OpenFEC Schedule A contributions fetched via
+            <code class="bg-slate-100 px-1 rounded text-xs">api-demo.py</code>.
+            CSV previews show the 8 most useful columns.
+          </p>
+        </div>
+        
+    <section id="EXXON_MOBIL_2019-01-01_2020-12-31" class="mb-12 scroll-mt-10">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h2 class="text-base font-bold text-slate-900">EXXON MOBIL</h2>
+          <p class="text-xs text-slate-400 font-mono mt-0.5">EXXON_MOBIL_2019-01-01_2020-12-31</p>
+        </div>
+        <div class="flex items-center gap-2"><a href="EXXON_MOBIL_2019-01-01_2020-12-31.csv" download class="inline-flex items-center gap-1.5 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> CSV (487 KB)</a><a href="EXXON_MOBIL_2019-01-01_2020-12-31.json" download class="inline-flex items-center gap-1.5 text-xs bg-slate-600 text-white px-3 py-1.5 rounded-lg hover:bg-slate-700 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> JSON (1120 KB)</a></div>
       </div>
       <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
   <table class="min-w-full divide-y divide-slate-200">
@@ -107,13 +145,13 @@
 </div>
       <p class="text-xs text-slate-400 mt-2">Showing first 12 rows · 487 KB total</p>
     </section>
-    <section class="mb-10">
+    <section id="MICROSOFT_2019-01-01_2020-12-31" class="mb-12 scroll-mt-10">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="text-base font-semibold text-slate-800 font-mono">MICROSOFT_2019-01-01_2020-12-31.csv</h2>
-        <a href="MICROSOFT_2019-01-01_2020-12-31.csv" download
-           class="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors">
-          Download CSV (469 KB)
-        </a>
+        <div>
+          <h2 class="text-base font-bold text-slate-900">MICROSOFT</h2>
+          <p class="text-xs text-slate-400 font-mono mt-0.5">MICROSOFT_2019-01-01_2020-12-31</p>
+        </div>
+        <div class="flex items-center gap-2"><a href="MICROSOFT_2019-01-01_2020-12-31.csv" download class="inline-flex items-center gap-1.5 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> CSV (469 KB)</a><a href="MICROSOFT_2019-01-01_2020-12-31.json" download class="inline-flex items-center gap-1.5 text-xs bg-slate-600 text-white px-3 py-1.5 rounded-lg hover:bg-slate-700 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> JSON (1070 KB)</a></div>
       </div>
       <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
   <table class="min-w-full divide-y divide-slate-200">
@@ -123,13 +161,13 @@
 </div>
       <p class="text-xs text-slate-400 mt-2">Showing first 12 rows · 469 KB total</p>
     </section>
-    <section class="mb-10">
+    <section id="TRACTOR_SUPPLY_2019-01-01_2020-12-31" class="mb-12 scroll-mt-10">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="text-base font-semibold text-slate-800 font-mono">TRACTOR_SUPPLY_2019-01-01_2020-12-31.csv</h2>
-        <a href="TRACTOR_SUPPLY_2019-01-01_2020-12-31.csv" download
-           class="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors">
-          Download CSV (433 KB)
-        </a>
+        <div>
+          <h2 class="text-base font-bold text-slate-900">TRACTOR SUPPLY</h2>
+          <p class="text-xs text-slate-400 font-mono mt-0.5">TRACTOR_SUPPLY_2019-01-01_2020-12-31</p>
+        </div>
+        <div class="flex items-center gap-2"><a href="TRACTOR_SUPPLY_2019-01-01_2020-12-31.csv" download class="inline-flex items-center gap-1.5 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> CSV (433 KB)</a><a href="TRACTOR_SUPPLY_2019-01-01_2020-12-31.json" download class="inline-flex items-center gap-1.5 text-xs bg-slate-600 text-white px-3 py-1.5 rounded-lg hover:bg-slate-700 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> JSON (1003 KB)</a></div>
       </div>
       <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
   <table class="min-w-full divide-y divide-slate-200">
@@ -139,13 +177,13 @@
 </div>
       <p class="text-xs text-slate-400 mt-2">Showing first 12 rows · 433 KB total</p>
     </section>
-    <section class="mb-10">
+    <section id="WALMART_2019-01-01_2020-12-31" class="mb-12 scroll-mt-10">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="text-base font-semibold text-slate-800 font-mono">WALMART_2019-01-01_2020-12-31.csv</h2>
-        <a href="WALMART_2019-01-01_2020-12-31.csv" download
-           class="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors">
-          Download CSV (414 KB)
-        </a>
+        <div>
+          <h2 class="text-base font-bold text-slate-900">WALMART</h2>
+          <p class="text-xs text-slate-400 font-mono mt-0.5">WALMART_2019-01-01_2020-12-31</p>
+        </div>
+        <div class="flex items-center gap-2"><a href="WALMART_2019-01-01_2020-12-31.csv" download class="inline-flex items-center gap-1.5 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> CSV (414 KB)</a><a href="WALMART_2019-01-01_2020-12-31.json" download class="inline-flex items-center gap-1.5 text-xs bg-slate-600 text-white px-3 py-1.5 rounded-lg hover:bg-slate-700 transition-colors"><svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> JSON (998 KB)</a></div>
       </div>
       <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
   <table class="min-w-full divide-y divide-slate-200">
@@ -155,46 +193,8 @@
 </div>
       <p class="text-xs text-slate-400 mt-2">Showing first 12 rows · 414 KB total</p>
     </section>
-    <section class="mb-8">
-      <div class="flex items-center justify-between mb-2">
-        <h2 class="text-base font-semibold text-slate-800 font-mono">EXXON_MOBIL_2019-01-01_2020-12-31.json</h2>
-        <a href="EXXON_MOBIL_2019-01-01_2020-12-31.json" download
-           class="text-xs bg-slate-600 text-white px-3 py-1.5 rounded-lg hover:bg-slate-700 transition-colors">
-          Download JSON (1120 KB)
-        </a>
       </div>
-      <p class="text-sm text-slate-500">Raw API response — same records as the CSV above, in OpenFEC format.</p>
-    </section>
-    <section class="mb-8">
-      <div class="flex items-center justify-between mb-2">
-        <h2 class="text-base font-semibold text-slate-800 font-mono">MICROSOFT_2019-01-01_2020-12-31.json</h2>
-        <a href="MICROSOFT_2019-01-01_2020-12-31.json" download
-           class="text-xs bg-slate-600 text-white px-3 py-1.5 rounded-lg hover:bg-slate-700 transition-colors">
-          Download JSON (1070 KB)
-        </a>
-      </div>
-      <p class="text-sm text-slate-500">Raw API response — same records as the CSV above, in OpenFEC format.</p>
-    </section>
-    <section class="mb-8">
-      <div class="flex items-center justify-between mb-2">
-        <h2 class="text-base font-semibold text-slate-800 font-mono">TRACTOR_SUPPLY_2019-01-01_2020-12-31.json</h2>
-        <a href="TRACTOR_SUPPLY_2019-01-01_2020-12-31.json" download
-           class="text-xs bg-slate-600 text-white px-3 py-1.5 rounded-lg hover:bg-slate-700 transition-colors">
-          Download JSON (1003 KB)
-        </a>
-      </div>
-      <p class="text-sm text-slate-500">Raw API response — same records as the CSV above, in OpenFEC format.</p>
-    </section>
-    <section class="mb-8">
-      <div class="flex items-center justify-between mb-2">
-        <h2 class="text-base font-semibold text-slate-800 font-mono">WALMART_2019-01-01_2020-12-31.json</h2>
-        <a href="WALMART_2019-01-01_2020-12-31.json" download
-           class="text-xs bg-slate-600 text-white px-3 py-1.5 rounded-lg hover:bg-slate-700 transition-colors">
-          Download JSON (998 KB)
-        </a>
-      </div>
-      <p class="text-sm text-slate-500">Raw API response — same records as the CSV above, in OpenFEC format.</p>
-    </section>
+    </div>
   </main>
   <footer class="border-t border-slate-200 py-5 text-center text-xs text-slate-400">
     Generated May 31, 2026 ·

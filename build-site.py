@@ -118,6 +118,7 @@ def page(title: str, body: str, active: str, depth: int = 1,
       border-radius: 0.5rem; padding: 1.25rem 1.5rem;
       border: 1px solid #e5e7eb;
     }}
+    html {{ scroll-behavior: smooth; }}
     body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }}
     .badge-d {{ background: #dbeafe; color: #1d4ed8; }}
     .badge-r {{ background: #fee2e2; color: #b91c1c; }}
@@ -442,63 +443,133 @@ def csv_table(path: Path, max_rows: int = 12) -> str:
         return f'<p class="text-red-500 text-sm">Could not preview CSV: {esc(str(e))}</p>'
 
 
+def _dl_icon() -> str:
+    return (
+        '<svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" '
+        'stroke="currentColor" stroke-width="2.5">'
+        '<path stroke-linecap="round" stroke-linejoin="round" '
+        'd="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>'
+        '</svg>'
+    )
+
+
 def build_data(data_files: list[str]) -> None:
     data_dir = DOCS / "data"
     data_dir.mkdir(exist_ok=True)
 
-    sections = ""
-    csvs   = sorted(f for f in data_files if f.endswith(".csv"))
-    jsons  = sorted(f for f in data_files if f.endswith(".json"))
-    others = sorted(f for f in data_files if not f.endswith(".csv") and not f.endswith(".json"))
+    # Group by stem so CSV + JSON sit together, ordered by stem
+    groups: dict[str, dict[str, str]] = {}
+    for filename in sorted(data_files):
+        stem = Path(filename).stem
+        ext  = Path(filename).suffix.lstrip(".")
+        if stem not in groups:
+            groups[stem] = {}
+        groups[stem][ext] = filename
 
-    for filename in csvs:
-        src = OUT_SCHEDULE_A / filename
-        size_kb = src.stat().st_size // 1024 if src.exists() else 0
-        sections += f"""
-    <section class="mb-10">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-base font-semibold text-slate-800 font-mono">{esc(filename)}</h2>
-        <a href="{esc(filename)}" download
-           class="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors">
-          Download CSV ({size_kb} KB)
-        </a>
-      </div>
-      {csv_table(src)}
-      <p class="text-xs text-slate-400 mt-2">Showing first 12 rows · {size_kb} KB total</p>
-    </section>"""
-
-    for filename in jsons:
-        src = OUT_SCHEDULE_A / filename
-        size_kb = src.stat().st_size // 1024 if src.exists() else 0
-        sections += f"""
-    <section class="mb-8">
-      <div class="flex items-center justify-between mb-2">
-        <h2 class="text-base font-semibold text-slate-800 font-mono">{esc(filename)}</h2>
-        <a href="{esc(filename)}" download
-           class="text-xs bg-slate-600 text-white px-3 py-1.5 rounded-lg hover:bg-slate-700 transition-colors">
-          Download JSON ({size_kb} KB)
-        </a>
-      </div>
-      <p class="text-sm text-slate-500">Raw API response — same records as the CSV above, in OpenFEC format.</p>
-    </section>"""
-
-    if not sections:
-        sections = """
+    if not groups:
+        body = """
     <div class="text-center py-20 text-slate-400">
       <p class="text-4xl mb-4">📂</p>
       <p class="font-medium">No data files found.</p>
       <p class="text-sm mt-1">Run <code class="bg-slate-100 px-2 py-0.5 rounded text-slate-700">just fetch</code> to download FEC data.</p>
     </div>"""
+        (data_dir / "index.html").write_text(page("Data", body, "data"))
+        print("  data/index.html")
+        return
+
+    # ── Sidebar ────────────────────────────────────────────────────────────
+    sidebar_items = ""
+    for stem, files in groups.items():
+        anchor  = stem
+        company = company_from_filename(stem)
+        dl_links = ""
+        if "csv" in files:
+            dl_links += (
+                f'<a href="{esc(files["csv"])}" download '
+                f'class="inline-flex items-center gap-1 text-xs font-medium '
+                f'text-indigo-600 hover:text-indigo-800 transition-colors">'
+                f'{_dl_icon()} csv</a>'
+            )
+        if "json" in files:
+            dl_links += (
+                f'<a href="{esc(files["json"])}" download '
+                f'class="inline-flex items-center gap-1 text-xs font-medium '
+                f'text-slate-400 hover:text-slate-700 transition-colors">'
+                f'{_dl_icon()} json</a>'
+            )
+        sidebar_items += f"""
+      <div class="mb-4">
+        <a href="#{esc(anchor)}"
+           class="block text-sm font-medium text-slate-700 hover:text-indigo-600 transition-colors leading-snug mb-1.5">
+          {esc(company)}
+        </a>
+        <div class="flex items-center gap-3 pl-0.5">{dl_links}</div>
+      </div>"""
+
+    # ── Main sections ──────────────────────────────────────────────────────
+    sections = ""
+    for stem, files in groups.items():
+        anchor  = stem
+        company = company_from_filename(stem)
+        csv_file  = files.get("csv")
+        json_file = files.get("json")
+
+        download_bar = ""
+        if csv_file:
+            csv_src  = OUT_SCHEDULE_A / csv_file
+            csv_kb   = csv_src.stat().st_size // 1024 if csv_src.exists() else 0
+            download_bar += (
+                f'<a href="{esc(csv_file)}" download '
+                f'class="inline-flex items-center gap-1.5 text-xs bg-indigo-600 text-white '
+                f'px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors">'
+                f'{_dl_icon()} CSV ({csv_kb} KB)</a>'
+            )
+        if json_file:
+            json_src = OUT_SCHEDULE_A / json_file
+            json_kb  = json_src.stat().st_size // 1024 if json_src.exists() else 0
+            download_bar += (
+                f'<a href="{esc(json_file)}" download '
+                f'class="inline-flex items-center gap-1.5 text-xs bg-slate-600 text-white '
+                f'px-3 py-1.5 rounded-lg hover:bg-slate-700 transition-colors">'
+                f'{_dl_icon()} JSON ({json_kb} KB)</a>'
+            )
+
+        table_html = csv_table(OUT_SCHEDULE_A / csv_file) if csv_file else ""
+        row_note   = f"Showing first 12 rows · {csv_kb} KB total" if csv_file else ""
+
+        sections += f"""
+    <section id="{esc(anchor)}" class="mb-12 scroll-mt-10">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h2 class="text-base font-bold text-slate-900">{esc(company)}</h2>
+          <p class="text-xs text-slate-400 font-mono mt-0.5">{esc(stem)}</p>
+        </div>
+        <div class="flex items-center gap-2">{download_bar}</div>
+      </div>
+      {table_html}
+      {f'<p class="text-xs text-slate-400 mt-2">{esc(row_note)}</p>' if row_note else ""}
+    </section>"""
 
     body = f"""
-    <div class="mb-8">
-      <h1 class="text-2xl font-bold text-slate-900">Data Files</h1>
-      <p class="text-slate-500 text-sm mt-1">
-        OpenFEC Schedule A contributions fetched via <code class="bg-slate-100 px-1 rounded text-xs">api-demo.py</code>.
-        CSV previews show the {len(PREVIEW_COLS)} most useful columns.
-      </p>
-    </div>
-    {sections}"""
+    <div class="flex gap-8">
+      <aside class="hidden md:block w-52 flex-shrink-0">
+        <div class="sticky top-6">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Files</p>
+          {sidebar_items}
+        </div>
+      </aside>
+      <div class="flex-1 min-w-0">
+        <div class="mb-8">
+          <h1 class="text-2xl font-bold text-slate-900">Data Files</h1>
+          <p class="text-slate-500 text-sm mt-1">
+            OpenFEC Schedule A contributions fetched via
+            <code class="bg-slate-100 px-1 rounded text-xs">api-demo.py</code>.
+            CSV previews show the {len(PREVIEW_COLS)} most useful columns.
+          </p>
+        </div>
+        {sections}
+      </div>
+    </div>"""
 
     (data_dir / "index.html").write_text(page("Data", body, "data"))
     print("  data/index.html")
