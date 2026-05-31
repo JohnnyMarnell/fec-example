@@ -15,17 +15,24 @@ uv run api-demo.py --help        # Full option reference
 uv run main.py                   # Default: ./csv/TractorSupplyFECr.csv
 uv run main.py csv/MyCompanyFECr.csv
 
-# Via just
-just fetch
-just fetch-fresh "TRACTOR SUPPLY"
+# Via just (recipe args are positional, not key=value)
+just fetch                                                  # all defaults
+just fetch "MY COMPANY" 2020-01-01 2021-12-31 5            # override all params
+just fetch-fresh "TRACTOR SUPPLY"                           # custom employer, other defaults
 just analyze
+just analyze csv/MyCompanyFECr.csv
+
+# Notebook — execute all cells and render to HTML (both committed to git)
+just notebook
+# Interactive editing
+just notebook-edit   # or: uv run jupyter notebook notebooks/analysis.ipynb
 ```
 
 There is no test suite and no linter configured.
 
 ## Architecture
 
-Three Python files; no shared modules beyond `fec_client.py`.
+Three Python files; `fec_client.py` shared module; one notebook.
 
 ### `fec_client.py` — API client
 
@@ -40,6 +47,13 @@ Three Python files; no shared modules beyond `fec_client.py`.
 Click command. Uses `FECClient`. Writes combined results to:
 - `output/schedule_a/<EMPLOYER_SLUG>_<min-date>_<max-date>.json`
 - `output/schedule_a/<EMPLOYER_SLUG>_<min-date>_<max-date>.csv`
+
+### `notebooks/analysis.ipynb` — interactive notebook
+
+Same pipeline as `main.py` but structured as cells with inline `display()` output and
+`%matplotlib inline` charts. `just notebook` executes it in-place (updating outputs in the
+`.ipynb`) and renders `notebooks/analysis.html`; both are committed to git. The cwd-fix
+cell at the top handles being launched from either `notebooks/` or the project root.
 
 ### `main.py` — analysis CLI
 
