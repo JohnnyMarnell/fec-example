@@ -17,6 +17,12 @@ DOCS = ROOT / "docs"
 OUT_CHARTS = ROOT / "output" / "charts"
 OUT_SCHEDULE_A = ROOT / "output" / "schedule_a"
 NOTEBOOKS_DIR = ROOT / "notebooks"
+DOCS_SRC = ROOT / "docs-src"
+
+# Markdown pages: (slug, title, source path, nav order). Rendered to docs/<slug>/index.html.
+DESIGN_DOCS = [
+    ("sas-port", "SAS Port Design", DOCS_SRC / "sas-port.md"),
+]
 
 BUILD_DATE = datetime.now().strftime("%B %d, %Y")
 GITHUB_REPO = "https://github.com/JohnnyMarnell/fec-example"
@@ -79,6 +85,7 @@ def nav(active: str, depth: int) -> str:
     items = {
         "home":     (f"{b}index.html",         "Home"),
         "notebook": (f"{b}notebook/",           "Notebook"),
+        "design":   (f"{b}design/sas-port/",    "Design"),
         "data":     (f"{b}data/",               "Data"),
         "source":   (f"{b}source/",             "Source"),
     }
@@ -114,6 +121,44 @@ def page(title: str, body: str, active: str, depth: int = 1,
     .badge-d {{ background: #dbeafe; color: #1d4ed8; }}
     .badge-r {{ background: #fee2e2; color: #b91c1c; }}
     .badge-n {{ background: #f3f4f6; color: #6b7280; }}
+    /* Markdown prose blocks (Design page) */
+    .prose h1 {{ font-size: 1.875rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem; }}
+    .prose h2 {{ font-size: 1.4rem; font-weight: 700; color: #0f172a;
+                 margin: 2.25rem 0 .75rem; padding-bottom: .3rem; border-bottom: 1px solid #e2e8f0; }}
+    .prose h3 {{ font-size: 1.1rem; font-weight: 600; color: #1e293b; margin: 1.75rem 0 .6rem; }}
+    .prose h4 {{ font-size: 1rem; font-weight: 600; color: #334155; margin: 1.25rem 0 .5rem; }}
+    .prose p {{ color: #334155; line-height: 1.7; margin: .65rem 0; }}
+    .prose ul, .prose ol {{ color: #334155; line-height: 1.7; margin: .5rem 0 .9rem 1.25rem; }}
+    .prose ul {{ list-style: disc; }}
+    .prose ol {{ list-style: decimal; }}
+    .prose li {{ margin: .15rem 0; }}
+    .prose a {{ color: #4f46e5; text-decoration: underline; text-underline-offset: 2px; }}
+    .prose a:hover {{ color: #4338ca; }}
+    .prose strong {{ color: #0f172a; font-weight: 600; }}
+    .prose blockquote {{
+      border-left: 3px solid #6366f1; background: #eef2ff;
+      padding: .6rem 1rem; margin: 1rem 0; color: #334155; border-radius: 0 .375rem .375rem 0;
+    }}
+    .prose blockquote p {{ margin: .25rem 0; }}
+    .prose code {{
+      background: #f1f5f9; color: #be185d;
+      padding: .1em .35em; border-radius: .25rem;
+      font-size: .85em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }}
+    .prose pre {{
+      background: #0f172a; color: #f1f5f9;
+      padding: 1rem 1.25rem; border-radius: .5rem;
+      overflow-x: auto; margin: 1rem 0;
+      font-size: .82rem; line-height: 1.6;
+    }}
+    .prose pre code {{ background: transparent; color: inherit; padding: 0; }}
+    .prose table {{ width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .9rem; }}
+    .prose th, .prose td {{
+      border: 1px solid #e2e8f0; padding: .5rem .75rem; text-align: left; vertical-align: top;
+    }}
+    .prose th {{ background: #f8fafc; font-weight: 600; color: #0f172a; }}
+    .prose tr:nth-child(even) td {{ background: #fafbfc; }}
+    .prose hr {{ border: 0; border-top: 1px solid #e2e8f0; margin: 1.75rem 0; }}
   </style>
   {extra_head}
 </head>
@@ -198,8 +243,9 @@ def build_index(charts: list[str], data_files: list[str], notebooks: list[Path])
 
     nb_desc = f"{nb_label} — full executed analyses with charts, data joins, and the 60% contributor classification rule."
     quick_links = f"""
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
         {link_card("notebook/", "Notebooks", nb_desc, "📓")}
+        {link_card("design/sas-port/", "Design", "Deep dive: porting the SAS pipeline to DuckDB/pandas, with a plan for the next notebook.", "📐")}
         {link_card("data/",     "Data",      "Browse and download raw API output: Schedule A CSVs and JSON files.", "📂")}
         {link_card("source/",   "Source",    "Syntax-highlighted Python source and Justfile build recipes.", "🔍")}
       </div>"""
@@ -507,6 +553,54 @@ def build_source() -> None:
     print("  source/index.html")
 
 
+# ── Design docs (Markdown → HTML) ──────────────────────────────────────────
+
+def _markdown_to_html(md: str) -> str:
+    """Render GFM-flavored markdown to HTML. Uses mistune (vendored by nbconvert)."""
+    import mistune
+    renderer = mistune.HTMLRenderer(escape=False)
+    md_parser = mistune.create_markdown(
+        renderer=renderer,
+        plugins=["table", "url", "strikethrough", "task_lists"],
+    )
+    return md_parser(md)
+
+
+def build_design() -> None:
+    design_dir = DOCS / "design"
+    design_dir.mkdir(exist_ok=True)
+
+    toc = "".join(
+        f'<a href="../{slug}/" class="block px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors '
+        f'text-sm font-medium text-slate-700">{esc(title)}</a>'
+        for slug, title, _ in DESIGN_DOCS
+    )
+
+    for slug, title, src in DESIGN_DOCS:
+        if not src.exists():
+            print(f"  (skip design/{slug} — {src} missing)")
+            continue
+        page_dir = design_dir / slug
+        page_dir.mkdir(exist_ok=True)
+        rendered = _markdown_to_html(src.read_text())
+        body = f"""
+    <div class="flex gap-8">
+      <aside class="hidden md:block w-56 flex-shrink-0">
+        <div class="sticky top-6">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Design docs</p>
+          <nav class="space-y-0.5">{toc}</nav>
+        </div>
+      </aside>
+      <article class="prose flex-1 min-w-0 bg-white rounded-xl border border-slate-200 shadow-sm px-8 py-7">
+        {rendered}
+      </article>
+    </div>"""
+        (page_dir / "index.html").write_text(
+            page(title, body, "design", depth=2)
+        )
+        print(f"  design/{slug}/index.html")
+
+
 # ── Main ───────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -538,6 +632,7 @@ def main() -> None:
 
     build_index(charts, data_files, notebooks)
     build_notebooks(notebooks)
+    build_design()
     build_data(data_files)
     build_source()
     print(f"\nDone. {sum(1 for _ in DOCS.rglob('*.html'))} HTML files generated.")

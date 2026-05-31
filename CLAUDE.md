@@ -2,6 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Setup
+
+Tool versions are pinned in `mise.toml` (Python 3.12.11, uv, just). On a fresh clone:
+
+```bash
+mise install   # installs pinned python / uv / just (Linux, macOS, Windows)
+uv sync        # creates .venv and installs Python deps
+```
+
+`mise` install docs: https://mise.jdx.dev/getting-started.html
+
 ## Commands
 
 ```bash

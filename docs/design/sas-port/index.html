@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAS Port Design · FEC Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+  <style>
+    pre code.hljs {
+      font-size: 0.8rem; line-height: 1.7;
+      border-radius: 0.5rem; padding: 1.25rem 1.5rem;
+      border: 1px solid #e5e7eb;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
+    .badge-d { background: #dbeafe; color: #1d4ed8; }
+    .badge-r { background: #fee2e2; color: #b91c1c; }
+    .badge-n { background: #f3f4f6; color: #6b7280; }
+    /* Markdown prose blocks (Design page) */
+    .prose h1 { font-size: 1.875rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem; }
+    .prose h2 { font-size: 1.4rem; font-weight: 700; color: #0f172a;
+                 margin: 2.25rem 0 .75rem; padding-bottom: .3rem; border-bottom: 1px solid #e2e8f0; }
+    .prose h3 { font-size: 1.1rem; font-weight: 600; color: #1e293b; margin: 1.75rem 0 .6rem; }
+    .prose h4 { font-size: 1rem; font-weight: 600; color: #334155; margin: 1.25rem 0 .5rem; }
+    .prose p { color: #334155; line-height: 1.7; margin: .65rem 0; }
+    .prose ul, .prose ol { color: #334155; line-height: 1.7; margin: .5rem 0 .9rem 1.25rem; }
+    .prose ul { list-style: disc; }
+    .prose ol { list-style: decimal; }
+    .prose li { margin: .15rem 0; }
+    .prose a { color: #4f46e5; text-decoration: underline; text-underline-offset: 2px; }
+    .prose a:hover { color: #4338ca; }
+    .prose strong { color: #0f172a; font-weight: 600; }
+    .prose blockquote {
+      border-left: 3px solid #6366f1; background: #eef2ff;
+      padding: .6rem 1rem; margin: 1rem 0; color: #334155; border-radius: 0 .375rem .375rem 0;
+    }
+    .prose blockquote p { margin: .25rem 0; }
+    .prose code {
+      background: #f1f5f9; color: #be185d;
+      padding: .1em .35em; border-radius: .25rem;
+      font-size: .85em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .prose pre {
+      background: #0f172a; color: #f1f5f9;
+      padding: 1rem 1.25rem; border-radius: .5rem;
+      overflow-x: auto; margin: 1rem 0;
+      font-size: .82rem; line-height: 1.6;
+    }
+    .prose pre code { background: transparent; color: inherit; padding: 0; }
+    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .9rem; }
+    .prose th, .prose td {
+      border: 1px solid #e2e8f0; padding: .5rem .75rem; text-align: left; vertical-align: top;
+    }
+    .prose th { background: #f8fafc; font-weight: 600; color: #0f172a; }
+    .prose tr:nth-child(even) td { background: #fafbfc; }
+    .prose hr { border: 0; border-top: 1px solid #e2e8f0; margin: 1.75rem 0; }
+  </style>
+  
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+  <header class="bg-slate-900 text-white shadow-lg">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-start justify-between">
+      <div>
+        <a href="../../index.html" class="text-lg font-bold tracking-tight hover:text-indigo-300 transition-colors">
+          FEC Contribution Analysis
+        </a>
+        <p class="text-slate-400 text-xs mt-0.5">OpenFEC · Political contribution explorer</p>
+      </div>
+      <a href="https://github.com/JohnnyMarnell/fec-example" target="_blank" rel="noopener"
+         class="text-slate-400 hover:text-white text-xs flex items-center gap-1.5 mt-1 transition-colors">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.92.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+  <nav class="bg-slate-800 px-6 py-2.5 flex gap-8 border-b border-slate-700/60"><a href="../../index.html" class="text-slate-300 hover:text-white transition-colors text-sm">Home</a>  <a href="../../notebook/" class="text-slate-300 hover:text-white transition-colors text-sm">Notebook</a>  <a href="../../design/sas-port/" class="text-indigo-300 font-semibold border-b-2 border-indigo-400 pb-0.5 text-sm">Design</a>  <a href="../../data/" class="text-slate-300 hover:text-white transition-colors text-sm">Data</a>  <a href="../../source/" class="text-slate-300 hover:text-white transition-colors text-sm">Source</a></nav>
+  <main class="max-w-6xl mx-auto px-6 py-10 flex-1">
+    
+    <div class="flex gap-8">
+      <aside class="hidden md:block w-56 flex-shrink-0">
+        <div class="sticky top-6">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Design docs</p>
+          <nav class="space-y-0.5"><a href="../sas-port/" class="block px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm font-medium text-slate-700">SAS Port Design</a></nav>
+        </div>
+      </aside>
+      <article class="prose flex-1 min-w-0 bg-white rounded-xl border border-slate-200 shadow-sm px-8 py-7">
+        <h1>Porting the SAS Pipeline → A Deeper Notebook</h1>
+<blockquote>
+<p><strong>Goal.</strong> Take the original SAS-based FEC analysis (a private sister repo,
+<code>../sas-fork</code>, originally prepared for <em>Mitchell Langbert, Associate Professor,
+Brooklyn College</em>) and re-express the same end-to-end pipeline in the
+DuckDB + pandas + Jupyter style we're already using here — then push further:
+more companies, more API surface area, gender + state breakdowns, and a
+committee-graph view the SAS version never had.</p>
+</blockquote>
+<p>This page is the <strong>design document</strong> for that new notebook. It is intentionally
+detailed: the SAS code is ~1,100 lines of <code>DATA</code> steps and <code>PROC TABULATE</code>,
+and re-implementing it correctly means understanding every join and every
+threshold. Code follows in a second pass; this is the contract.</p>
+<hr />
+<h2>1 · Where we are today</h2>
+<p>The existing notebook (<code>notebooks/analysis.ipynb</code> → <a href="../notebook/">Notebook tab</a>)
+is a focused single-company demo:</p>
+<table>
+<thead>
+<tr>
+  <th>Stage</th>
+  <th>Today</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Fetch</strong></td>
+  <td>OpenFEC <code>/schedules/schedule_a/</code> — <em>one</em> employer, 2 pages (200 records)</td>
+</tr>
+<tr>
+  <td><strong>Join</strong></td>
+  <td><code>AllPacs.xslx.csv</code> + <code>Aristotle1.xlsx.csv</code> → party code</td>
+</tr>
+<tr>
+  <td><strong>Aggregate</strong></td>
+  <td>DuckDB <code>GROUP BY compervar</code></td>
+</tr>
+<tr>
+  <td><strong>60 % rule</strong></td>
+  <td><code>CASE WHEN Dsum/total &gt;= 0.6 …</code></td>
+</tr>
+<tr>
+  <td><strong>Output</strong></td>
+  <td>2 pie charts + a top-10 committee table</td>
+</tr>
+</tbody>
+</table>
+<p>It hits roughly <strong>steps 1, 3, 5, 6, 10</strong> of the 11-step SAS pipeline and skips:</p>
+<ul>
+<li>gender inference (steps 2, 8 — needs <code>name_gender.csv</code>),</li>
+<li>the full 25-party <code>*sum</code> matrix (step 4, 6),</li>
+<li>state-name resolution (<code>stnamel()</code> in step 2),</li>
+<li>the <strong>agency</strong> branch (every report has a <code>WHERE company=' ' AND agency≠' '</code> twin),</li>
+<li>the cross-company <code>% total</code> calculation (step 11 / <code>PROC TABULATE</code>),</li>
+<li>the contributor-count-vs-transaction-count <em>contrast</em> (the two output families
+<code>*_contributors.xlsx</code> vs <code>*_contributions.xlsx</code>).</li>
+</ul>
+<p>The new notebook closes those gaps.</p>
+<hr />
+<h2>2 · The SAS pipeline, end to end</h2>
+<p>Source: <a href="https://github.com/"><code>files-from-ftp-server/sas-src/</code></a> in the SAS fork
+(<code>sascsvc19.sas</code>, <code>stats5xle.sas</code>, <code>saspac3xle.sas</code>, <code>sasformats.sas</code>).</p>
+<pre><code>Raw FEC CSVs (79 cols, 10.8M rows across 55 companies)
+    │
+    ▼
+[1] SASPAC      PROC FEDSQL — companies ⋈ AllPacs ⋈ Aristotle ⋈ companyrank
+                10.8M rows × 16 vars
+    │
+    ▼
+[2] SASPAC2     MERGE name_gender BY first;  statename = stnamel(state)
+                10.8M × 19   (+ gender, probability, statename)
+    │
+    ▼
+[3] SASPAC3     mParty assignment;  5-digit zip;  compervar = company-last-zip
+                10.8M × 20   (drops probability/zip; renames contribution → contribsum)
+    │
+    ▼
+[4] SASPAC4     25 party-sum columns:  Asum…ORsum  (one is the amount, rest 0)
+                10.8M × 39
+    │
+    ▼
+[5] CLASS       PROC SUMMARY NWAY CLASS=compervar VAR=contribsum
+                1.03M × 4    (compervar, _TYPE_, _FREQ_, contribsum)
+    │
+    ▼
+[6] CLASS2      PROC SUMMARY NWAY CLASS=compervar VAR=Asum…ORsum
+                1.03M × 28   (per-person totals across all 25 party buckets)
+    │
+    ▼
+[7] STATS       SASPAC3 ⋈ CLASS  BY compervar  IF FIRST.   (drop committee/party)
+                1.03M × 16   (one row per person with demographics + grand total)
+    │
+    ▼
+[8] STATS2      SASPAC4 ⋈ CLASS2 BY compervar  IF FIRST.
+                1.03M × 39   (demographics + 25 party-sums)
+    │
+    ▼
+[9] STATS3      MERGE STATS STATS2;  contribsum = sum(all *sum)
+                1.03M × 41
+    │
+    ▼
+[10] STATS4     ★ THE 60% RULE ★   pCode = first party with party_sum/total ≥ 0.6
+                                    else 'N'.  mParty rolls up to D/R/Other
+                1.03M × 43
+    │
+    ▼
+[11] STATS5     LEFT JOIN Aristotle ON pCode = Code  →  full PARTY name
+                1.03M × 44                                    ← final contributor-level table
+</code></pre>
+<p>Then <strong>two parallel &quot;publish&quot; passes</strong> (<code>stats5xle.sas</code>, <code>saspac3xle.sas</code>)
+filter by company-vs-agency and pivot the *sum / Dnum / DMnum / DFnum / DUnum…
+matrix into one row per employer. And <code>sascsvc19.sas</code> runs 14 <code>PROC TABULATE</code>
+reports off the two tables (7 by company × 7 by agency).</p>
+<h3>2a · The &quot;60 % rule&quot; — why it's the heart of this</h3>
+<p>The same person can give 100 contributions across many committees. Calling them
+&quot;a Democrat&quot; because <em>some</em> of their money went to a Democratic committee
+is misleading — many corporate-PAC-aligned donors deliberately give to both
+sides. The fix:</p>
+<blockquote>
+<p>A person is classified as party <em>X</em> only if **≥ 60 % of their <em>total dollar
+volume*** went to *X</em>. Otherwise the person is <code>'N'</code> (None / Nonpartisan).</p>
+</blockquote>
+<p>In SAS this is 25 <code>IF</code> statements; in our DuckDB version it collapses to a
+single <code>CASE</code> expression over per-party sums. Same logic, ~95 % less code.</p>
+<h3>2b · <code>compervar</code> — the unique-person key</h3>
+<pre><code>compervar = strip(Company) || ' - ' || strip(Last) || ' - ' || zip5
+                                                              ^^^^
+                                       SUBSTR(zip, 1, 5) — drops the +4 suffix
+</code></pre>
+<p>Quirks worth preserving:</p>
+<ul>
+<li>Married couples at the same address collapse into one row (acknowledged limitation).</li>
+<li>People who moved during the cycle may split into two rows.</li>
+<li>The company name has to be <strong>standardized first</strong> — <code>'AMAZON'</code> and <code>'AMAZON.COM'</code>
+are different <code>compervar</code>s otherwise. SAS handles this with <code>$COMPANYF.</code>
+(500-row PROC FORMAT, <a href="https://github.com/">sasformats.sas</a> lines 13–514).</li>
+</ul>
+<h3>2c · Two output universes</h3>
+<p>The SAS code generates <strong>two parallel summary families</strong> because the question
+&quot;how many Democrats work at Amazon?&quot; has two valid answers:</p>
+<table>
+<thead>
+<tr>
+  <th>Family</th>
+  <th>Unit</th>
+  <th>Built from</th>
+  <th>&quot;Amazon Democrats&quot; means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Contributions</strong> (<code>saspac3all</code>)</td>
+  <td>one row per <em>transaction</em></td>
+  <td>step 3</td>
+  <td>&quot;$ given to Democratic committees, counted once per transaction&quot;</td>
+</tr>
+<tr>
+  <td><strong>Contributors</strong> (<code>stats5all</code>)</td>
+  <td>one row per <em>person</em></td>
+  <td>step 10</td>
+  <td>&quot;people whose ≥ 60 % went to Democrats, counted once per person&quot;</td>
+</tr>
+</tbody>
+</table>
+<p>The two answers can differ a lot — a single high-volume bipartisan donor
+contributes to <em>contributions</em> totals on both sides but is classified <code>'N'</code>
+in <em>contributors</em>. Our existing notebook only shows the contributors view;
+the new one shows both, side by side.</p>
+<hr />
+<h2>3 · Mapping every SAS construct to DuckDB / pandas</h2>
+<table>
+<thead>
+<tr>
+  <th>SAS construct</th>
+  <th>DuckDB / pandas equivalent</th>
+  <th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>PROC FEDSQL CREATE TABLE … LEFT OUTER JOIN</code></td>
+  <td><code>con.execute(&quot;SELECT … LEFT JOIN …&quot;).df()</code></td>
+  <td>Direct</td>
+</tr>
+<tr>
+  <td><code>MERGE a (in=A) b (in=B) BY k; IF A;</code></td>
+  <td><code>df.merge(b, on='k', how='left')</code></td>
+  <td>Drop <code>in=</code> flags</td>
+</tr>
+<tr>
+  <td><code>PROC SORT … BY k</code></td>
+  <td>DuckDB sorts on join; usually unneeded</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>PROC SUMMARY NWAY CLASS=k VAR=x OUTPUT OUT=o SUM=x</code></td>
+  <td><code>GROUP BY k</code>, <code>SUM(x) AS x</code></td>
+  <td><code>_TYPE_</code>, <code>_FREQ_</code> we synthesize where needed</td>
+</tr>
+<tr>
+  <td><code>IF FIRST.k = 1</code></td>
+  <td><code>DROP DUPLICATES (k, keep='first')</code></td>
+  <td>After ordering</td>
+</tr>
+<tr>
+  <td><code>IF cond THEN var='X'; ELSE …</code></td>
+  <td><code>CASE WHEN cond THEN 'X' …</code></td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>SUBSTR(put(Zip,9.), 1, 5)</code></td>
+  <td><code>LPAD(REGEXP_REPLACE(zip,'\D','','g'), 5, '0')</code></td>
+  <td>Drop +4 suffix, force 5 digits</td>
+</tr>
+<tr>
+  <td><code>stnamel(state)</code></td>
+  <td><code>state_abbr → state_full</code> dict in Python</td>
+  <td>Use a static map (50 entries)</td>
+</tr>
+<tr>
+  <td><code>PROC FORMAT $COMPANYF.</code> (500 rows)</td>
+  <td><code>dict</code> literal in the notebook</td>
+  <td>We only need the subset for our default companies</td>
+</tr>
+<tr>
+  <td><code>PROC FORMAT $AGENCYF.</code> (40 rows)</td>
+  <td><code>dict</code> literal in the notebook</td>
+  <td>Same</td>
+</tr>
+<tr>
+  <td><code>PROC TABULATE … CLASS … TABLE row,col*statistic</code></td>
+  <td><code>pd.crosstab(rows, cols, values=…, aggfunc=…, margins=True)</code></td>
+  <td>+ <code>.style.format()</code> for display</td>
+</tr>
+<tr>
+  <td><code>pctsum='% total'</code></td>
+  <td><code>.div(.sum()).mul(100)</code> post-aggregation</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>ODS EXCEL FILE=…</code></td>
+  <td><code>df.to_excel(path)</code></td>
+  <td>Optional — we lean on inline display</td>
+</tr>
+</tbody>
+</table>
+<p>A column-by-column re-do of <em>every</em> <code>*sum</code> variable would be tedious. For the
+<strong>dynamic</strong> ones we keep the same names so anyone cross-referencing SAS code
+recognizes them. We drop the variables that are always zero in our subset
+(<code>Bsum</code>/Constitution, <code>Jsum</code>/UMOJA, etc.) — adding them back is a one-liner
+when needed.</p>
+<hr />
+<h2>4 · What the new notebook adds beyond the SAS code</h2>
+<table>
+<thead>
+<tr>
+  <th>Capability</th>
+  <th>SAS</th>
+  <th>New notebook</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Multi-company</td>
+  <td>✅ 55 employers, batch</td>
+  <td>✅ 5 employers, parallelizable</td>
+</tr>
+<tr>
+  <td>Gender inference</td>
+  <td>✅ name_gender.csv (~95K names)</td>
+  <td>✅ — uses <code>gender-guesser</code> library (US Census + EU data, no API call)</td>
+</tr>
+<tr>
+  <td>25 party codes</td>
+  <td>✅</td>
+  <td>✅</td>
+</tr>
+<tr>
+  <td>60 % rule</td>
+  <td>✅</td>
+  <td>✅</td>
+</tr>
+<tr>
+  <td>Company vs Agency split</td>
+  <td>✅</td>
+  <td>✅ (with <code>$AGENCYF.</code>-equivalent dict)</td>
+</tr>
+<tr>
+  <td>State-name resolution</td>
+  <td>✅ <code>stnamel()</code></td>
+  <td>✅ static dict</td>
+</tr>
+<tr>
+  <td>Cross-company <code>% total</code></td>
+  <td>✅</td>
+  <td>✅</td>
+</tr>
+<tr>
+  <td>Contributors <em>and</em> Contributions output</td>
+  <td>✅</td>
+  <td>✅</td>
+</tr>
+<tr>
+  <td><strong>Per-committee party</strong> sourced from FEC API directly</td>
+  <td>❌ (static <code>AllPacs.csv</code>)</td>
+  <td>✅ — <code>committee.party</code> is embedded in every Schedule A row</td>
+</tr>
+<tr>
+  <td><strong>Recipient-side view</strong>: where did each committee spend?</td>
+  <td>❌</td>
+  <td>✅ — Schedule B disbursements for top recipients</td>
+</tr>
+<tr>
+  <td><strong>Time-series</strong>: contributions per month</td>
+  <td>❌</td>
+  <td>✅</td>
+</tr>
+<tr>
+  <td><strong>Committee designation</strong> breakdown (PAC / candidate cmte / party cmte)</td>
+  <td>❌</td>
+  <td>✅ — <code>committee.committee_type_full</code></td>
+</tr>
+<tr>
+  <td><strong>Visualizations</strong>: pies, bars, stacked, choropleth</td>
+  <td>partial</td>
+  <td>✅ (matplotlib + folium choropleth optional)</td>
+</tr>
+</tbody>
+</table>
+<p>The &quot;committee party via API&quot; finding is the biggest win. The SAS pipeline
+needs <code>AllPacs.csv</code> because the original CSVs didn't carry party info. The
+modern OpenFEC API embeds <code>committee.party</code> and <code>committee.committee_type</code>
+directly in every Schedule A response — so for <strong>future</strong> ports we no longer
+need a static lookup at all. We still fall back to <code>AllPacs.xslx.csv</code> for the
+~25 % of committees the API returns <code>party=null</code> for (e.g. unauthorized PACs).</p>
+<hr />
+<h2>5 · Data sources for the new notebook</h2>
+<h3>5a · FEC API endpoints we'll use</h3>
+<table>
+<thead>
+<tr>
+  <th>Endpoint</th>
+  <th>Use</th>
+  <th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>/schedules/schedule_a/?contributor_employer=X</code></td>
+  <td>Per-employer individual contributions (the SAS input)</td>
+  <td>2 pages × 100 / employer</td>
+</tr>
+<tr>
+  <td><code>/committees/?committee_id=X</code> <em>(optional)</em></td>
+  <td>Fill in <code>party</code> for committees the embedded <code>committee.*</code> lacks</td>
+  <td>Only for <code>party=null</code> rows, batched</td>
+</tr>
+<tr>
+  <td><code>/schedules/schedule_b/?committee_id=X</code> <em>(optional)</em></td>
+  <td>&quot;Where did the Tractor Supply PAC spend its money?&quot;</td>
+  <td>1 page for the top 3 committees per company</td>
+</tr>
+<tr>
+  <td><code>/candidates/?candidate_id=X</code> <em>(optional)</em></td>
+  <td>Resolve <code>candidate_id</code> → candidate party (some contributions earmark a candidate)</td>
+  <td>Cached</td>
+</tr>
+</tbody>
+</table>
+<p>Everything goes through the existing <a href="../source/#fec_client-py"><code>FECClient</code></a>, so
+the disk cache (<code>cache/*.json</code> + <code>cache/index.json</code>) absorbs all subsequent
+runs at zero cost.</p>
+<h3>5b · Static lookups, bundled in <code>csv/</code></h3>
+<ul>
+<li><code>AllPacs.xslx.csv</code> — already in repo. ~35 K committees → party affiliation.
+Used <strong>only as fallback</strong> when <code>committee.party</code> from the API is null.</li>
+<li><code>Aristotle1.xlsx.csv</code> — already in repo. The 25-party code dictionary.</li>
+<li><code>name_gender.csv</code> — <em>not</em> bundled to keep the repo small; we use the
+pip-installable <a href="https://pypi.org/project/gender-guesser/"><code>gender-guesser</code></a>
+package as a drop-in replacement (~95 K names, ≥ 0.9-equivalent threshold).</li>
+<li><code>CompanyRank.csv</code> / <code>$COMPANYF.</code> — we inline a small dict for our defaults
+rather than carrying the full Fortune-500 mapping.</li>
+</ul>
+<h3>5c · Default companies and date ranges</h3>
+<p>Five employers, picked to give a <em>varied political profile</em> and a varied
+size so the cross-company comparisons are interesting:</p>
+<table>
+<thead>
+<tr>
+  <th>#</th>
+  <th>Employer string (FEC)</th>
+  <th>Why</th>
+  <th>Expected pol. tilt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>1</td>
+  <td><code>TRACTOR SUPPLY</code></td>
+  <td>Already in our cache — zero new fetch</td>
+  <td>mixed</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>MICROSOFT CORPORATION</code></td>
+  <td>Big tech, lots of donors</td>
+  <td>D-leaning</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>EXXON MOBIL</code></td>
+  <td>Energy / old industrial</td>
+  <td>R-leaning</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>WALMART</code></td>
+  <td>Retail giant, mixed workforce</td>
+  <td>mixed</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>LOCKHEED MARTIN</code></td>
+  <td>Defense — bipartisan giving</td>
+  <td>bipartisan</td>
+</tr>
+</tbody>
+</table>
+<p>Date range: <strong>2019-01-01 → 2020-12-31</strong> (matches the SAS analysis cycle so any
+spot-checks against <code>company_contributors.xlsx</code> in the SAS repo are apples to
+apples). Adjustable via a single notebook cell.</p>
+<p><strong>Budget</strong>: 5 employers × 2 pages × ~0.5 s ≈ <strong>5 s first run</strong>, ~0 s cached.
+That sits well within the &quot;under a minute total&quot; ceiling, leaving headroom
+for the optional Schedule B / committees fill-in calls.</p>
+<hr />
+<h2>6 · The new notebook's structure</h2>
+<p>Cells, in order:</p>
+<ol>
+<li><strong>Setup</strong> — imports, paths, cache wiring (mirrors today's notebook).</li>
+<li><strong>Config</strong> — <code>COMPANIES</code>, <code>MIN_DATE</code>, <code>MAX_DATE</code>, <code>PARTY_THRESHOLD = 0.60</code>.</li>
+<li><strong>Fetch</strong> — <code>FECClient.schedule_a_pages(...)</code> for every employer in parallel-ish
+(sequential but cached). Drops into a single <code>pandas.DataFrame</code>.</li>
+<li><strong>SASPAC</strong> — DuckDB join: contributions ⋈ allpacs ⋈ aristotle. Prefer
+embedded <code>committee.party_full</code>; fall back to <code>AllPacs</code> lookup; fall back
+to <code>'N'</code>. (One CTE.)</li>
+<li><strong>SASPAC2</strong> — gender via <code>gender-guesser</code> (Python UDF, then merged back).
+State name via static dict.</li>
+<li><strong>SASPAC3</strong> — <code>mParty</code>, zip5, <code>compervar</code>, rename → <code>contribsum</code>.</li>
+<li><strong>Per-party sum matrix (SASPAC4 + CLASS2)</strong> — one CTE with 25
+<code>SUM(CASE WHEN code = 'D' THEN amount ELSE 0 END) AS Dsum</code>, …</li>
+<li><strong>60 % rule (STATS4)</strong> — one <code>CASE</code> over <code>*sum / contribsum</code>. Outputs
+<code>pCode</code>, <code>mParty</code>, full <code>Party</code> (joined to Aristotle).</li>
+<li><strong><code>stats5all</code> final view</strong> — the canonical contributor-level table.
+Display sample.</li>
+<li><strong>Output A — <code>company_contributors</code></strong> — 1 row / employer, columns matching
+<a href="https://github.com/">SAS <code>company_contributors.xlsx</code></a> including
+<code>Contributor_Count</code>, <code>contribsum</code>, <code>Dnum/Dsumc/DMnum/DMsum/DFnum/DFsum/DUnum/DUsum</code>,
+parallel <code>R*</code> and <code>O*</code>. Side-by-side display vs the SAS row for Tractor Supply.</li>
+<li><strong>Output B — <code>company_contributions</code></strong> — 1 row / employer, transaction-level,
+matching SAS <a href="https://github.com/"><code>company_contributions.xlsx</code></a>.</li>
+<li><strong>Compare</strong>: a small table that shows <em>why</em> A and B differ
+(the same contributor counted N times vs once).</li>
+<li><strong>Cross-company viz</strong> — stacked bar of D/R/O contributor counts; choropleth
+of contribution dollars by <code>contributor_state</code> <em>(folium, optional)</em>.</li>
+<li><strong>Top-committees per company</strong> — already in old notebook, kept.</li>
+<li><strong>Time series</strong> — monthly contribution totals by <code>mParty</code> (one plot per company).</li>
+<li><strong>Bonus: committee designations</strong> — distribution of <code>committee.committee_type_full</code>
+across all contributions (super-PAC vs candidate cmte vs party cmte vs …).</li>
+<li><strong>Agency branch</strong> <em>(stretch)</em> — re-run pipeline with a single federal
+agency (<code>DEPT OF DEFENSE</code> or <code>DOD</code>) as <code>contributor_employer</code>, demonstrate
+the SAS agency reports as a separate section.</li>
+</ol>
+<p>Each section ends with a Markdown explainer that maps the DuckDB cell back
+to the <strong>SAS line numbers</strong> so a SAS reader can cross-reference.</p>
+<hr />
+<h2>7 · Output artifacts written to disk</h2>
+<pre><code>output/
+├── schedule_a/                                # raw fetch (one per employer)
+│   ├── MICROSOFT_CORPORATION_2019-01-01_2020-12-31.{json,csv}
+│   ├── EXXON_MOBIL_…
+│   └── …
+├── tables/                                    # SAS-parity summaries
+│   ├── company_contributors.csv               # ↔ SAS company_contributors.xlsx
+│   ├── company_contributions.csv              # ↔ SAS company_contributions.xlsx
+│   └── stats5all_sample.csv                   # contributor-level, 50-row sample
+└── charts/
+    ├── multi_company_party_stack.png
+    ├── monthly_timeseries_&lt;employer&gt;.png
+    └── …
+</code></pre>
+<p>The CSVs are then automatically picked up by the existing
+<a href="../source/#build-site-py"><code>build-site.py</code></a> → <a href="../data/">Data tab</a> so anyone
+browsing the site can download them.</p>
+<hr />
+<h2>8 · Risks &amp; open questions before we write code</h2>
+<ol>
+<li><strong>Multi-company <code>contributor_employer</code> matching is fuzzy.</strong> FEC contributors
+self-report their employer, so <code>&quot;WALMART&quot;</code> returns <code>&quot;WALMART INC&quot;</code>,
+<code>&quot;WAL-MART&quot;</code>, <code>&quot;WALMART STORES&quot;</code>, etc. We normalize on our side
+(uppercase, strip punctuation) but our SAS-parity numbers won't match
+the SAS book exactly unless we apply the same <code>$COMPANYF.</code> mapping.</li>
+<li><strong><code>gender-guesser</code> ≠ the original <code>name_gender.csv</code>.</strong> It uses a different
+underlying source. Expect ±2 % drift on gender shares per company. The
+threshold (≥ 0.9 probability → assign; else <code>'U'</code>) is preserved.</li>
+<li><strong>API <code>committee.party</code> is <code>null</code> for ~25 % of rows</strong> (mostly unauthorized
+PACs). The fallback chain <code>embedded → AllPacs → 'N'</code> works but won't be
+identical to the SAS run, which used <code>AllPacs</code> first.</li>
+<li><strong>Schedule B fetch cost.</strong> If we expand to disbursement-side views for all
+5 companies' top 3 committees, that's 15 extra fetches. Still well under
+the minute budget but worth measuring.</li>
+<li><strong>State name dict.</strong> US Postal abbrevs only — we drop territories the
+SAS code resolved (PR/VI/etc.). Cheap to add back if needed.</li>
+</ol>
+<hr />
+<h2>9 · Source-of-truth pointers</h2>
+<table>
+<thead>
+<tr>
+  <th>Thing</th>
+  <th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Original SAS code</td>
+  <td><code>../sas-fork/files-from-ftp-server/sas-src/sascsvc19.sas</code> (and friends)</td>
+</tr>
+<tr>
+  <td>SAS docs</td>
+  <td><code>../sas-fork/README.md</code>, <code>../sas-fork/SAS_OUTPUTS.md</code>, <code>../sas-fork/CLAUDE.md</code></td>
+</tr>
+<tr>
+  <td>Existing single-company notebook</td>
+  <td><a href="../notebook/"><code>notebooks/analysis.ipynb</code></a></td>
+</tr>
+<tr>
+  <td>Existing pipeline</td>
+  <td><a href="../source/">Source tab</a> (<code>main.py</code>, <code>api-demo.py</code>, <code>fec_client.py</code>)</td>
+</tr>
+<tr>
+  <td>60 % rule (SAS)</td>
+  <td><code>sascsvc19.sas:534-562</code></td>
+</tr>
+<tr>
+  <td>Person key (SAS)</td>
+  <td><code>sascsvc19.sas:103</code></td>
+</tr>
+<tr>
+  <td>Excel output writer (SAS)</td>
+  <td><code>stats5xle.sas</code>, <code>saspac3xle.sas</code></td>
+</tr>
+<tr>
+  <td>Gender threshold (SAS)</td>
+  <td><code>sascsvc19.sas:93-99</code></td>
+</tr>
+<tr>
+  <td>FEC API</td>
+  <td><a href="https://api.open.fec.gov/developers/">https://api.open.fec.gov/developers/</a></td>
+</tr>
+<tr>
+  <td>FEC bulk data (origin of the SAS inputs)</td>
+  <td><a href="https://www.fec.gov/data/browse-data/?tab=bulk-data">https://www.fec.gov/data/browse-data/?tab=bulk-data</a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Next step.</strong> Once this design is accepted, the actual notebook
+(<code>notebooks/sas_port_deep_analysis.ipynb</code>) is a straight translation: each
+section above → one or two cells, each SAS step → one DuckDB CTE.
+Wire it into <code>build-site.py</code> the same way <code>analysis.ipynb</code> is wired today.</p>
+
+      </article>
+    </div>
+  </main>
+  <footer class="border-t border-slate-200 py-5 text-center text-xs text-slate-400">
+    Generated May 31, 2026 ·
+    <a href="https://github.com/JohnnyMarnell/fec-example" target="_blank" rel="noopener" class="hover:text-slate-700 underline">GitHub</a> ·
+    <a href="../../source/" class="hover:text-slate-700 underline">Source code</a>
+  </footer>
+</body>
+</html>

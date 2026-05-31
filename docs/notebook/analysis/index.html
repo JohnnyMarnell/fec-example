@@ -18,6 +18,44 @@
     .badge-d { background: #dbeafe; color: #1d4ed8; }
     .badge-r { background: #fee2e2; color: #b91c1c; }
     .badge-n { background: #f3f4f6; color: #6b7280; }
+    /* Markdown prose blocks (Design page) */
+    .prose h1 { font-size: 1.875rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem; }
+    .prose h2 { font-size: 1.4rem; font-weight: 700; color: #0f172a;
+                 margin: 2.25rem 0 .75rem; padding-bottom: .3rem; border-bottom: 1px solid #e2e8f0; }
+    .prose h3 { font-size: 1.1rem; font-weight: 600; color: #1e293b; margin: 1.75rem 0 .6rem; }
+    .prose h4 { font-size: 1rem; font-weight: 600; color: #334155; margin: 1.25rem 0 .5rem; }
+    .prose p { color: #334155; line-height: 1.7; margin: .65rem 0; }
+    .prose ul, .prose ol { color: #334155; line-height: 1.7; margin: .5rem 0 .9rem 1.25rem; }
+    .prose ul { list-style: disc; }
+    .prose ol { list-style: decimal; }
+    .prose li { margin: .15rem 0; }
+    .prose a { color: #4f46e5; text-decoration: underline; text-underline-offset: 2px; }
+    .prose a:hover { color: #4338ca; }
+    .prose strong { color: #0f172a; font-weight: 600; }
+    .prose blockquote {
+      border-left: 3px solid #6366f1; background: #eef2ff;
+      padding: .6rem 1rem; margin: 1rem 0; color: #334155; border-radius: 0 .375rem .375rem 0;
+    }
+    .prose blockquote p { margin: .25rem 0; }
+    .prose code {
+      background: #f1f5f9; color: #be185d;
+      padding: .1em .35em; border-radius: .25rem;
+      font-size: .85em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .prose pre {
+      background: #0f172a; color: #f1f5f9;
+      padding: 1rem 1.25rem; border-radius: .5rem;
+      overflow-x: auto; margin: 1rem 0;
+      font-size: .82rem; line-height: 1.6;
+    }
+    .prose pre code { background: transparent; color: inherit; padding: 0; }
+    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .9rem; }
+    .prose th, .prose td {
+      border: 1px solid #e2e8f0; padding: .5rem .75rem; text-align: left; vertical-align: top;
+    }
+    .prose th { background: #f8fafc; font-weight: 600; color: #0f172a; }
+    .prose tr:nth-child(even) td { background: #fafbfc; }
+    .prose hr { border: 0; border-top: 1px solid #e2e8f0; margin: 1.75rem 0; }
   </style>
   <style type="text/css">
     pre { line-height: 125%; }
@@ -7372,7 +7410,7 @@ a.anchor-link {
       </a>
     </div>
   </header>
-  <nav class="bg-slate-800 px-6 py-2.5 flex gap-8 border-b border-slate-700/60"><a href="../../index.html" class="text-slate-300 hover:text-white transition-colors text-sm">Home</a>  <a href="../../notebook/" class="text-indigo-300 font-semibold border-b-2 border-indigo-400 pb-0.5 text-sm">Notebook</a>  <a href="../../data/" class="text-slate-300 hover:text-white transition-colors text-sm">Data</a>  <a href="../../source/" class="text-slate-300 hover:text-white transition-colors text-sm">Source</a></nav>
+  <nav class="bg-slate-800 px-6 py-2.5 flex gap-8 border-b border-slate-700/60"><a href="../../index.html" class="text-slate-300 hover:text-white transition-colors text-sm">Home</a>  <a href="../../notebook/" class="text-indigo-300 font-semibold border-b-2 border-indigo-400 pb-0.5 text-sm">Notebook</a>  <a href="../../design/sas-port/" class="text-slate-300 hover:text-white transition-colors text-sm">Design</a>  <a href="../../data/" class="text-slate-300 hover:text-white transition-colors text-sm">Data</a>  <a href="../../source/" class="text-slate-300 hover:text-white transition-colors text-sm">Source</a></nav>
   <main class="w-full flex-1 p-0">
     
     <div class="flex items-center justify-between px-6 py-3 bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
@@ -8122,108 +8160,108 @@ Total dollars       : $174,991.63
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <style type="text/css">
 </style>
-<table id="T_0666f">
+<table id="T_ea77f">
 <thead>
 <tr>
 <th class="blank level0"> </th>
-<th class="col_heading level0 col0" id="T_0666f_level0_col0">committee_name</th>
-<th class="col_heading level0 col1" id="T_0666f_level0_col1">party</th>
-<th class="col_heading level0 col2" id="T_0666f_level0_col2">count</th>
-<th class="col_heading level0 col3" id="T_0666f_level0_col3">max_amount</th>
-<th class="col_heading level0 col4" id="T_0666f_level0_col4">mean_amount</th>
-<th class="col_heading level0 col5" id="T_0666f_level0_col5">total_amount</th>
+<th class="col_heading level0 col0" id="T_ea77f_level0_col0">committee_name</th>
+<th class="col_heading level0 col1" id="T_ea77f_level0_col1">party</th>
+<th class="col_heading level0 col2" id="T_ea77f_level0_col2">count</th>
+<th class="col_heading level0 col3" id="T_ea77f_level0_col3">max_amount</th>
+<th class="col_heading level0 col4" id="T_ea77f_level0_col4">mean_amount</th>
+<th class="col_heading level0 col5" id="T_ea77f_level0_col5">total_amount</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_0666f_level0_row0">0</th>
-<td class="data row0 col0" id="T_0666f_row0_col0">TRACTOR SUPPLY COMPANY POLITICAL ACTION COMMITTEE</td>
-<td class="data row0 col1" id="T_0666f_row0_col1">R</td>
-<td class="data row0 col2" id="T_0666f_row0_col2">47</td>
-<td class="data row0 col3" id="T_0666f_row0_col3">$5,000.00</td>
-<td class="data row0 col4" id="T_0666f_row0_col4">$1,096.51</td>
-<td class="data row0 col5" id="T_0666f_row0_col5">$51,536.00</td>
+<th class="row_heading level0 row0" id="T_ea77f_level0_row0">0</th>
+<td class="data row0 col0" id="T_ea77f_row0_col0">TRACTOR SUPPLY COMPANY POLITICAL ACTION COMMITTEE</td>
+<td class="data row0 col1" id="T_ea77f_row0_col1">R</td>
+<td class="data row0 col2" id="T_ea77f_row0_col2">47</td>
+<td class="data row0 col3" id="T_ea77f_row0_col3">$5,000.00</td>
+<td class="data row0 col4" id="T_ea77f_row0_col4">$1,096.51</td>
+<td class="data row0 col5" id="T_ea77f_row0_col5">$51,536.00</td>
 </tr>
 <tr>
-<th class="row_heading level0 row1" id="T_0666f_level0_row1">1</th>
-<td class="data row1 col0" id="T_0666f_row1_col0">WINRED</td>
-<td class="data row1 col1" id="T_0666f_row1_col1">R</td>
-<td class="data row1 col2" id="T_0666f_row1_col2">1042</td>
-<td class="data row1 col3" id="T_0666f_row1_col3">$2,800.00</td>
-<td class="data row1 col4" id="T_0666f_row1_col4">$38.04</td>
-<td class="data row1 col5" id="T_0666f_row1_col5">$39,639.98</td>
+<th class="row_heading level0 row1" id="T_ea77f_level0_row1">1</th>
+<td class="data row1 col0" id="T_ea77f_row1_col0">WINRED</td>
+<td class="data row1 col1" id="T_ea77f_row1_col1">R</td>
+<td class="data row1 col2" id="T_ea77f_row1_col2">1042</td>
+<td class="data row1 col3" id="T_ea77f_row1_col3">$2,800.00</td>
+<td class="data row1 col4" id="T_ea77f_row1_col4">$38.04</td>
+<td class="data row1 col5" id="T_ea77f_row1_col5">$39,639.98</td>
 </tr>
 <tr>
-<th class="row_heading level0 row2" id="T_0666f_level0_row2">2</th>
-<td class="data row2 col0" id="T_0666f_row2_col0">ACTBLUE</td>
-<td class="data row2 col1" id="T_0666f_row2_col1">D</td>
-<td class="data row2 col2" id="T_0666f_row2_col2">2113</td>
-<td class="data row2 col3" id="T_0666f_row2_col3">$100.00</td>
-<td class="data row2 col4" id="T_0666f_row2_col4">$12.78</td>
-<td class="data row2 col5" id="T_0666f_row2_col5">$27,010.25</td>
+<th class="row_heading level0 row2" id="T_ea77f_level0_row2">2</th>
+<td class="data row2 col0" id="T_ea77f_row2_col0">ACTBLUE</td>
+<td class="data row2 col1" id="T_ea77f_row2_col1">D</td>
+<td class="data row2 col2" id="T_ea77f_row2_col2">2113</td>
+<td class="data row2 col3" id="T_ea77f_row2_col3">$100.00</td>
+<td class="data row2 col4" id="T_ea77f_row2_col4">$12.78</td>
+<td class="data row2 col5" id="T_ea77f_row2_col5">$27,010.25</td>
 </tr>
 <tr>
-<th class="row_heading level0 row3" id="T_0666f_level0_row3">3</th>
-<td class="data row3 col0" id="T_0666f_row3_col0">TEAM HAGERTY</td>
-<td class="data row3 col1" id="T_0666f_row3_col1">R</td>
-<td class="data row3 col2" id="T_0666f_row3_col2">10</td>
-<td class="data row3 col3" id="T_0666f_row3_col3">$2,800.00</td>
-<td class="data row3 col4" id="T_0666f_row3_col4">$1,160.00</td>
-<td class="data row3 col5" id="T_0666f_row3_col5">$11,600.00</td>
+<th class="row_heading level0 row3" id="T_ea77f_level0_row3">3</th>
+<td class="data row3 col0" id="T_ea77f_row3_col0">TEAM HAGERTY</td>
+<td class="data row3 col1" id="T_ea77f_row3_col1">R</td>
+<td class="data row3 col2" id="T_ea77f_row3_col2">10</td>
+<td class="data row3 col3" id="T_ea77f_row3_col3">$2,800.00</td>
+<td class="data row3 col4" id="T_ea77f_row3_col4">$1,160.00</td>
+<td class="data row3 col5" id="T_ea77f_row3_col5">$11,600.00</td>
 </tr>
 <tr>
-<th class="row_heading level0 row4" id="T_0666f_level0_row4">4</th>
-<td class="data row4 col0" id="T_0666f_row4_col0">DONALD J. TRUMP FOR PRESIDENT, INC.</td>
-<td class="data row4 col1" id="T_0666f_row4_col1">R</td>
-<td class="data row4 col2" id="T_0666f_row4_col2">90</td>
-<td class="data row4 col3" id="T_0666f_row4_col3">$2,800.00</td>
-<td class="data row4 col4" id="T_0666f_row4_col4">$74.97</td>
-<td class="data row4 col5" id="T_0666f_row4_col5">$6,746.92</td>
+<th class="row_heading level0 row4" id="T_ea77f_level0_row4">4</th>
+<td class="data row4 col0" id="T_ea77f_row4_col0">DONALD J. TRUMP FOR PRESIDENT, INC.</td>
+<td class="data row4 col1" id="T_ea77f_row4_col1">R</td>
+<td class="data row4 col2" id="T_ea77f_row4_col2">90</td>
+<td class="data row4 col3" id="T_ea77f_row4_col3">$2,800.00</td>
+<td class="data row4 col4" id="T_ea77f_row4_col4">$74.97</td>
+<td class="data row4 col5" id="T_ea77f_row4_col5">$6,746.92</td>
 </tr>
 <tr>
-<th class="row_heading level0 row5" id="T_0666f_level0_row5">5</th>
-<td class="data row5 col0" id="T_0666f_row5_col0">NATIONAL RETAIL FEDERATION RETAILPAC</td>
-<td class="data row5 col1" id="T_0666f_row5_col1">R</td>
-<td class="data row5 col2" id="T_0666f_row5_col2">59</td>
-<td class="data row5 col3" id="T_0666f_row5_col3">$5,000.00</td>
-<td class="data row5 col4" id="T_0666f_row5_col4">$99.32</td>
-<td class="data row5 col5" id="T_0666f_row5_col5">$5,860.00</td>
+<th class="row_heading level0 row5" id="T_ea77f_level0_row5">5</th>
+<td class="data row5 col0" id="T_ea77f_row5_col0">NATIONAL RETAIL FEDERATION RETAILPAC</td>
+<td class="data row5 col1" id="T_ea77f_row5_col1">R</td>
+<td class="data row5 col2" id="T_ea77f_row5_col2">59</td>
+<td class="data row5 col3" id="T_ea77f_row5_col3">$5,000.00</td>
+<td class="data row5 col4" id="T_ea77f_row5_col4">$99.32</td>
+<td class="data row5 col5" id="T_ea77f_row5_col5">$5,860.00</td>
 </tr>
 <tr>
-<th class="row_heading level0 row6" id="T_0666f_level0_row6">6</th>
-<td class="data row6 col0" id="T_0666f_row6_col0">RETAIL INDUSTRY LEADERS ASSOCIATION POLITICAL ACTION COMMITTEE AKA RETAIL LEADERS PAC</td>
-<td class="data row6 col1" id="T_0666f_row6_col1">N</td>
-<td class="data row6 col2" id="T_0666f_row6_col2">1</td>
-<td class="data row6 col3" id="T_0666f_row6_col3">$5,000.00</td>
-<td class="data row6 col4" id="T_0666f_row6_col4">$5,000.00</td>
-<td class="data row6 col5" id="T_0666f_row6_col5">$5,000.00</td>
+<th class="row_heading level0 row6" id="T_ea77f_level0_row6">6</th>
+<td class="data row6 col0" id="T_ea77f_row6_col0">RETAIL INDUSTRY LEADERS ASSOCIATION POLITICAL ACTION COMMITTEE AKA RETAIL LEADERS PAC</td>
+<td class="data row6 col1" id="T_ea77f_row6_col1">N</td>
+<td class="data row6 col2" id="T_ea77f_row6_col2">1</td>
+<td class="data row6 col3" id="T_ea77f_row6_col3">$5,000.00</td>
+<td class="data row6 col4" id="T_ea77f_row6_col4">$5,000.00</td>
+<td class="data row6 col5" id="T_ea77f_row6_col5">$5,000.00</td>
 </tr>
 <tr>
-<th class="row_heading level0 row7" id="T_0666f_level0_row7">7</th>
-<td class="data row7 col0" id="T_0666f_row7_col0">BIDEN FOR PRESIDENT</td>
-<td class="data row7 col1" id="T_0666f_row7_col1">D</td>
-<td class="data row7 col2" id="T_0666f_row7_col2">119</td>
-<td class="data row7 col3" id="T_0666f_row7_col3">$250.00</td>
-<td class="data row7 col4" id="T_0666f_row7_col4">$26.88</td>
-<td class="data row7 col5" id="T_0666f_row7_col5">$3,198.73</td>
+<th class="row_heading level0 row7" id="T_ea77f_level0_row7">7</th>
+<td class="data row7 col0" id="T_ea77f_row7_col0">BIDEN FOR PRESIDENT</td>
+<td class="data row7 col1" id="T_ea77f_row7_col1">D</td>
+<td class="data row7 col2" id="T_ea77f_row7_col2">119</td>
+<td class="data row7 col3" id="T_ea77f_row7_col3">$250.00</td>
+<td class="data row7 col4" id="T_ea77f_row7_col4">$26.88</td>
+<td class="data row7 col5" id="T_ea77f_row7_col5">$3,198.73</td>
 </tr>
 <tr>
-<th class="row_heading level0 row8" id="T_0666f_level0_row8">8</th>
-<td class="data row8 col0" id="T_0666f_row8_col0">GADE FOR VIRGINIA, INC.</td>
-<td class="data row8 col1" id="T_0666f_row8_col1">R</td>
-<td class="data row8 col2" id="T_0666f_row8_col2">1</td>
-<td class="data row8 col3" id="T_0666f_row8_col3">$2,800.00</td>
-<td class="data row8 col4" id="T_0666f_row8_col4">$2,800.00</td>
-<td class="data row8 col5" id="T_0666f_row8_col5">$2,800.00</td>
+<th class="row_heading level0 row8" id="T_ea77f_level0_row8">8</th>
+<td class="data row8 col0" id="T_ea77f_row8_col0">GADE FOR VIRGINIA, INC.</td>
+<td class="data row8 col1" id="T_ea77f_row8_col1">R</td>
+<td class="data row8 col2" id="T_ea77f_row8_col2">1</td>
+<td class="data row8 col3" id="T_ea77f_row8_col3">$2,800.00</td>
+<td class="data row8 col4" id="T_ea77f_row8_col4">$2,800.00</td>
+<td class="data row8 col5" id="T_ea77f_row8_col5">$2,800.00</td>
 </tr>
 <tr>
-<th class="row_heading level0 row9" id="T_0666f_level0_row9">9</th>
-<td class="data row9 col0" id="T_0666f_row9_col0">TRUMP MAKE AMERICA GREAT AGAIN COMMITTEE</td>
-<td class="data row9 col1" id="T_0666f_row9_col1">R</td>
-<td class="data row9 col2" id="T_0666f_row9_col2">53</td>
-<td class="data row9 col3" id="T_0666f_row9_col3">$250.00</td>
-<td class="data row9 col4" id="T_0666f_row9_col4">$47.84</td>
-<td class="data row9 col5" id="T_0666f_row9_col5">$2,535.49</td>
+<th class="row_heading level0 row9" id="T_ea77f_level0_row9">9</th>
+<td class="data row9 col0" id="T_ea77f_row9_col0">TRUMP MAKE AMERICA GREAT AGAIN COMMITTEE</td>
+<td class="data row9 col1" id="T_ea77f_row9_col1">R</td>
+<td class="data row9 col2" id="T_ea77f_row9_col2">53</td>
+<td class="data row9 col3" id="T_ea77f_row9_col3">$250.00</td>
+<td class="data row9 col4" id="T_ea77f_row9_col4">$47.84</td>
+<td class="data row9 col5" id="T_ea77f_row9_col5">$2,535.49</td>
 </tr>
 </tbody>
 </table>
