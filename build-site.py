@@ -16,7 +16,7 @@ ROOT = Path(__file__).parent
 DOCS = ROOT / "docs"
 OUT_CHARTS = ROOT / "output" / "charts"
 OUT_SCHEDULE_A = ROOT / "output" / "schedule_a"
-NOTEBOOK_HTML = ROOT / "notebooks" / "analysis.html"
+NOTEBOOKS_DIR = ROOT / "notebooks"
 
 BUILD_DATE = datetime.now().strftime("%B %d, %Y")
 GITHUB_REPO = "https://github.com/JohnnyMarnell/fec-example"
@@ -34,6 +34,34 @@ PREVIEW_COLS = [
     "contributor_employer", "contributor_occupation", "contributor_city",
     "contributor_state", "committee_name",
 ]
+
+
+# ── Discovery helpers ──────────────────────────────────────────────────────
+
+def find_notebooks() -> list[Path]:
+    """All rendered .html files under notebooks/ (skips checkpoints)."""
+    if not NOTEBOOKS_DIR.exists():
+        return []
+    return sorted(
+        p for p in NOTEBOOKS_DIR.glob("*.html")
+        if ".ipynb_checkpoints" not in str(p)
+    )
+
+
+def notebook_slug(path: Path) -> str:
+    return path.stem.lower().replace("_", "-")
+
+
+def notebook_display(path: Path) -> str:
+    return path.stem.replace("_", " ").replace("-", " ").title()
+
+
+def company_from_filename(stem: str) -> str:
+    """TRACTOR_SUPPLY_2019-01-01_2020-12-31 → TRACTOR SUPPLY"""
+    import re as _re
+    name = _re.sub(r"_\d{4}-\d{2}-\d{2}.*$", "", stem)
+    return name.replace("_", " ").strip()
+
 
 HLJS_CSS = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css"
 HLJS_JS  = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"
@@ -96,7 +124,7 @@ def page(title: str, body: str, active: str, depth: int = 1,
         <a href="{b}index.html" class="text-lg font-bold tracking-tight hover:text-indigo-300 transition-colors">
           FEC Contribution Analysis
         </a>
-        <p class="text-slate-400 text-xs mt-0.5">OpenFEC · Political contribution explorer · Tractor Supply Co.</p>
+        <p class="text-slate-400 text-xs mt-0.5">OpenFEC · Political contribution explorer</p>
       </div>
       <a href="{GITHUB_REPO}" target="_blank" rel="noopener"
          class="text-slate-400 hover:text-white text-xs flex items-center gap-1.5 mt-1 transition-colors">
@@ -120,63 +148,78 @@ def page(title: str, body: str, active: str, depth: int = 1,
 
 # ── Homepage ───────────────────────────────────────────────────────────────
 
-def build_index(charts: list[str], data_files: list[str]) -> None:
-    # Quick stats from CSV
-    stats_html = ""
+def build_index(charts: list[str], data_files: list[str], notebooks: list[Path]) -> None:
     csvs = [f for f in data_files if f.endswith(".csv")]
-    if csvs:
-        csv_path = OUT_SCHEDULE_A / csvs[0]
+
+    # Aggregate stats across all CSVs
+    total_records = total_amt = 0
+    all_states: set[str] = set()
+    companies_found: list[str] = []
+    seen_companies: set[str] = set()
+    for filename in csvs:
+        company = company_from_filename(Path(filename).stem)
+        if company not in seen_companies:
+            companies_found.append(company)
+            seen_companies.add(company)
         try:
-            with open(csv_path) as f:
-                reader = csv.DictReader(f)
-                rows = list(reader)
-            total = len(rows)
-            total_amt = sum(float(r.get("contribution_receipt_amount", 0) or 0) for r in rows)
-            employers = set(r.get("contributor_employer", "") for r in rows)
-            states = set(r.get("contributor_state", "") for r in rows if r.get("contributor_state"))
-            stats_html = f"""
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          {stat_card("Contributions", f"{total:,}", "API records fetched (2 pages)")}
-          {stat_card("Total Amount", f"${total_amt:,.0f}", "Sum of contribution amounts")}
-          {stat_card("Unique Employers", f"{len(employers):,}", "Distinct employer strings")}
-          {stat_card("States", f"{len(states)}", "Contributor states represented")}
-        </div>"""
+            with open(OUT_SCHEDULE_A / filename) as f:
+                rows = list(csv.DictReader(f))
+            total_records += len(rows)
+            total_amt += sum(float(r.get("contribution_receipt_amount", 0) or 0) for r in rows)
+            all_states.update(r.get("contributor_state", "") for r in rows if r.get("contributor_state"))
         except Exception:
             pass
 
+    nb_count = len(notebooks)
+    nb_label = f"{nb_count} notebook{'s' if nb_count != 1 else ''}"
+    company_label = ", ".join(companies_found) if companies_found else "—"
+
+    stats_html = ""
+    if total_records:
+        stats_html = f"""
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+          {stat_card("Companies", str(len(companies_found)), company_label)}
+          {stat_card("Contributions", f"{total_records:,}", "Total API records across all fetches")}
+          {stat_card("Total Amount", f"${total_amt:,.0f}", "Sum of all contribution amounts")}
+          {stat_card("States", str(len(all_states)), "Contributor states represented")}
+        </div>"""
+
     chart_imgs = ""
     for chart in sorted(charts):
+        company_display = chart.replace("_party_breakdown.png", "").replace("_", " ")
         chart_imgs += f"""
       <figure class="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-        <img src="charts/{esc(chart)}" alt="Party breakdown chart"
+        <img src="charts/{esc(chart)}" alt="{esc(company_display)} party breakdown chart"
              class="w-full object-contain max-h-[420px]">
         <figcaption class="text-xs text-slate-500 text-center py-2 bg-slate-50 border-t border-slate-100">
-          {esc(chart.replace("_party_breakdown.png", "").replace("_", " "))} · party breakdown by 60% rule
+          {esc(company_display)} · contributor party breakdown by 60% rule
         </figcaption>
       </figure>"""
 
+    nb_desc = f"{nb_label} — full executed analyses with charts, data joins, and the 60% contributor classification rule."
     quick_links = f"""
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
-        {link_card("notebook/", "Notebook", "Full Jupyter analysis with charts, data joins, and the 60% contributor classification rule.", "📓")}
-        {link_card("data/",     "Data",     "Browse and download raw API output: Schedule A CSV and JSON files.", "📂")}
-        {link_card("source/",   "Source",   "Syntax-highlighted Python source and Justfile build recipes.", "🔍")}
+        {link_card("notebook/", "Notebooks", nb_desc, "📓")}
+        {link_card("data/",     "Data",      "Browse and download raw API output: Schedule A CSVs and JSON files.", "📂")}
+        {link_card("source/",   "Source",    "Syntax-highlighted Python source and Justfile build recipes.", "🔍")}
       </div>"""
 
     pipeline_html = """
       <section class="mb-12">
         <h2 class="text-lg font-semibold text-slate-800 mb-3">Pipeline</h2>
         <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm font-mono text-sm text-slate-700 space-y-1">
-          <div><span class="text-green-600 font-bold">just build</span>  <span class="text-slate-400"># fetch → analyze → notebook + HTML</span></div>
-          <div class="pl-4 text-slate-500">↳ api-demo.py fetches OpenFEC Schedule A for TRACTOR SUPPLY (2019–2020)</div>
+          <div><span class="text-green-600 font-bold">just build</span>  <span class="text-slate-400"># fetch → analyze → notebook + site</span></div>
+          <div class="pl-4 text-slate-500">↳ api-demo.py fetches OpenFEC Schedule A for any employer</div>
           <div class="pl-4 text-slate-500">↳ main.py joins party lookups (AllPacs, Aristotle), applies 60% rule</div>
-          <div class="pl-4 text-slate-500">↳ notebooks/analysis.ipynb executes and renders to HTML</div>
+          <div class="pl-4 text-slate-500">↳ notebooks/*.ipynb execute and render to HTML</div>
           <div class="pl-4 text-slate-500">↳ output/charts/ and output/schedule_a/ written to disk</div>
         </div>
       </section>"""
 
+    title_companies = f" · {company_label}" if len(companies_found) == 1 else f" · {len(companies_found)} Companies"
     body = f"""
     <div class="mb-10">
-      <h1 class="text-3xl font-bold text-slate-900 mb-2">Tractor Supply Co. · FEC Contributions</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-2">FEC Contribution Analysis{esc(title_companies)}</h1>
       <p class="text-slate-500 max-w-2xl">
         Fetches political contribution records from the
         <a href="https://api.open.fec.gov/" target="_blank" rel="noopener" class="text-indigo-600 hover:underline">OpenFEC API</a>,
@@ -188,7 +231,7 @@ def build_index(charts: list[str], data_files: list[str]) -> None:
     {stats_html}
     <section class="mb-12">
       <h2 class="text-lg font-semibold text-slate-800 mb-4">Results</h2>
-      {"".join(f'<div class="mb-6">{chart_imgs}</div>') if chart_imgs else '<p class="text-slate-400 text-sm">No charts found — run <code>just build</code> first.</p>'}
+      {chart_imgs or '<p class="text-slate-400 text-sm">No charts yet — run <code>just build</code> first.</p>'}
     </section>
     {pipeline_html}"""
 
@@ -213,32 +256,45 @@ def link_card(href: str, title: str, desc: str, icon: str) -> str:
   </a>"""
 
 
-# ── Notebook ───────────────────────────────────────────────────────────────
+# ── Notebooks ──────────────────────────────────────────────────────────────
 
-def build_notebook() -> None:
+def _inline_notebook(nb_path: Path) -> tuple[str, str]:
+    """Return (extra_head_styles, body_content) extracted from a Jupyter HTML export."""
     import re as _re
+    raw = nb_path.read_text()
+    head_end = raw.find("</head>")
+    nb_styles = "\n".join(_re.findall(r"<style[^>]*>.*?</style>", raw[:head_end + 7], _re.DOTALL))
+    body_match = _re.search(r"<body[^>]*>(.*)</body>", raw, _re.DOTALL)
+    nb_body = body_match.group(1).strip() if body_match else "<p>Could not parse notebook.</p>"
+    return nb_styles, nb_body
+
+
+def build_notebooks(notebooks: list[Path]) -> None:
     nb_dir = DOCS / "notebook"
     nb_dir.mkdir(exist_ok=True)
 
-    if NOTEBOOK_HTML.exists():
-        # Keep standalone copy for full-screen link
-        shutil.copy(NOTEBOOK_HTML, nb_dir / "notebook_content.html")
+    # ── Individual notebook pages ──────────────────────────────────────────
+    for nb_path in notebooks:
+        slug = notebook_slug(nb_path)
+        display = notebook_display(nb_path)
+        size_kb = nb_path.stat().st_size // 1024
 
-        raw = NOTEBOOK_HTML.read_text()
-        head_end = raw.find("</head>")
+        slug_dir = nb_dir / slug
+        slug_dir.mkdir(exist_ok=True)
 
-        # Extract all <style> blocks from the notebook's <head> to inject into ours
-        nb_styles = "\n".join(_re.findall(r"<style[^>]*>.*?</style>", raw[:head_end + 7], _re.DOTALL))
+        shutil.copy(nb_path, slug_dir / "notebook_content.html")
 
-        # Extract <body ...>...</body> inner content
-        body_match = _re.search(r"<body[^>]*>(.*)</body>", raw, _re.DOTALL)
-        nb_body = body_match.group(1).strip() if body_match else "<p>Could not parse notebook.</p>"
+        nb_styles, nb_body = _inline_notebook(nb_path)
 
-        bar = """
+        back = '← All notebooks' if len(notebooks) > 1 else '← Home'
+        back_href = '../' if len(notebooks) > 1 else '../../index.html'
+        bar = f"""
     <div class="flex items-center justify-between px-6 py-3 bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
-      <div>
-        <span class="font-semibold text-slate-800">Jupyter Notebook</span>
-        <span class="text-slate-400 text-xs ml-2">— full executed analysis</span>
+      <div class="flex items-center gap-3">
+        <a href="{back_href}" class="text-xs text-slate-400 hover:text-slate-700 transition-colors">{back}</a>
+        <span class="text-slate-300">|</span>
+        <span class="font-semibold text-slate-800">{esc(display)}</span>
+        <span class="text-slate-400 text-xs">· {size_kb} KB</span>
       </div>
       <a href="notebook_content.html" target="_blank" rel="noopener"
          class="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors">
@@ -247,21 +303,52 @@ def build_notebook() -> None:
     </div>"""
 
         body = f"{bar}\n<div class='nb-inline'>{nb_body}</div>"
-
-        (nb_dir / "index.html").write_text(page(
-            "Notebook", body, "notebook",
+        (slug_dir / "index.html").write_text(page(
+            display, body, "notebook",
+            depth=2,
             extra_head=nb_styles,
             main_class="w-full flex-1 p-0",
         ))
-    else:
+        print(f"  notebook/{slug}/index.html")
+
+    # ── Listing / index page ───────────────────────────────────────────────
+    if not notebooks:
         body = """
     <div class="text-center py-20 text-slate-400">
       <p class="text-4xl mb-4">📓</p>
-      <p class="font-medium">Notebook not yet generated.</p>
-      <p class="text-sm mt-1">Run <code class="bg-slate-100 px-2 py-0.5 rounded text-slate-700">just notebook</code> to build it.</p>
+      <p class="font-medium">No notebooks rendered yet.</p>
+      <p class="text-sm mt-1">Run <code class="bg-slate-100 px-2 py-0.5 rounded text-slate-700">just notebook</code> to build them.</p>
     </div>"""
-        (nb_dir / "index.html").write_text(page("Notebook", body, "notebook"))
+    else:
+        cards = ""
+        for nb_path in notebooks:
+            slug = notebook_slug(nb_path)
+            display = notebook_display(nb_path)
+            size_kb = nb_path.stat().st_size // 1024
+            mtime = datetime.fromtimestamp(nb_path.stat().st_mtime).strftime("%b %d, %Y")
+            cards += f"""
+        <a href="{slug}/" class="block bg-white rounded-xl border border-slate-200 p-5 shadow-sm
+                  hover:border-indigo-400 hover:shadow-md transition-all group">
+          <div class="flex items-start justify-between mb-2">
+            <h3 class="font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors">
+              {esc(display)}
+            </h3>
+            <span class="text-xs text-slate-400 ml-3 flex-shrink-0">{size_kb} KB</span>
+          </div>
+          <p class="text-xs text-slate-400">Last rendered {mtime}</p>
+          <p class="text-xs text-indigo-500 mt-2 group-hover:underline">View notebook →</p>
+        </a>"""
+        body = f"""
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-slate-900">Notebooks</h1>
+      <p class="text-slate-500 text-sm mt-1">
+        {len(notebooks)} rendered notebook{'s' if len(notebooks) != 1 else ''} —
+        any <code class="bg-slate-100 px-1 rounded text-xs">notebooks/*.html</code> file is picked up automatically.
+      </p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{cards}</div>"""
 
+    (nb_dir / "index.html").write_text(page("Notebooks", body, "notebook"))
     print("  notebook/index.html")
 
 
@@ -445,8 +532,12 @@ def main() -> None:
                 data_files.append(f.name)
                 print(f"  data/{f.name}")
 
-    build_index(charts, data_files)
-    build_notebook()
+    notebooks = find_notebooks()
+    for nb in notebooks:
+        print(f"  notebooks/{nb.name}")
+
+    build_index(charts, data_files, notebooks)
+    build_notebooks(notebooks)
     build_data(data_files)
     build_source()
     print(f"\nDone. {sum(1 for _ in DOCS.rglob('*.html'))} HTML files generated.")
