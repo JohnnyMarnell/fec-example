@@ -82,7 +82,7 @@
       </a>
     </div>
   </header>
-  <nav class="bg-slate-800 px-6 py-2.5 flex gap-8 border-b border-slate-700/60"><a href="../index.html" class="text-slate-300 hover:text-white transition-colors text-sm">Home</a>  <a href="../notebook/" class="text-slate-300 hover:text-white transition-colors text-sm">Notebooks</a>  <a href="../design/sas-port/" class="text-slate-300 hover:text-white transition-colors text-sm">Design</a>  <a href="../data/" class="text-slate-300 hover:text-white transition-colors text-sm">Data</a>  <a href="../source/" class="text-indigo-300 font-semibold border-b-2 border-indigo-400 pb-0.5 text-sm">Source</a></nav>
+  <nav class="bg-slate-800 px-6 py-2.5 flex gap-8 border-b border-slate-700/60"><a href="../index.html" class="text-slate-300 hover:text-white transition-colors text-sm">Home</a>  <a href="../notebook/" class="text-slate-300 hover:text-white transition-colors text-sm">Notebooks</a>  <a href="../design/sas-port/" class="text-slate-300 hover:text-white transition-colors text-sm">Design</a>  <a href="../data/" class="text-slate-300 hover:text-white transition-colors text-sm">Data</a>  <a href="../source/" class="text-indigo-300 font-semibold border-b-2 border-indigo-400 pb-0.5 text-sm">Source</a>  <a href="../sql/" class="text-slate-300 hover:text-white transition-colors text-sm">SQL</a></nav>
   <main class="max-w-6xl mx-auto px-6 py-10 flex-1">
     
     <div class="flex gap-8">
@@ -93,7 +93,7 @@
       <a href="#fec_client-py"
          class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm">
         <span class="font-mono font-medium text-slate-800">fec_client.py</span>
-        <span class="text-xs text-slate-400">198 lines</span>
+        <span class="text-xs text-slate-400">204 lines</span>
       </a>
       <a href="#api-demo-py"
          class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm">
@@ -124,7 +124,7 @@
     <section id="fec_client-py" class="mb-12 scroll-mt-8">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-base font-bold font-mono text-slate-900">fec_client.py</h2>
-        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">198 lines · python</span>
+        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">204 lines · python</span>
       </div>
       <pre><code class="language-python">&quot;&quot;&quot;FEC API client with transparent disk caching.
 
@@ -150,12 +150,18 @@ class FECClient:
         cache_dir: str = &quot;cache&quot;,
         no_cache: bool = False,
         timeout: tuple[float, float] = DEFAULT_TIMEOUT,
+        quiet: bool = False,
     ):
         self.api_key = api_key
         self.no_cache = no_cache
         self.cache_dir = Path(cache_dir)
         self._index_path = self.cache_dir / &quot;index.json&quot;
         self.timeout = timeout
+        self.quiet = quiet
+
+    def _log(self, msg: str) -&gt; None:
+        if not self.quiet:
+            print(msg)
 
     # -- cache internals -------------------------------------------------------
 
@@ -199,7 +205,7 @@ class FECClient:
         if not self.no_cache:
             cached = self._cache_get(canonical)
             if cached is not None:
-                print(f&quot;  [cache] {canonical[:100]}&quot;)
+                self._log(f&quot;  [cache] {canonical[:100]}&quot;)
                 return cached
 
         url = f&quot;{BASE_URL}{endpoint}&quot;
@@ -255,7 +261,7 @@ class FECClient:
             batch = data.get(&quot;results&quot;, [])
             all_results.extend(batch)
             total_pages = data.get(&quot;pagination&quot;, {}).get(&quot;pages&quot;, 1)
-            print(f&quot;  page {page}/{total_pages}: {len(batch)} records  (total: {len(all_results)})&quot;)
+            self._log(f&quot;  page {page}/{total_pages}: {len(batch)} records  (total: {len(all_results)})&quot;)
             if page &gt;= total_pages or (max_pages is not None and page &gt;= max_pages):
                 break
             page += 1
@@ -307,7 +313,7 @@ class FECClient:
             batch = data.get(&quot;results&quot;, [])
             all_results.extend(batch)
             total_pages = data.get(&quot;pagination&quot;, {}).get(&quot;pages&quot;, 1)
-            print(f&quot;  schedule_b page {page}/{total_pages}: {len(batch)} records  (total: {len(all_results)})&quot;)
+            self._log(f&quot;  schedule_b page {page}/{total_pages}: {len(batch)} records  (total: {len(all_results)})&quot;)
             if page &gt;= total_pages or (max_pages is not None and page &gt;= max_pages):
                 break
             page += 1

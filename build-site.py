@@ -7,6 +7,7 @@ Out:  docs/   (configure GitHub Pages → main branch → /docs folder)
 import csv
 import html as html_mod
 import json
+import re
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -90,6 +91,7 @@ def nav(active: str, depth: int) -> str:
         "design":   (f"{b}design/sas-port/",    "Design"),
         "data":     (f"{b}data/",               "Data"),
         "source":   (f"{b}source/",             "Source"),
+        "sql":      (f"{b}sql/",               "SQL"),
     }
     links = []
     for key, (href, label) in items.items():
@@ -997,6 +999,130 @@ def build_design() -> None:
         print(f"  design/{slug}/index.html")
 
 
+# ── SQL extractor ──────────────────────────────────────────────────────────
+
+_SQL_START = re.compile(r'^\s*(SELECT|WITH|INSERT|UPDATE|DELETE|CREATE|DROP)\b', re.IGNORECASE)
+_SQL_STR   = re.compile(r'f?"""(.*?)"""|f?\'\'\'(.*?)\'\'\'', re.DOTALL)
+_MD_STRIP  = re.compile(r'^#{1,6}\s*|\*\*|__|\*|_|`|\[([^\]]+)\]\([^)]+\)')
+_BLANK_RE  = re.compile(r'\n{3,}')
+
+
+def _extract_notebook_sql(nb_path: Path, comment_cap: int = 3) -> list[tuple[str, str]]:
+    """Return (comment_header, sql) pairs extracted from a .ipynb file."""
+    nb     = json.loads(nb_path.read_text())
+    cells  = nb["cells"]
+    result = []
+    last_md = ""
+
+    for cell in cells:
+        src = "".join(cell["source"])
+        if cell["cell_type"] == "markdown":
+            last_md = src
+            continue
+        if cell["cell_type"] != "code":
+            last_md = ""
+            continue
+
+        for m in _SQL_STR.finditer(src):
+            sql = (m.group(1) or m.group(2) or "").strip()
+            if not _SQL_START.match(sql):
+                continue
+
+            comment = ""
+            if last_md:
+                raw_lines = last_md.strip().splitlines()
+                kept: list[str] = []
+                for line in raw_lines:
+                    clean = _MD_STRIP.sub(r"\1", line).strip()
+                    if clean:
+                        kept.append(f"-- {clean}")
+                    if len(kept) >= comment_cap:
+                        break
+                comment = "\n".join(kept)
+
+            result.append((comment, sql))
+        last_md = ""
+
+    return result
+
+
+def build_sql(notebooks: list[Path]) -> None:
+    sql_dir = DOCS / "sql"
+    sql_dir.mkdir(exist_ok=True)
+
+    toc_items     = ""
+    nb_sections   = ""
+    built_any     = False
+
+    for nb_html in notebooks:
+        slug    = notebook_slug(nb_html)
+        display = notebook_display(nb_html)
+        ipynb   = NOTEBOOKS_DIR / (nb_html.stem + ".ipynb")
+        if not ipynb.exists():
+            continue
+
+        queries = _extract_notebook_sql(ipynb)
+        if not queries:
+            continue
+        built_any = True
+
+        # Assemble one SQL block with comment headers between queries
+        parts: list[str] = []
+        for header, sql in queries:
+            if parts:
+                parts.append("")          # blank line separator
+            if header:
+                parts.append(header)
+            parts.append(_BLANK_RE.sub("\n\n", sql))
+        sql_text = "\n".join(parts).strip()
+
+        toc_items += (
+            f'<a href="#{esc(slug)}" class="flex items-center justify-between '
+            f'px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm">'
+            f'<span class="font-medium text-slate-800">{esc(display)}</span>'
+            f'<span class="text-xs text-slate-400">{len(queries)}q</span></a>'
+        )
+        nb_sections += f"""
+    <section id="{esc(slug)}" class="mb-12 scroll-mt-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-bold text-slate-900">{esc(display)}</h2>
+        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">
+          {len(queries)} quer{'y' if len(queries) == 1 else 'ies'}
+        </span>
+      </div>
+      <pre><code class="language-sql">{esc(sql_text)}</code></pre>
+    </section>"""
+
+    if not built_any:
+        body = """<div class="text-center py-20 text-slate-400">
+          <p class="text-4xl mb-4">🗄️</p>
+          <p class="font-medium">No SQL found in notebooks yet.</p>
+        </div>"""
+    else:
+        body = f"""
+    <div class="flex gap-8">
+      <aside class="hidden md:block w-52 flex-shrink-0">
+        <div class="sticky top-6">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Notebooks</p>
+          <nav class="space-y-0.5">{toc_items}</nav>
+        </div>
+      </aside>
+      <div class="flex-1 min-w-0">
+        <div class="mb-8">
+          <h1 class="text-2xl font-bold text-slate-900">SQL Queries</h1>
+          <p class="text-slate-500 text-sm mt-1">
+            DuckDB queries extracted from notebook sources.
+            Section headers come from the preceding markdown cell (capped at {3} lines).
+          </p>
+        </div>
+        {nb_sections}
+      </div>
+    </div>"""
+
+    (sql_dir / "index.html").write_text(page("SQL", body, "sql"))
+    print("  sql/index.html")
+
+
 # ── Main ───────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -1031,6 +1157,7 @@ def main() -> None:
     build_design()
     build_data(data_files)
     build_source()
+    build_sql(notebooks)
     print(f"\nDone. {sum(1 for _ in DOCS.rglob('*.html'))} HTML files generated.")
 
 

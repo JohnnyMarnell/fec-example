@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL · FEC Analysis</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+  <style>
+    pre code.hljs {
+      font-size: 0.8rem; line-height: 1.7;
+      border-radius: 0.5rem; padding: 1.25rem 1.5rem;
+      border: 1px solid #e5e7eb;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
+    .badge-d { background: #dbeafe; color: #1d4ed8; }
+    .badge-r { background: #fee2e2; color: #b91c1c; }
+    .badge-n { background: #f3f4f6; color: #6b7280; }
+    /* Markdown prose blocks (Design page) */
+    .prose h1 { font-size: 1.875rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem; }
+    .prose h2 { font-size: 1.4rem; font-weight: 700; color: #0f172a;
+                 margin: 2.25rem 0 .75rem; padding-bottom: .3rem; border-bottom: 1px solid #e2e8f0; }
+    .prose h3 { font-size: 1.1rem; font-weight: 600; color: #1e293b; margin: 1.75rem 0 .6rem; }
+    .prose h4 { font-size: 1rem; font-weight: 600; color: #334155; margin: 1.25rem 0 .5rem; }
+    .prose p { color: #334155; line-height: 1.7; margin: .65rem 0; }
+    .prose ul, .prose ol { color: #334155; line-height: 1.7; margin: .5rem 0 .9rem 1.25rem; }
+    .prose ul { list-style: disc; }
+    .prose ol { list-style: decimal; }
+    .prose li { margin: .15rem 0; }
+    .prose a { color: #4f46e5; text-decoration: underline; text-underline-offset: 2px; }
+    .prose a:hover { color: #4338ca; }
+    .prose strong { color: #0f172a; font-weight: 600; }
+    .prose blockquote {
+      border-left: 3px solid #6366f1; background: #eef2ff;
+      padding: .6rem 1rem; margin: 1rem 0; color: #334155; border-radius: 0 .375rem .375rem 0;
+    }
+    .prose blockquote p { margin: .25rem 0; }
+    .prose code {
+      background: #f1f5f9; color: #be185d;
+      padding: .1em .35em; border-radius: .25rem;
+      font-size: .85em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .prose pre {
+      background: #0f172a; color: #f1f5f9;
+      padding: 1rem 1.25rem; border-radius: .5rem;
+      overflow-x: auto; margin: 1rem 0;
+      font-size: .82rem; line-height: 1.6;
+    }
+    .prose pre code { background: transparent; color: inherit; padding: 0; }
+    .prose pre.filetree {
+      background: #f8fafc; color: #334155;
+      border: 1px solid #e2e8f0; border-left: 3px solid #6366f1;
+    }
+    .mermaid { margin: 1.25rem 0; text-align: center; }
+    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .9rem; }
+    .prose th, .prose td {
+      border: 1px solid #e2e8f0; padding: .5rem .75rem; text-align: left; vertical-align: top;
+    }
+    .prose th { background: #f8fafc; font-weight: 600; color: #0f172a; }
+    .prose tr:nth-child(even) td { background: #fafbfc; }
+    .prose hr { border: 0; border-top: 1px solid #e2e8f0; margin: 1.75rem 0; }
+  </style>
+  
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+  <header class="bg-slate-900 text-white shadow-lg">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-start justify-between">
+      <div>
+        <a href="../index.html" class="text-lg font-bold tracking-tight hover:text-indigo-300 transition-colors">
+          FEC Contribution Analysis
+        </a>
+        <p class="text-slate-400 text-xs mt-0.5">OpenFEC · Political contribution explorer</p>
+      </div>
+      <a href="https://github.com/JohnnyMarnell/fec-example" target="_blank" rel="noopener"
+         class="text-slate-400 hover:text-white text-xs flex items-center gap-1.5 mt-1 transition-colors">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.92.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+  <nav class="bg-slate-800 px-6 py-2.5 flex gap-8 border-b border-slate-700/60"><a href="../index.html" class="text-slate-300 hover:text-white transition-colors text-sm">Home</a>  <a href="../notebook/" class="text-slate-300 hover:text-white transition-colors text-sm">Notebooks</a>  <a href="../design/sas-port/" class="text-slate-300 hover:text-white transition-colors text-sm">Design</a>  <a href="../data/" class="text-slate-300 hover:text-white transition-colors text-sm">Data</a>  <a href="../source/" class="text-slate-300 hover:text-white transition-colors text-sm">Source</a>  <a href="../sql/" class="text-indigo-300 font-semibold border-b-2 border-indigo-400 pb-0.5 text-sm">SQL</a></nav>
+  <main class="max-w-6xl mx-auto px-6 py-10 flex-1">
+    
+    <div class="flex gap-8">
+      <aside class="hidden md:block w-52 flex-shrink-0">
+        <div class="sticky top-6">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Notebooks</p>
+          <nav class="space-y-0.5"><a href="#basic-example" class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm"><span class="font-medium text-slate-800">Basic Example</span><span class="text-xs text-slate-400">5q</span></a><a href="#cross-company" class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm"><span class="font-medium text-slate-800">Cross Company</span><span class="text-xs text-slate-400">3q</span></a></nav>
+        </div>
+      </aside>
+      <div class="flex-1 min-w-0">
+        <div class="mb-8">
+          <h1 class="text-2xl font-bold text-slate-900">SQL Queries</h1>
+          <p class="text-slate-500 text-sm mt-1">
+            DuckDB queries extracted from notebook sources.
+            Section headers come from the preceding markdown cell (capped at 3 lines).
+          </p>
+        </div>
+        
+    <section id="basic-example" class="mb-12 scroll-mt-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-bold text-slate-900">Basic Example</h2>
+        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">
+          5 queries
+        </span>
+      </div>
+      <pre><code class="language-sql">-- 1. Join with Party Lookups &amp; Clean
+SELECT
+        f.*,
+        COALESCE(a.&quot;Political Affiliation&quot;, ar.Party, &#x27;N&#x27;) AS party,
+        &#x27;{company_name}&#x27; AS company,
+        UPPER(TRIM(contributor_last_name)) AS last,
+        REGEXP_REPLACE(CAST(contributor_zip AS VARCHAR), &#x27;[^0-9]&#x27;, &#x27;&#x27;, &#x27;g&#x27;) AS zip_raw,
+        contribution_receipt_amount AS amount
+    FROM fec f
+    LEFT JOIN allpacs   a  ON f.committee_id = a.committee_id
+    LEFT JOIN aristotle ar ON f.committee_id = ar.Code
+
+-- 2. Transaction-Level Statistics
+SELECT
+        COUNT(*)                                                      AS count,
+        MAX(amount)                                                   AS max_amount,
+        AVG(amount)                                                   AS mean_amount,
+        SUM(amount)                                                   AS total_amount,
+        SUM(CASE WHEN party = &#x27;D&#x27; THEN amount ELSE 0 END)            AS dem_amount,
+        SUM(CASE WHEN party = &#x27;R&#x27; THEN amount ELSE 0 END)            AS rep_amount,
+        SUM(CASE WHEN party NOT IN (&#x27;D&#x27;, &#x27;R&#x27;) THEN amount ELSE 0 END) AS other_amount
+    FROM saspac3
+
+-- 3. Contributor-Level Analysis (60% Rule)
+-- Each contributor is identified by company - lastname - zip. A contributor is assigned
+-- a party code only if ≥ 60% of their cumulative donations went to that party; otherwise N.
+WITH person_sums AS (
+        SELECT
+            compervar,
+            SUM(CASE WHEN party = &#x27;D&#x27; THEN amount ELSE 0 END) AS Dsum,
+            SUM(CASE WHEN party = &#x27;R&#x27; THEN amount ELSE 0 END) AS Rsum,
+            SUM(CASE WHEN party = &#x27;I&#x27; THEN amount ELSE 0 END) AS Isum,
+            SUM(CASE WHEN party = &#x27;L&#x27; THEN amount ELSE 0 END) AS Lsum,
+            SUM(CASE WHEN party = &#x27;G&#x27; THEN amount ELSE 0 END) AS Gsum,
+            SUM(amount) AS total
+        FROM saspac3
+        GROUP BY compervar
+    )
+    SELECT
+        compervar, Dsum, Rsum, Isum, Lsum, Gsum, total,
+        CASE
+            WHEN total = 0            THEN &#x27;N&#x27;
+            WHEN Dsum / total &gt;= 0.60 THEN &#x27;D&#x27;
+            WHEN Rsum / total &gt;= 0.60 THEN &#x27;R&#x27;
+            WHEN Isum / total &gt;= 0.60 THEN &#x27;I&#x27;
+            WHEN Lsum / total &gt;= 0.60 THEN &#x27;L&#x27;
+            WHEN Gsum / total &gt;= 0.60 THEN &#x27;G&#x27;
+            ELSE &#x27;N&#x27;
+        END AS pCode
+    FROM person_sums
+
+SELECT
+        pCode,
+        COUNT(*)                                         AS people_count,
+        SUM(total)                                       AS party_dollars,
+        100.0 * COUNT(*) / SUM(COUNT(*)) OVER ()         AS pct,
+        SUM(COUNT(*)) OVER ()                            AS total_people,
+        SUM(SUM(total)) OVER ()                          AS total_dollars
+    FROM person_totals
+    GROUP BY pCode
+    ORDER BY people_count DESC
+
+-- 4. Top 10 Recipient Committees
+SELECT
+        committee_name,
+        party,
+        COUNT(*)    AS count,
+        MAX(amount) AS max_amount,
+        AVG(amount) AS mean_amount,
+        SUM(amount) AS total_amount
+    FROM saspac3
+    GROUP BY committee_name, party
+    ORDER BY total_amount DESC
+    LIMIT 10</code></pre>
+    </section>
+    <section id="cross-company" class="mb-12 scroll-mt-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-bold text-slate-900">Cross Company</h2>
+        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">
+          3 queries
+        </span>
+      </div>
+      <pre><code class="language-sql">-- 4. SASPAC — committee → party enrichment
+-- SAS reference: sascsvc19.sas:3–12 (the PROC FEDSQL that builds SASPAC)
+-- Party resolution falls back through three sources:
+WITH joined AS (
+        SELECT
+            r.company,
+            r.contributor_name,
+            UPPER(TRIM(r.contributor_first_name)) AS first,
+            UPPER(TRIM(r.contributor_last_name))  AS last,
+            r.contributor_employer AS division,
+            r.contributor_occupation AS occupation,
+            r.contributor_city  AS city,
+            r.contributor_state AS state,
+            CAST(r.contributor_zip AS VARCHAR) AS zip_raw,
+            r.committee_id,
+            r.committee_name   AS committee,
+            r.contribution_receipt_amount AS contribution,
+            r.contribution_receipt_date    AS receipt_date,
+            r.committee_party_embedded,
+            r.committee_type_full,
+            r.committee_designation_full,
+            a.\&quot;Political Affiliation\&quot; AS allpacs_party
+        FROM raw r
+        LEFT JOIN allpacs a ON r.committee_id = a.committee_id
+    )
+    SELECT
+        j.*,
+        -- Three-tier party resolution
+        COALESCE(
+            UPPER(NULLIF(TRIM(j.committee_party_embedded), &#x27;&#x27;)),
+            UPPER(NULLIF(TRIM(j.allpacs_party), &#x27;&#x27;)),
+            &#x27;N&#x27;
+        ) AS code,
+        ar.Party AS party
+    FROM joined j
+    LEFT JOIN aristotle ar ON ar.Code = COALESCE(
+        UPPER(NULLIF(TRIM(j.committee_party_embedded), &#x27;&#x27;)),
+        UPPER(NULLIF(TRIM(j.allpacs_party), &#x27;&#x27;)),
+        &#x27;N&#x27;
+    )
+
+-- 6. SASPAC3 — mParty + zip5 + compervar
+-- SAS reference: sascsvc19.sas:83–106 (the SASPAC3 DATA step)
+-- - mParty rolls 25 party codes up to Democrat / Republican / Other.
+SELECT
+        *,
+        CASE
+            WHEN code = &#x27;D&#x27; THEN &#x27;Democrat&#x27;
+            WHEN code = &#x27;R&#x27; THEN &#x27;Republican&#x27;
+            ELSE &#x27;Other&#x27;
+        END AS mParty,
+        LPAD(
+            COALESCE(
+                NULLIF(REGEXP_REPLACE(zip_raw, &#x27;\\D&#x27;, &#x27;&#x27;, &#x27;g&#x27;), &#x27;&#x27;),
+                &#x27;00000&#x27;
+            ),
+            5, &#x27;0&#x27;
+        )[1:5] AS zip5,
+        contribution AS contribsum
+    FROM saspac2
+
+-- 7. STATS5 — apply the 60 % rule
+-- SAS reference: sascsvc19.sas:532–563 (the STATS4 DATA step), :618–622 (STATS5 join with Aristotle)
+-- Per-person aggregation: build a sum column for every party code (Dsum, Rsum, …),
+WITH person_sums AS (
+        SELECT
+            compervar,
+            ANY_VALUE(company)      AS company,
+            ANY_VALUE(contributor_name) AS contributor,
+            ANY_VALUE(first)        AS first,
+            ANY_VALUE(last)         AS last,
+            ANY_VALUE(occupation)   AS occupation,
+            ANY_VALUE(city)         AS city,
+            ANY_VALUE(state)        AS state,
+            ANY_VALUE(statename)    AS statename,
+            ANY_VALUE(zip5)         AS zip,
+            ANY_VALUE(gender)       AS gender,
+            COUNT(*)                AS &quot;_FREQ_&quot;,
+            SUM(contribsum)         AS contribsum,
+            {sum_cols}
+        FROM saspac3
+        GROUP BY compervar
+    )
+    SELECT
+        p.*,
+        CASE
+            {rule_cases}
+            ELSE &#x27;N&#x27;
+        END AS pCode,
+        CASE
+            {rule_cases}
+            ELSE &#x27;N&#x27;
+        END AS _pCode_repeat -- only needed once; kept for symmetry
+    FROM person_sums p</code></pre>
+    </section>
+      </div>
+    </div>
+  </main>
+  <footer class="border-t border-slate-200 py-5 text-center text-xs text-slate-400">
+    Generated May 31, 2026 ·
+    <a href="https://github.com/JohnnyMarnell/fec-example" target="_blank" rel="noopener" class="hover:text-slate-700 underline">GitHub</a> ·
+    <a href="../source/" class="hover:text-slate-700 underline">Source code</a>
+  </footer>
+</body>
+</html>

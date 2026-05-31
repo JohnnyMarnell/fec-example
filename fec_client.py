@@ -22,12 +22,18 @@ class FECClient:
         cache_dir: str = "cache",
         no_cache: bool = False,
         timeout: tuple[float, float] = DEFAULT_TIMEOUT,
+        quiet: bool = False,
     ):
         self.api_key = api_key
         self.no_cache = no_cache
         self.cache_dir = Path(cache_dir)
         self._index_path = self.cache_dir / "index.json"
         self.timeout = timeout
+        self.quiet = quiet
+
+    def _log(self, msg: str) -> None:
+        if not self.quiet:
+            print(msg)
 
     # -- cache internals -------------------------------------------------------
 
@@ -71,7 +77,7 @@ class FECClient:
         if not self.no_cache:
             cached = self._cache_get(canonical)
             if cached is not None:
-                print(f"  [cache] {canonical[:100]}")
+                self._log(f"  [cache] {canonical[:100]}")
                 return cached
 
         url = f"{BASE_URL}{endpoint}"
@@ -127,7 +133,7 @@ class FECClient:
             batch = data.get("results", [])
             all_results.extend(batch)
             total_pages = data.get("pagination", {}).get("pages", 1)
-            print(f"  page {page}/{total_pages}: {len(batch)} records  (total: {len(all_results)})")
+            self._log(f"  page {page}/{total_pages}: {len(batch)} records  (total: {len(all_results)})")
             if page >= total_pages or (max_pages is not None and page >= max_pages):
                 break
             page += 1
@@ -179,7 +185,7 @@ class FECClient:
             batch = data.get("results", [])
             all_results.extend(batch)
             total_pages = data.get("pagination", {}).get("pages", 1)
-            print(f"  schedule_b page {page}/{total_pages}: {len(batch)} records  (total: {len(all_results)})")
+            self._log(f"  schedule_b page {page}/{total_pages}: {len(batch)} records  (total: {len(all_results)})")
             if page >= total_pages or (max_pages is not None and page >= max_pages):
                 break
             page += 1
