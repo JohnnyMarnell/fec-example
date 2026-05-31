@@ -190,9 +190,9 @@ SELECT
           3 queries
         </span>
       </div>
-      <pre><code class="language-sql">-- 4. SASPAC — committee → party enrichment
--- SAS reference: sascsvc19.sas:3–12 (the PROC FEDSQL that builds SASPAC)
--- Party resolution falls back through three sources:
+      <pre><code class="language-sql">-- 4. SASPAC — assign a party to every contribution
+-- Each Schedule A row says who gave and which committee received it — but
+-- not the committee&#x27;s party. SAS&#x27;s PROC FEDSQL joins the committee table to
 WITH joined AS (
         SELECT
             r.company,
@@ -231,16 +231,18 @@ WITH joined AS (
         &#x27;N&#x27;
     )
 
--- 6. SASPAC3 — mParty + zip5 + compervar
--- SAS reference: sascsvc19.sas:83–106 (the SASPAC3 DATA step)
--- - mParty rolls 25 party codes up to Democrat / Republican / Other.
+-- 6. SASPAC3 — collapse to Democrat / Republican / Other + build the person key
+-- Three small but load-bearing transforms happen here. Each one is a single
+-- SQL expression but solves a real problem.
 SELECT
         *,
+        -- 25 Aristotle codes collapse to a 3-way major-party label.
         CASE
             WHEN code = &#x27;D&#x27; THEN &#x27;Democrat&#x27;
             WHEN code = &#x27;R&#x27; THEN &#x27;Republican&#x27;
             ELSE &#x27;Other&#x27;
         END AS mParty,
+        -- ZIP+4 → strict 5-digit (the SAS zipcc step, in one expression).
         LPAD(
             COALESCE(
                 NULLIF(REGEXP_REPLACE(zip_raw, &#x27;\\D&#x27;, &#x27;&#x27;, &#x27;g&#x27;), &#x27;&#x27;),
@@ -251,9 +253,9 @@ SELECT
         contribution AS contribsum
     FROM saspac2
 
--- 7. STATS5 — apply the 60 % rule
--- SAS reference: sascsvc19.sas:532–563 (the STATS4 DATA step), :618–622 (STATS5 join with Aristotle)
--- Per-person aggregation: build a sum column for every party code (Dsum, Rsum, …),
+-- 7. STATS5 — the 60 % rule, the core analytical move
+-- &gt; A contributor is classified as party X only if ≥ 60 % of their total
+-- &gt; dollar volume went to X. Otherwise they&#x27;re &#x27;N&#x27; (Nonpartisan / mixed).
 WITH person_sums AS (
         SELECT
             compervar,
@@ -267,7 +269,7 @@ WITH person_sums AS (
             ANY_VALUE(statename)    AS statename,
             ANY_VALUE(zip5)         AS zip,
             ANY_VALUE(gender)       AS gender,
-            COUNT(*)                AS &quot;_FREQ_&quot;,
+            COUNT(*)                AS \&quot;_FREQ_\&quot;,
             SUM(contribsum)         AS contribsum,
             {sum_cols}
         FROM saspac3
@@ -278,11 +280,7 @@ WITH person_sums AS (
         CASE
             {rule_cases}
             ELSE &#x27;N&#x27;
-        END AS pCode,
-        CASE
-            {rule_cases}
-            ELSE &#x27;N&#x27;
-        END AS _pCode_repeat -- only needed once; kept for symmetry
+        END AS pCode
     FROM person_sums p</code></pre>
     </section>
       </div>
