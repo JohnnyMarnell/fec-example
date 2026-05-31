@@ -14,12 +14,17 @@ default:
 install:
     uv sync
 
-# Run the full pipeline: fetch → analyze → notebook + HTML
+# Run the full pipeline: fetch → analyze → notebook + HTML → site
 # Pass --no-cache to bypass local API cache: just build --no-cache
 build *flags:
     just fetch {{flags}}
     just analyze
     just notebook
+    just pages
+
+# Build the GitHub Pages static site from current outputs
+pages:
+    python build-site.py
 
 # Fetch Schedule A contributions (cached by default)
 # Pass --no-cache to force a fresh API request: just fetch --no-cache

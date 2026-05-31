@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Source · FEC Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+  <style>
+    pre code.hljs {
+      font-size: 0.8rem; line-height: 1.7;
+      border-radius: 0.5rem; padding: 1.25rem 1.5rem;
+      border: 1px solid #e5e7eb;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
+    .badge-d { background: #dbeafe; color: #1d4ed8; }
+    .badge-r { background: #fee2e2; color: #b91c1c; }
+    .badge-n { background: #f3f4f6; color: #6b7280; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+  <header class="bg-slate-900 text-white shadow-lg">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-start justify-between">
+      <div>
+        <a href="../index.html" class="text-lg font-bold tracking-tight hover:text-indigo-300 transition-colors">
+          FEC Contribution Analysis
+        </a>
+        <p class="text-slate-400 text-xs mt-0.5">OpenFEC · Political contribution explorer · Tractor Supply Co.</p>
+      </div>
+      <a href="https://github.com/JohnnyMarnell/fec-example" target="_blank" rel="noopener"
+         class="text-slate-400 hover:text-white text-xs flex items-center gap-1.5 mt-1 transition-colors">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.92.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+  <nav class="bg-slate-800 px-6 py-2.5 flex gap-8 border-b border-slate-700/60"><a href="../index.html" class="text-slate-300 hover:text-white transition-colors text-sm">Home</a>  <a href="../notebook/" class="text-slate-300 hover:text-white transition-colors text-sm">Notebook</a>  <a href="../data/" class="text-slate-300 hover:text-white transition-colors text-sm">Data</a>  <a href="../source/" class="text-indigo-300 font-semibold border-b-2 border-indigo-400 pb-0.5 text-sm">Source</a></nav>
+  <main class="max-w-6xl mx-auto px-6 py-10 flex-1">
+    
+    <div class="flex gap-8">
+      <aside class="hidden md:block w-52 flex-shrink-0">
+        <div class="sticky top-6">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Files</p>
+          <nav class="space-y-0.5">
+      <a href="#fec_client-py"
+         class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm">
+        <span class="font-mono font-medium text-slate-800">fec_client.py</span>
+        <span class="text-xs text-slate-400">126 lines</span>
+      </a>
+      <a href="#api-demo-py"
+         class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm">
+        <span class="font-mono font-medium text-slate-800">api-demo.py</span>
+        <span class="text-xs text-slate-400">60 lines</span>
+      </a>
+      <a href="#main-py"
+         class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm">
+        <span class="font-mono font-medium text-slate-800">main.py</span>
+        <span class="text-xs text-slate-400">208 lines</span>
+      </a>
+      <a href="#Justfile"
+         class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm">
+        <span class="font-mono font-medium text-slate-800">Justfile</span>
+        <span class="text-xs text-slate-400">44 lines</span>
+      </a></nav>
+        </div>
+      </aside>
+      <div class="flex-1 min-w-0">
+        <div class="mb-8">
+          <h1 class="text-2xl font-bold text-slate-900">Source Code</h1>
+          <p class="text-slate-500 text-sm mt-1">
+            Three Python scripts + a Justfile. Syntax highlighted via
+            <a href="https://highlightjs.org/" target="_blank" rel="noopener" class="text-indigo-600 hover:underline">highlight.js</a>.
+          </p>
+        </div>
+        
+    <section id="fec_client-py" class="mb-12 scroll-mt-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-bold font-mono text-slate-900">fec_client.py</h2>
+        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">126 lines · python</span>
+      </div>
+      <pre><code class="language-python">&quot;&quot;&quot;FEC API client with transparent disk caching.
+
+Caching requires concrete date ranges on every request so that cached responses
+remain valid — historical FEC data does not change, making date-bounded requests
+safe to cache indefinitely.
+&quot;&quot;&quot;
+import hashlib
+import json
+from pathlib import Path
+from urllib.parse import urlencode
+
+import requests
+
+BASE_URL = &quot;https://api.open.fec.gov/v1&quot;
+
+
+class FECClient:
+    def __init__(self, api_key: str, cache_dir: str = &quot;cache&quot;, no_cache: bool = False):
+        self.api_key = api_key
+        self.no_cache = no_cache
+        self.cache_dir = Path(cache_dir)
+        self._index_path = self.cache_dir / &quot;index.json&quot;
+
+    # -- cache internals -------------------------------------------------------
+
+    def _canonical(self, endpoint: str, params: dict) -&gt; str:
+        &quot;&quot;&quot;Stable, human-readable key from endpoint + sorted params.&quot;&quot;&quot;
+        return f&quot;{endpoint}?{urlencode(sorted(params.items()))}&quot;
+
+    def _hash(self, canonical: str) -&gt; str:
+        return hashlib.sha256(canonical.encode()).hexdigest()[:20]
+
+    def _load_index(self) -&gt; dict:
+        if self._index_path.exists():
+            return json.loads(self._index_path.read_text())
+        return {}
+
+    def _save_index(self, index: dict) -&gt; None:
+        self._index_path.write_text(json.dumps(index, indent=2))
+
+    def _cache_get(self, canonical: str) -&gt; dict | None:
+        index = self._load_index()
+        if canonical not in index:
+            return None
+        cached_path = self.cache_dir / index[canonical]
+        if not cached_path.exists():
+            return None
+        return json.loads(cached_path.read_text())
+
+    def _cache_put(self, canonical: str, data: dict) -&gt; None:
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        filename = f&quot;{self._hash(canonical)}.json&quot;
+        (self.cache_dir / filename).write_text(json.dumps(data))
+        index = self._load_index()
+        index[canonical] = filename
+        self._save_index(index)
+
+    # -- HTTP ------------------------------------------------------------------
+
+    def _get(self, endpoint: str, params: dict) -&gt; dict:
+        canonical = self._canonical(endpoint, params)
+
+        if not self.no_cache:
+            cached = self._cache_get(canonical)
+            if cached is not None:
+                print(f&quot;  [cache] {canonical[:100]}&quot;)
+                return cached
+
+        url = f&quot;{BASE_URL}{endpoint}&quot;
+        headers = {&quot;X-Api-Key&quot;: self.api_key, &quot;Accept&quot;: &quot;application/json&quot;}
+        resp = requests.get(url, headers=headers, params=params)
+        resp.raise_for_status()
+        data = resp.json()
+
+        if not self.no_cache:
+            self._cache_put(canonical, data)
+
+        return data
+
+    # -- public API ------------------------------------------------------------
+
+    def schedule_a(
+        self,
+        contributor_employer: str,
+        min_date: str,
+        max_date: str,
+        page: int = 1,
+        per_page: int = 100,
+        sort: str = &quot;-contribution_receipt_date&quot;,
+    ) -&gt; dict:
+        &quot;&quot;&quot;Single page of Schedule A contributions for an employer.&quot;&quot;&quot;
+        return self._get(
+            &quot;/schedules/schedule_a/&quot;,
+            {
+                &quot;contributor_employer&quot;: contributor_employer,
+                &quot;min_date&quot;: min_date,
+                &quot;max_date&quot;: max_date,
+                &quot;per_page&quot;: per_page,
+                &quot;sort&quot;: sort,
+                &quot;page&quot;: page,
+            },
+        )
+
+    def schedule_a_pages(
+        self,
+        contributor_employer: str,
+        min_date: str,
+        max_date: str,
+        max_pages: int | None = None,
+        per_page: int = 100,
+    ) -&gt; list[dict]:
+        &quot;&quot;&quot;All pages of Schedule A contributions, up to max_pages (None = all).&quot;&quot;&quot;
+        all_results: list[dict] = []
+        page = 1
+        while True:
+            data = self.schedule_a(
+                contributor_employer, min_date, max_date, page=page, per_page=per_page
+            )
+            batch = data.get(&quot;results&quot;, [])
+            all_results.extend(batch)
+            total_pages = data.get(&quot;pagination&quot;, {}).get(&quot;pages&quot;, 1)
+            print(f&quot;  page {page}/{total_pages}: {len(batch)} records  (total: {len(all_results)})&quot;)
+            if page &gt;= total_pages or (max_pages is not None and page &gt;= max_pages):
+                break
+            page += 1
+        return all_results
+</code></pre>
+    </section>
+    <section id="api-demo-py" class="mb-12 scroll-mt-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-bold font-mono text-slate-900">api-demo.py</h2>
+        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">60 lines · python</span>
+      </div>
+      <pre><code class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;Fetch FEC Schedule A contribution data and write results to disk.&quot;&quot;&quot;
+import json
+import re
+from pathlib import Path
+
+import click
+import pandas as pd
+
+from fec_client import FECClient
+
+_DEFAULT_API_KEY = &quot;Kgkivmpbsy1rehiCuTcd8gVHxzwQFRcSDsrVhQJm&quot;
+
+
+@click.command()
+@click.option(&quot;--employer&quot;, default=&quot;TRACTOR SUPPLY&quot;, show_default=True, help=&quot;Employer name to search.&quot;)
+@click.option(&quot;--min-date&quot;, default=&quot;2019-01-01&quot;, show_default=True, help=&quot;Earliest contribution date (YYYY-MM-DD).&quot;)
+@click.option(&quot;--max-date&quot;, default=&quot;2020-12-31&quot;, show_default=True, help=&quot;Latest contribution date (YYYY-MM-DD).&quot;)
+@click.option(&quot;--pages&quot;, default=2, show_default=True, type=int, help=&quot;Max pages to fetch; 0 = all pages.&quot;)
+@click.option(&quot;--per-page&quot;, default=100, show_default=True, type=int, help=&quot;Records per page (max 100).&quot;)
+@click.option(&quot;--api-key&quot;, default=_DEFAULT_API_KEY, envvar=&quot;FEC_API_KEY&quot;, help=&quot;OpenFEC API key.&quot;)
+@click.option(&quot;--no-cache&quot;, is_flag=True, help=&quot;Skip local cache and force a fresh API request.&quot;)
+@click.option(&quot;--output-dir&quot;, default=&quot;output&quot;, show_default=True, type=click.Path(), help=&quot;Root output directory.&quot;)
+def fetch(employer, min_date, max_date, pages, per_page, api_key, no_cache, output_dir):
+    &quot;&quot;&quot;Fetch FEC Schedule A contributions for EMPLOYER and write JSON + CSV to disk.&quot;&quot;&quot;
+    client = FECClient(api_key=api_key, no_cache=no_cache)
+    max_pages = pages or None  # 0 → fetch all
+
+    click.echo(f&quot;Fetching Schedule A: employer={employer!r}  {min_date} → {max_date}  max_pages={max_pages or &#x27;all&#x27;}&quot;)
+    results = client.schedule_a_pages(employer, min_date, max_date, max_pages=max_pages, per_page=per_page)
+
+    if not results:
+        click.echo(&quot;No results returned.&quot;)
+        return
+
+    slug = re.sub(r&quot;[^A-Za-z0-9]+&quot;, &quot;_&quot;, employer).strip(&quot;_&quot;).upper()
+    out_dir = Path(output_dir) / &quot;schedule_a&quot;
+    out_dir.mkdir(parents=True, exist_ok=True)
+    stem = f&quot;{slug}_{min_date}_{max_date}&quot;
+
+    json_path = out_dir / f&quot;{stem}.json&quot;
+    csv_path = out_dir / f&quot;{stem}.csv&quot;
+
+    json_path.write_text(json.dumps(results, indent=2))
+    pd.DataFrame(results).to_csv(csv_path, index=False)
+
+    click.echo(f&quot;\nFetched {len(results):,} records.&quot;)
+    click.echo(f&quot;  JSON → {json_path}&quot;)
+    click.echo(f&quot;  CSV  → {csv_path}&quot;)
+
+    df = pd.DataFrame(results)
+    preview_cols = [&quot;contributor_name&quot;, &quot;contribution_receipt_amount&quot;, &quot;contributor_state&quot;, &quot;contributor_zip&quot;]
+    cols = [c for c in preview_cols if c in df.columns]
+    if cols:
+        click.echo(f&quot;\nSample ({&#x27;, &#x27;.join(cols)}):&quot;)
+        click.echo(df[cols].head(5).to_string(index=False))
+
+
+if __name__ == &quot;__main__&quot;:
+    fetch()
+</code></pre>
+    </section>
+    <section id="main-py" class="mb-12 scroll-mt-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-bold font-mono text-slate-900">main.py</h2>
+        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">208 lines · python</span>
+      </div>
+      <pre><code class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;Analyze FEC contribution data: aggregate and visualize a company&#x27;s political donations.&quot;&quot;&quot;
+import re
+from pathlib import Path
+
+import click
+import duckdb
+import matplotlib.pyplot as plt
+import pandas as pd
+
+
+@click.command()
+@click.argument(&quot;csv_path&quot;, default=&quot;./csv/TractorSupplyFECr.csv&quot;, required=False)
+@click.option(&quot;--show&quot;, is_flag=True, help=&quot;Open interactive chart window (blocks until closed).&quot;)
+def analyze(csv_path, show):
+    &quot;&quot;&quot;Aggregate and visualize FEC contributions from CSV_PATH.
+
+    CSV_PATH defaults to ./csv/TractorSupplyFECr.csv.
+    Expects AllPacs.xslx.csv and Aristotle1.xlsx.csv in ./csv/.
+    &quot;&quot;&quot;
+    company_name = re.sub(r&quot;FECr?$&quot;, &quot;&quot;, Path(csv_path).stem, flags=re.IGNORECASE).upper()
+
+    fec = pd.read_csv(csv_path)
+    allpacs = pd.read_csv(&quot;./csv/AllPacs.xslx.csv&quot;)
+    aristotle = pd.read_csv(&quot;./csv/Aristotle1.xlsx.csv&quot;)
+
+    con = duckdb.connect(&quot;:memory:&quot;)
+
+    click.echo(f&quot;Analyzing: {company_name}&quot;)
+    click.echo(f&quot;Input file: {csv_path}&quot;)
+    click.echo(f&quot;Rows loaded: {len(fec):,}\n&quot;)
+
+    # Step 1: Join with party lookups &amp; clean data
+    saspac3 = con.execute(f&quot;&quot;&quot;
+        SELECT
+            f.*,
+            COALESCE(a.&quot;Political Affiliation&quot;, ar.Party, &#x27;N&#x27;) as party,
+            &#x27;{company_name}&#x27; as company,
+            UPPER(TRIM(contributor_last_name)) as last,
+            REGEXP_REPLACE(CAST(contributor_zip AS VARCHAR), &#x27;[^0-9]&#x27;, &#x27;&#x27;, &#x27;g&#x27;) as zip_raw,
+            contribution_receipt_amount as amount
+        FROM fec f
+        LEFT JOIN allpacs a ON f.committee_id = a.committee_id
+        LEFT JOIN aristotle ar ON f.committee_id = ar.Code
+    &quot;&quot;&quot;).df()
+
+    saspac3[&#x27;zipcc&#x27;] = saspac3[&#x27;zip_raw&#x27;].str[:5]
+    saspac3[&#x27;compervar&#x27;] = saspac3[&#x27;company&#x27;] + &#x27; - &#x27; + saspac3[&#x27;last&#x27;] + &#x27; - &#x27; + saspac3[&#x27;zipcc&#x27;]
+
+    ruler = &quot;\n&quot; + &quot;=&quot; * 70
+
+    # Step 2: Transaction-level stats
+    click.echo(&quot;\nContributions by Company (Transaction-Level)&quot; + ruler)
+
+    trans_stats = con.execute(&quot;&quot;&quot;
+        SELECT
+            COUNT(*) as count,
+            MAX(amount) as max_amount,
+            AVG(amount) as mean_amount,
+            SUM(amount) as total_amount,
+            SUM(CASE WHEN party = &#x27;D&#x27; THEN amount ELSE 0 END) as dem_amount,
+            SUM(CASE WHEN party = &#x27;R&#x27; THEN amount ELSE 0 END) as rep_amount,
+            SUM(CASE WHEN party NOT IN (&#x27;D&#x27;, &#x27;R&#x27;) THEN amount ELSE 0 END) as other_amount
+        FROM saspac3
+    &quot;&quot;&quot;).df()
+
+    stat = lambda key: trans_stats[key].iloc[0]
+    total = stat(&#x27;total_amount&#x27;)
+    click.echo(f&quot;Count:              {stat(&#x27;count&#x27;):,}&quot;)
+    click.echo(f&quot;Max:                ${stat(&#x27;max_amount&#x27;):,.2f}&quot;)
+    click.echo(f&quot;Mean:               ${stat(&#x27;mean_amount&#x27;):,.2f}&quot;)
+    click.echo(f&quot;Total:              ${total:,.2f}&quot;)
+    click.echo(f&quot;Democrat %:         {100 * stat(&#x27;dem_amount&#x27;) / total:.2f}%&quot;)
+    click.echo(f&quot;Republican %:       {100 * stat(&#x27;rep_amount&#x27;) / total:.2f}%&quot;)
+    click.echo(f&quot;Other %:            {100 * stat(&#x27;other_amount&#x27;) / total:.2f}%&quot;)
+
+    # Step 3: Aggregate by person and apply 60% rule
+    person_totals = con.execute(&quot;&quot;&quot;
+        WITH person_sums AS (
+            SELECT
+                compervar,
+                SUM(CASE WHEN party = &#x27;D&#x27; THEN amount ELSE 0 END) as Dsum,
+                SUM(CASE WHEN party = &#x27;R&#x27; THEN amount ELSE 0 END) as Rsum,
+                SUM(CASE WHEN party = &#x27;I&#x27; THEN amount ELSE 0 END) as Isum,
+                SUM(CASE WHEN party = &#x27;L&#x27; THEN amount ELSE 0 END) as Lsum,
+                SUM(CASE WHEN party = &#x27;G&#x27; THEN amount ELSE 0 END) as Gsum,
+                SUM(amount) as total
+            FROM saspac3
+            GROUP BY compervar
+        )
+        SELECT
+            compervar,
+            Dsum, Rsum, Isum, Lsum, Gsum,
+            total,
+            CASE
+                WHEN total = 0 THEN &#x27;N&#x27;
+                WHEN Dsum / total &gt;= 0.60 THEN &#x27;D&#x27;
+                WHEN Rsum / total &gt;= 0.60 THEN &#x27;R&#x27;
+                WHEN Isum / total &gt;= 0.60 THEN &#x27;I&#x27;
+                WHEN Lsum / total &gt;= 0.60 THEN &#x27;L&#x27;
+                WHEN Gsum / total &gt;= 0.60 THEN &#x27;G&#x27;
+                ELSE &#x27;N&#x27;
+            END as pCode
+        FROM person_sums
+    &quot;&quot;&quot;).df()
+
+    # Step 4: Contributor-level stats
+    click.echo(&quot;\nContributors by Company (60% Rule, Person-Level)&quot; + ruler)
+
+    contrib_stats = con.execute(&quot;&quot;&quot;
+        SELECT
+            pCode,
+            COUNT(*) as people_count,
+            SUM(total) as party_dollars,
+            100.0 * COUNT(*) / SUM(COUNT(*)) OVER () as pct,
+            SUM(COUNT(*)) OVER () as total_people,
+            SUM(SUM(total)) OVER () as total_dollars
+        FROM person_totals
+        GROUP BY pCode
+        ORDER BY people_count DESC
+    &quot;&quot;&quot;).df()
+
+    total_people = int(contrib_stats[&#x27;total_people&#x27;].iloc[0])
+    total_dollars = contrib_stats[&#x27;total_dollars&#x27;].iloc[0]
+
+    click.echo(f&quot;Unique Contributors: {total_people:,}&quot;)
+    click.echo(f&quot;Total Amount:        ${total_dollars:,.2f}&quot;)
+    click.echo(&quot;\nParty Breakdown (60% rule):&quot;)
+
+    for _, row in contrib_stats.iterrows():
+        party_name = {&#x27;D&#x27;: &#x27;Democrat&#x27;, &#x27;R&#x27;: &#x27;Republican&#x27;, &#x27;N&#x27;: &#x27;None/Other&#x27;}.get(row[&#x27;pCode&#x27;], row[&#x27;pCode&#x27;])
+        click.echo(f&quot;  {party_name:20s} {row[&#x27;people_count&#x27;]:4.0f} people ({row[&#x27;pct&#x27;]:5.2f}%)&quot;)
+
+    # Step 5: Top committees
+    click.echo(&quot;\nTop 10 Recipient Committees &quot; + ruler)
+
+    top_committees = con.execute(&quot;&quot;&quot;
+        SELECT
+            committee_name,
+            party,
+            COUNT(*) as count,
+            MAX(amount) as max_amount,
+            AVG(amount) as mean_amount,
+            SUM(amount) as total_amount
+        FROM saspac3
+        GROUP BY committee_name, party
+        ORDER BY total_amount DESC
+        LIMIT 10
+    &quot;&quot;&quot;).df()
+
+    for _, row in top_committees.iterrows():
+        click.echo(f&quot;{row[&#x27;committee_name&#x27;][:50]:50s} [{row[&#x27;party&#x27;]}] ${row[&#x27;total_amount&#x27;]:&gt;10,.2f} ({row[&#x27;count&#x27;]:3.0f} txns)&quot;)
+
+    click.echo(&quot;\n&quot; + &quot;=&quot; * 70)
+    click.echo(&quot;SUMMARY&quot;)
+    click.echo(&quot;=&quot; * 70)
+    click.echo(f&quot;Company:                {company_name}&quot;)
+    click.echo(f&quot;Total transactions:     {len(saspac3):,}&quot;)
+    click.echo(f&quot;Total amount:           ${saspac3[&#x27;amount&#x27;].sum():,.2f}&quot;)
+    click.echo(f&quot;Unique contributors:    {total_people}&quot;)
+    click.echo(f&quot;Avg txns per person:    {len(saspac3) / total_people:.1f}&quot;)
+    click.echo(&quot;=&quot; * 70)
+
+    _show_charts(company_name, contrib_stats, show=show)
+
+
+def _show_charts(company_name, contrib_stats, show=False):
+    &quot;&quot;&quot;Pie charts: party breakdown by contributor count and dollar amount.&quot;&quot;&quot;
+    color_map = {&#x27;D&#x27;: &#x27;#3498db&#x27;, &#x27;R&#x27;: &#x27;#e74c3c&#x27;, &#x27;N&#x27;: &#x27;#95a5a6&#x27;, &#x27;I&#x27;: &#x27;#f39c12&#x27;, &#x27;L&#x27;: &#x27;#9b59b6&#x27;, &#x27;G&#x27;: &#x27;#27ae60&#x27;}
+    party_full = {
+        &#x27;D&#x27;: &#x27;Democrat&#x27;, &#x27;R&#x27;: &#x27;Republican&#x27;, &#x27;N&#x27;: &#x27;None/Other&#x27;,
+        &#x27;I&#x27;: &#x27;Independent&#x27;, &#x27;L&#x27;: &#x27;Libertarian&#x27;, &#x27;G&#x27;: &#x27;Green&#x27;,
+    }
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    fig.suptitle(f&#x27;{company_name} — Political Contributions (60% Rule)&#x27;, fontsize=14, fontweight=&#x27;bold&#x27;)
+
+    count_labels, counts, count_colors = [], [], []
+    dollar_labels, dollars, dollar_colors = [], [], []
+    for _, row in contrib_stats.iterrows():
+        name = party_full.get(row[&#x27;pCode&#x27;], row[&#x27;pCode&#x27;])
+        c = color_map.get(row[&#x27;pCode&#x27;], &#x27;#95a5a6&#x27;)
+        count_labels.append(f&quot;{name}\n{row[&#x27;people_count&#x27;]:.0f} people&quot;)
+        counts.append(row[&#x27;people_count&#x27;])
+        count_colors.append(c)
+        dollar_labels.append(f&quot;{name}\n${row[&#x27;party_dollars&#x27;]:,.0f}&quot;)
+        dollars.append(row[&#x27;party_dollars&#x27;])
+        dollar_colors.append(c)
+
+    ax1.pie(counts, labels=count_labels, colors=count_colors, autopct=&#x27;%1.1f%%&#x27;, startangle=90)
+    ax1.set_title(&#x27;Contributors by Party&#x27;)
+    ax2.pie(dollars, labels=dollar_labels, colors=dollar_colors, autopct=&#x27;%1.1f%%&#x27;, startangle=90)
+    ax2.set_title(&#x27;Dollar Amounts by Party&#x27;)
+
+    plt.tight_layout()
+
+    slug = re.sub(r&quot;[^A-Za-z0-9]+&quot;, &quot;_&quot;, company_name).strip(&quot;_&quot;)
+    out_path = Path(&quot;output/charts&quot;) / f&quot;{slug}_party_breakdown.png&quot;
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(out_path, dpi=150, bbox_inches=&quot;tight&quot;)
+    click.echo(f&quot;\nChart saved → {out_path}&quot;)
+
+    if show:
+        plt.show()
+
+
+if __name__ == &quot;__main__&quot;:
+    analyze()
+</code></pre>
+    </section>
+    <section id="Justfile" class="mb-12 scroll-mt-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-bold font-mono text-slate-900">Justfile</h2>
+        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">44 lines · makefile</span>
+      </div>
+      <pre><code class="language-makefile"># FEC data tools
+# Requires: just (https://github.com/casey/just)
+
+# Default fetch parameters — override with: just --set EMPLOYER &quot;WALMART&quot; fetch
+EMPLOYER := &quot;TRACTOR SUPPLY&quot;
+MIN_DATE  := &quot;2019-01-01&quot;
+MAX_DATE  := &quot;2020-12-31&quot;
+PAGES     := &quot;2&quot;
+
+default:
+    @just --list
+
+# Install dependencies
+install:
+    uv sync
+
+# Run the full pipeline: fetch → analyze → notebook + HTML
+# Pass --no-cache to bypass local API cache: just build --no-cache
+build *flags:
+    just fetch {{flags}}
+    just analyze
+    just notebook
+
+# Fetch Schedule A contributions (cached by default)
+# Pass --no-cache to force a fresh API request: just fetch --no-cache
+fetch *flags:
+    uv run api-demo.py --employer &quot;{{EMPLOYER}}&quot; --min-date &quot;{{MIN_DATE}}&quot; --max-date &quot;{{MAX_DATE}}&quot; --pages {{PAGES}} {{flags}}
+
+# Fetch without cache (force fresh API request)
+fetch-fresh:
+    just fetch --no-cache
+
+# Analyze a company&#x27;s contribution CSV
+analyze csv=&quot;./csv/TractorSupplyFECr.csv&quot;:
+    uv run main.py &quot;{{csv}}&quot;
+
+# Execute notebook and render to HTML (both committed to git)
+notebook:
+    uv run jupyter nbconvert --to notebook --execute --inplace notebooks/analysis.ipynb
+    uv run jupyter nbconvert --to html notebooks/analysis.ipynb --output-dir notebooks/
+
+# Open notebook for interactive editing
+notebook-edit:
+    uv run jupyter notebook notebooks/analysis.ipynb
+</code></pre>
+    </section>
+      </div>
+    </div>
+  </main>
+  <footer class="border-t border-slate-200 py-5 text-center text-xs text-slate-400">
+    Generated May 31, 2026 ·
+    <a href="https://github.com/JohnnyMarnell/fec-example" target="_blank" rel="noopener" class="hover:text-slate-700 underline">GitHub</a> ·
+    <a href="../source/" class="hover:text-slate-700 underline">Source code</a>
+  </footer>
+</body>
+</html>
