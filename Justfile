@@ -47,3 +47,8 @@ notebook:
 # Open notebook for interactive editing
 notebook-edit:
     uv run jupyter notebook notebooks/analysis.ipynb
+
+# Serve the built site locally — mirrors what GitHub Pages serves from docs/
+serve port="8000":
+    @echo "http://localhost:{{port}}  (Ctrl-C to stop)"
+    uv run python -m http.server {{port}} --directory docs

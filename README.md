@@ -6,17 +6,27 @@ Examples of fetching and aggregating FEC data from gov API.
 
 ## Setup
 
-Make sure `git` and `uv` are installed, then:
+Tool versions (Python, uv, just) are pinned in `mise.toml`. The recommended bootstrap uses [mise](https://mise.jdx.dev):
 
 ```bash
 git clone 'https://github.com/johnnyMarnell/fec-example'
 cd fec-example
-uv sync
+mise install   # installs pinned Python / uv / just
+uv sync        # creates .venv and installs Python deps
 ```
 
-Install `uv` if needed:
+Install `mise` if needed (macOS/Linux):
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+curl https://mise.run | sh
+```
+
+Windows: `winget install jdx.mise` or `scoop install mise`
+
+**Without mise** — install `uv` and `just` manually, then `uv sync`:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh   # uv
+# just: https://github.com/casey/just#installation
+uv sync
 ```
 
 ## Fetch contributions from the FEC API
