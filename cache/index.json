@@ -7,5 +7,21 @@
   "/schedules/schedule_a/?contributor_employer=WALMART&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=100&sort=-contribution_receipt_date": "8494532ca2c2816d8471.json",
   "/schedules/schedule_a/?contributor_employer=MICROSOFT&max_date=2020-12-31&min_date=2019-01-01&page=2&per_page=100&sort=-contribution_receipt_date": "f681219af3af8f34e59a.json",
   "/schedules/schedule_a/?contributor_employer=WALMART&max_date=2020-12-31&min_date=2019-01-01&page=2&per_page=100&sort=-contribution_receipt_date": "e0af4464bf8cb1a74c00.json",
-  "/schedules/schedule_a/?contributor_employer=LOCKHEED+MARTIN&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=100&sort=-contribution_receipt_date": "92e6e19e7b2a4c5a3005.json"
+  "/schedules/schedule_a/?contributor_employer=LOCKHEED+MARTIN&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=100&sort=-contribution_receipt_date": "92e6e19e7b2a4c5a3005.json",
+  "/committee/C00763664/?": "0706edfc70fa4f95a0a8.json",
+  "/schedules/schedule_b/?committee_id=C00763664&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=5&sort=-disbursement_date": "c52969a709a59f061b2e.json",
+  "/schedules/schedule_b/?committee_id=C00121368&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=100&sort=-disbursement_date": "f3bd2d395376e294c98c.json",
+  "/schedules/schedule_b/?committee_id=C00121368&max_date=2020-12-31&min_date=2019-01-01&page=2&per_page=100&sort=-disbursement_date": "d636f9ccddb8a2af6e27.json",
+  "/schedules/schedule_b/?committee_id=C00763664&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=100&sort=-disbursement_date": "a24aaf675139685e7c7e.json",
+  "/schedules/schedule_b/?committee_id=C00401224&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=100&sort=-disbursement_date": "05eee193bab8c8f2c8d6.json",
+  "/schedules/schedule_b/?committee_id=C00401224&max_date=2020-12-31&min_date=2019-01-01&page=2&per_page=100&sort=-disbursement_date": "2b446c7ffad53c2ffc9b.json",
+  "/schedules/schedule_b/?committee_id=C00762591&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=100&sort=-disbursement_date": "16065e2d6722383684e6.json",
+  "/schedules/schedule_a/?contributor_employer=LOCKHEED+MARTIN&max_date=2020-12-31&min_date=2019-01-01&page=2&per_page=100&sort=-contribution_receipt_date": "462574c69a96df6c8ee6.json",
+  "/committee/C00401224/?": "e7641e3bad688af58f48.json",
+  "/committee/C00121368/?": "b907d68930b1ecc1150e.json",
+  "/committee/C00694323/?": "48a3b7e2d0218bff45ac.json",
+  "/committee/C00762591/?": "98de09d8485287fbed2b.json",
+  "/committee/C00618371/?": "2796175fbb05cc8e1751.json",
+  "/committee/C00760124/?": "65558eabb68d13911e5f.json",
+  "/committee/C00365536/?": "b4450fa87d6ef1cb6881.json"
 }

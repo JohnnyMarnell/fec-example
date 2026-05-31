@@ -12,14 +12,22 @@ from urllib.parse import urlencode
 import requests
 
 BASE_URL = "https://api.open.fec.gov/v1"
+DEFAULT_TIMEOUT = (10, 30)  # (connect, read) — FEC sometimes stalls on Schedule B
 
 
 class FECClient:
-    def __init__(self, api_key: str, cache_dir: str = "cache", no_cache: bool = False):
+    def __init__(
+        self,
+        api_key: str,
+        cache_dir: str = "cache",
+        no_cache: bool = False,
+        timeout: tuple[float, float] = DEFAULT_TIMEOUT,
+    ):
         self.api_key = api_key
         self.no_cache = no_cache
         self.cache_dir = Path(cache_dir)
         self._index_path = self.cache_dir / "index.json"
+        self.timeout = timeout
 
     # -- cache internals -------------------------------------------------------
 
@@ -68,7 +76,7 @@ class FECClient:
 
         url = f"{BASE_URL}{endpoint}"
         headers = {"X-Api-Key": self.api_key, "Accept": "application/json"}
-        resp = requests.get(url, headers=headers, params=params)
+        resp = requests.get(url, headers=headers, params=params, timeout=self.timeout)
         resp.raise_for_status()
         data = resp.json()
 
@@ -124,3 +132,67 @@ class FECClient:
                 break
             page += 1
         return all_results
+
+    # -- Schedule B (committee disbursements — "where did the PAC spend?") ----
+
+    def schedule_b(
+        self,
+        committee_id: str,
+        min_date: str,
+        max_date: str,
+        page: int = 1,
+        per_page: int = 100,
+        sort: str = "-disbursement_date",
+    ) -> dict:
+        """Single page of Schedule B (itemized disbursements) for one committee."""
+        return self._get(
+            "/schedules/schedule_b/",
+            {
+                "committee_id": committee_id,
+                "min_date": min_date,
+                "max_date": max_date,
+                "per_page": per_page,
+                "sort": sort,
+                "page": page,
+            },
+        )
+
+    def schedule_b_pages(
+        self,
+        committee_id: str,
+        min_date: str,
+        max_date: str,
+        max_pages: int | None = None,
+        per_page: int = 100,
+    ) -> list[dict]:
+        """All pages of Schedule B disbursements, up to max_pages (None = all).
+
+        Surfaces network timeouts as `requests.exceptions.RequestException`
+        rather than hanging — callers can swallow and continue.
+        """
+        all_results: list[dict] = []
+        page = 1
+        while True:
+            data = self.schedule_b(
+                committee_id, min_date, max_date, page=page, per_page=per_page
+            )
+            batch = data.get("results", [])
+            all_results.extend(batch)
+            total_pages = data.get("pagination", {}).get("pages", 1)
+            print(f"  schedule_b page {page}/{total_pages}: {len(batch)} records  (total: {len(all_results)})")
+            if page >= total_pages or (max_pages is not None and page >= max_pages):
+                break
+            page += 1
+        return all_results
+
+    # -- Committees (authoritative committee metadata) ------------------------
+
+    def committee(self, committee_id: str) -> dict:
+        """Single committee — authoritative party/type/designation lookup."""
+        return self._get(f"/committee/{committee_id}/", {})
+
+    # -- Candidates (candidate metadata — includes party_full) ----------------
+
+    def candidate(self, candidate_id: str) -> dict:
+        """Single candidate — authoritative party / office / cycle lookup."""
+        return self._get(f"/candidate/{candidate_id}/", {})

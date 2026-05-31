@@ -14,10 +14,9 @@ default:
 install:
     uv sync
 
-# Run the full pipeline: fetch → analyze → notebook + HTML → site
-# Pass --no-cache to bypass local API cache: just build --no-cache
-build *flags:
-    just fetch {{flags}}
+# Full pipeline: prewarm-cache → analyze → notebooks + HTML → site
+build:
+    just prewarm-cache
     just analyze
     just notebook
     just pages
@@ -34,6 +33,10 @@ fetch *flags:
 # Fetch without cache (force fresh API request)
 fetch-fresh:
     just fetch --no-cache
+
+# Cache every endpoint the cross-company notebook uses (Schedule A + B + /committee/). Idempotent.
+prewarm-cache:
+    uv run python tools/prewarm_cache.py
 
 # Analyze a company's contribution CSV
 analyze csv="./csv/TractorSupplyFECr.csv":

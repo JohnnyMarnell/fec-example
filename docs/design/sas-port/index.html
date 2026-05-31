@@ -445,6 +445,7 @@ need a static lookup at all. We still fall back to <code>AllPacs.xslx.csv</code>
   <th>Endpoint</th>
   <th>Use</th>
   <th>Cost</th>
+  <th>Status</th>
 </tr>
 </thead>
 <tbody>
@@ -452,21 +453,25 @@ need a static lookup at all. We still fall back to <code>AllPacs.xslx.csv</code>
   <td><code>/schedules/schedule_a/?contributor_employer=X</code></td>
   <td>Per-employer individual contributions (the SAS input)</td>
   <td>2 pages × 100 / employer</td>
+  <td><strong>shipped</strong> — §3</td>
 </tr>
 <tr>
-  <td><code>/committees/?committee_id=X</code> <em>(optional)</em></td>
-  <td>Fill in <code>party</code> for committees the embedded <code>committee.*</code> lacks</td>
-  <td>Only for <code>party=null</code> rows, batched</td>
+  <td><code>/committee/{id}/</code></td>
+  <td>Authoritative party / type / designation for committees the embedded Schedule A field left null</td>
+  <td>1 call per &quot;fell-through&quot; committee, top 8</td>
+  <td><strong>shipped</strong> — §13</td>
 </tr>
 <tr>
-  <td><code>/schedules/schedule_b/?committee_id=X</code> <em>(optional)</em></td>
+  <td><code>/schedules/schedule_b/?committee_id=X</code></td>
   <td>&quot;Where did the Tractor Supply PAC spend its money?&quot;</td>
-  <td>1 page for the top 3 committees per company</td>
+  <td>2 pages × 1 top committee / employer</td>
+  <td><strong>shipped</strong> — §12</td>
 </tr>
 <tr>
-  <td><code>/candidates/?candidate_id=X</code> <em>(optional)</em></td>
-  <td>Resolve <code>candidate_id</code> → candidate party (some contributions earmark a candidate)</td>
-  <td>Cached</td>
+  <td><code>/candidate/{id}/</code></td>
+  <td>Resolve <code>candidate_id</code> → candidate party (for direct-to-candidate contributions)</td>
+  <td>Cached, lazy</td>
+  <td>available on <code>FECClient</code>, not yet wired into notebook</td>
 </tr>
 </tbody>
 </table>

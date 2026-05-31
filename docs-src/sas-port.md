@@ -191,12 +191,12 @@ need a static lookup at all. We still fall back to `AllPacs.xslx.csv` for the
 
 ### 5a · FEC API endpoints we'll use
 
-| Endpoint | Use | Cost |
-|---|---|---|
-| `/schedules/schedule_a/?contributor_employer=X` | Per-employer individual contributions (the SAS input) | 2 pages × 100 / employer |
-| `/committees/?committee_id=X` *(optional)* | Fill in `party` for committees the embedded `committee.*` lacks | Only for `party=null` rows, batched |
-| `/schedules/schedule_b/?committee_id=X` *(optional)* | "Where did the Tractor Supply PAC spend its money?" | 1 page for the top 3 committees per company |
-| `/candidates/?candidate_id=X` *(optional)* | Resolve `candidate_id` → candidate party (some contributions earmark a candidate) | Cached |
+| Endpoint | Use | Cost | Status |
+|---|---|---|---|
+| `/schedules/schedule_a/?contributor_employer=X` | Per-employer individual contributions (the SAS input) | 2 pages × 100 / employer | **shipped** — §3 |
+| `/committee/{id}/` | Authoritative party / type / designation for committees the embedded Schedule A field left null | 1 call per "fell-through" committee, top 8 | **shipped** — §13 |
+| `/schedules/schedule_b/?committee_id=X` | "Where did the Tractor Supply PAC spend its money?" | 2 pages × 1 top committee / employer | **shipped** — §12 |
+| `/candidate/{id}/` | Resolve `candidate_id` → candidate party (for direct-to-candidate contributions) | Cached, lazy | available on `FECClient`, not yet wired into notebook |
 
 Everything goes through the existing [`FECClient`](/source/#fec_client-py), so
 the disk cache (`cache/*.json` + `cache/index.json`) absorbs all subsequent

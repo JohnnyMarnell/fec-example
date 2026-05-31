@@ -92,7 +92,7 @@
       <a href="#fec_client-py"
          class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm">
         <span class="font-mono font-medium text-slate-800">fec_client.py</span>
-        <span class="text-xs text-slate-400">126 lines</span>
+        <span class="text-xs text-slate-400">198 lines</span>
       </a>
       <a href="#api-demo-py"
          class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm">
@@ -107,7 +107,7 @@
       <a href="#Justfile"
          class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm">
         <span class="font-mono font-medium text-slate-800">Justfile</span>
-        <span class="text-xs text-slate-400">63 lines</span>
+        <span class="text-xs text-slate-400">66 lines</span>
       </a></nav>
         </div>
       </aside>
@@ -123,7 +123,7 @@
     <section id="fec_client-py" class="mb-12 scroll-mt-8">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-base font-bold font-mono text-slate-900">fec_client.py</h2>
-        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">126 lines · python</span>
+        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">198 lines · python</span>
       </div>
       <pre><code class="language-python">&quot;&quot;&quot;FEC API client with transparent disk caching.
 
@@ -139,14 +139,22 @@ from urllib.parse import urlencode
 import requests
 
 BASE_URL = &quot;https://api.open.fec.gov/v1&quot;
+DEFAULT_TIMEOUT = (10, 30)  # (connect, read) — FEC sometimes stalls on Schedule B
 
 
 class FECClient:
-    def __init__(self, api_key: str, cache_dir: str = &quot;cache&quot;, no_cache: bool = False):
+    def __init__(
+        self,
+        api_key: str,
+        cache_dir: str = &quot;cache&quot;,
+        no_cache: bool = False,
+        timeout: tuple[float, float] = DEFAULT_TIMEOUT,
+    ):
         self.api_key = api_key
         self.no_cache = no_cache
         self.cache_dir = Path(cache_dir)
         self._index_path = self.cache_dir / &quot;index.json&quot;
+        self.timeout = timeout
 
     # -- cache internals -------------------------------------------------------
 
@@ -195,7 +203,7 @@ class FECClient:
 
         url = f&quot;{BASE_URL}{endpoint}&quot;
         headers = {&quot;X-Api-Key&quot;: self.api_key, &quot;Accept&quot;: &quot;application/json&quot;}
-        resp = requests.get(url, headers=headers, params=params)
+        resp = requests.get(url, headers=headers, params=params, timeout=self.timeout)
         resp.raise_for_status()
         data = resp.json()
 
@@ -251,6 +259,70 @@ class FECClient:
                 break
             page += 1
         return all_results
+
+    # -- Schedule B (committee disbursements — &quot;where did the PAC spend?&quot;) ----
+
+    def schedule_b(
+        self,
+        committee_id: str,
+        min_date: str,
+        max_date: str,
+        page: int = 1,
+        per_page: int = 100,
+        sort: str = &quot;-disbursement_date&quot;,
+    ) -&gt; dict:
+        &quot;&quot;&quot;Single page of Schedule B (itemized disbursements) for one committee.&quot;&quot;&quot;
+        return self._get(
+            &quot;/schedules/schedule_b/&quot;,
+            {
+                &quot;committee_id&quot;: committee_id,
+                &quot;min_date&quot;: min_date,
+                &quot;max_date&quot;: max_date,
+                &quot;per_page&quot;: per_page,
+                &quot;sort&quot;: sort,
+                &quot;page&quot;: page,
+            },
+        )
+
+    def schedule_b_pages(
+        self,
+        committee_id: str,
+        min_date: str,
+        max_date: str,
+        max_pages: int | None = None,
+        per_page: int = 100,
+    ) -&gt; list[dict]:
+        &quot;&quot;&quot;All pages of Schedule B disbursements, up to max_pages (None = all).
+
+        Surfaces network timeouts as `requests.exceptions.RequestException`
+        rather than hanging — callers can swallow and continue.
+        &quot;&quot;&quot;
+        all_results: list[dict] = []
+        page = 1
+        while True:
+            data = self.schedule_b(
+                committee_id, min_date, max_date, page=page, per_page=per_page
+            )
+            batch = data.get(&quot;results&quot;, [])
+            all_results.extend(batch)
+            total_pages = data.get(&quot;pagination&quot;, {}).get(&quot;pages&quot;, 1)
+            print(f&quot;  schedule_b page {page}/{total_pages}: {len(batch)} records  (total: {len(all_results)})&quot;)
+            if page &gt;= total_pages or (max_pages is not None and page &gt;= max_pages):
+                break
+            page += 1
+        return all_results
+
+    # -- Committees (authoritative committee metadata) ------------------------
+
+    def committee(self, committee_id: str) -&gt; dict:
+        &quot;&quot;&quot;Single committee — authoritative party/type/designation lookup.&quot;&quot;&quot;
+        return self._get(f&quot;/committee/{committee_id}/&quot;, {})
+
+    # -- Candidates (candidate metadata — includes party_full) ----------------
+
+    def candidate(self, candidate_id: str) -&gt; dict:
+        &quot;&quot;&quot;Single candidate — authoritative party / office / cycle lookup.&quot;&quot;&quot;
+        return self._get(f&quot;/candidate/{candidate_id}/&quot;, {})
 </code></pre>
     </section>
     <section id="api-demo-py" class="mb-12 scroll-mt-8">
@@ -538,7 +610,7 @@ if __name__ == &quot;__main__&quot;:
     <section id="Justfile" class="mb-12 scroll-mt-8">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-base font-bold font-mono text-slate-900">Justfile</h2>
-        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">63 lines · makefile</span>
+        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">66 lines · makefile</span>
       </div>
       <pre><code class="language-makefile"># FEC data tools
 # Requires: just (https://github.com/casey/just)
@@ -556,10 +628,9 @@ default:
 install:
     uv sync
 
-# Run the full pipeline: fetch → analyze → notebook + HTML → site
-# Pass --no-cache to bypass local API cache: just build --no-cache
-build *flags:
-    just fetch {{flags}}
+# Full pipeline: prewarm-cache → analyze → notebooks + HTML → site
+build:
+    just prewarm-cache
     just analyze
     just notebook
     just pages
@@ -576,6 +647,10 @@ fetch *flags:
 # Fetch without cache (force fresh API request)
 fetch-fresh:
     just fetch --no-cache
+
+# Cache every endpoint the cross-company notebook uses (Schedule A + B + /committee/). Idempotent.
+prewarm-cache:
+    uv run python tools/prewarm_cache.py
 
 # Analyze a company&#x27;s contribution CSV
 analyze csv=&quot;./csv/TractorSupplyFECr.csv&quot;:
