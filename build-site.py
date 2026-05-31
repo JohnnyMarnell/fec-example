@@ -109,6 +109,7 @@ def page(title: str, body: str, active: str, depth: int = 1,
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{esc(title)} · FEC Analysis</title>
+  <link rel="icon" type="image/svg+xml" href="{b}favicon.svg">
   <script src="{TAILWIND}"></script>
   <link rel="stylesheet" href="{HLJS_CSS}">
   <script src="{HLJS_JS}"></script>

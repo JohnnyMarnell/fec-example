@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- body: yellow circle with 60° mouth wedge cut out, facing right -->
+  <path d="M16,16 L28.1,9 A14,14,0,1,0,28.1,23 Z" fill="#FFD700"/>
+  <!-- eye -->
+  <circle cx="21" cy="9.5" r="2" fill="#111"/>
+</svg>
