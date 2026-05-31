@@ -1,4 +1,11 @@
 {
   "/schedules/schedule_a/?contributor_employer=TRACTOR+SUPPLY&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=100&sort=-contribution_receipt_date": "c5ae622756858b3970d5.json",
-  "/schedules/schedule_a/?contributor_employer=TRACTOR+SUPPLY&max_date=2020-12-31&min_date=2019-01-01&page=2&per_page=100&sort=-contribution_receipt_date": "45e8c188ee0db58c188e.json"
+  "/schedules/schedule_a/?contributor_employer=TRACTOR+SUPPLY&max_date=2020-12-31&min_date=2019-01-01&page=2&per_page=100&sort=-contribution_receipt_date": "45e8c188ee0db58c188e.json",
+  "/schedules/schedule_a/?contributor_employer=EXXON+MOBIL&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=100&sort=-contribution_receipt_date": "74174e767810bafd652a.json",
+  "/schedules/schedule_a/?contributor_employer=EXXON+MOBIL&max_date=2020-12-31&min_date=2019-01-01&page=2&per_page=100&sort=-contribution_receipt_date": "eedb67ade5457524d13e.json",
+  "/schedules/schedule_a/?contributor_employer=MICROSOFT&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=100&sort=-contribution_receipt_date": "57d475f71b8cfe201bd8.json",
+  "/schedules/schedule_a/?contributor_employer=WALMART&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=100&sort=-contribution_receipt_date": "8494532ca2c2816d8471.json",
+  "/schedules/schedule_a/?contributor_employer=MICROSOFT&max_date=2020-12-31&min_date=2019-01-01&page=2&per_page=100&sort=-contribution_receipt_date": "f681219af3af8f34e59a.json",
+  "/schedules/schedule_a/?contributor_employer=WALMART&max_date=2020-12-31&min_date=2019-01-01&page=2&per_page=100&sort=-contribution_receipt_date": "e0af4464bf8cb1a74c00.json",
+  "/schedules/schedule_a/?contributor_employer=LOCKHEED+MARTIN&max_date=2020-12-31&min_date=2019-01-01&page=1&per_page=100&sort=-contribution_receipt_date": "92e6e19e7b2a4c5a3005.json"
 }
