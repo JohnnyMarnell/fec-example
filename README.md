@@ -6,34 +6,69 @@ Examples of fetching and aggregating FEC data from gov API.
 
 ## Setup
 
-### Prerequisites (once)
+Make sure `git` and `uv` are installed, then:
 
-Make sure `git` CLI is installed. In a terminal / Git Shell,
-clone this repo and `cd` to it:
 ```bash
 git clone 'https://github.com/johnnyMarnell/fec-example'
 cd fec-example
+uv sync
 ```
 
-This project uses uv + python, make sure uv is installed:
+Install `uv` if needed:
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### Install project dependencies (infrequent)
+## Fetch contributions from the FEC API
+
+Fetch Schedule A contributions for an employer (results cached locally by default):
 
 ```bash
-uv sync
+uv run api-demo.py --employer "TRACTOR SUPPLY" --min-date 2019-01-01 --max-date 2020-12-31
+# → output/schedule_a/TRACTOR_SUPPLY_2019-01-01_2020-12-31.{json,csv}
 ```
 
-### Run
+Force a fresh API request, skipping the cache:
 
-Aggregate FEC data and print stats to console, plus render bar charts example
 ```bash
-uv run main.py
+uv run api-demo.py --employer "WALMART" --min-date 2021-01-01 --max-date 2022-12-31 --no-cache
 ```
 
-Example of FEC API calls (from https://api.open.fec.gov/developers)
+Fetch all available pages (default is 2):
+
 ```bash
-uv run api-demo.py
+uv run api-demo.py --employer "TRACTOR SUPPLY" --min-date 2019-01-01 --max-date 2020-12-31 --pages 0
 ```
+
+Full option reference:
+
+```bash
+uv run api-demo.py --help
+```
+
+## Analyze a company's contribution CSV
+
+```bash
+uv run main.py                           # defaults to ./csv/TractorSupplyFECr.csv
+uv run main.py csv/TractorSupplyFECr.csv
+```
+
+## Using `just`
+
+```bash
+just install
+just fetch                               # Tractor Supply, 2019-2020, 2 pages, cached
+just fetch "WALMART" "2021-01-01" "2022-12-31"
+just fetch-fresh "TRACTOR SUPPLY"        # bypass cache
+just analyze
+just analyze csv/MyCompanyFECr.csv
+```
+
+## Caching
+
+API responses are stored in `cache/` (one JSON file per request). `cache/index.json`
+maps canonical request URIs to their files for easy inspection. Supplying concrete
+`--min-date` / `--max-date` bounds ensures cached responses stay valid — historical
+FEC data does not change.
+
+Pass `--no-cache` to bypass the cache and force a live API request.

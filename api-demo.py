@@ -1,95 +1,60 @@
 #!/usr/bin/env python3
-"""
-FEC API Demo - Fetch Schedule A data from OpenFEC API
-Fetches 2 pages of contribution data and saves to CSV
-"""
-import requests
+"""Fetch FEC Schedule A contribution data and write results to disk."""
+import json
+import re
+from pathlib import Path
+
+import click
 import pandas as pd
 
-# API Configuration
-API_KEY = "Kgkivmpbsy1rehiCuTcd8gVHxzwQFRcSDsrVhQJm"
-BASE_URL = "https://api.open.fec.gov/v1/schedules/schedule_a/"
-OUTPUT_FILE = "tmp-API-FETCH-TracktorSupplyFEC.csv"
+from fec_client import FECClient
 
-# Query parameters
-PARAMS = {
-    "contributor_employer": "TRACTOR SUPPLY",
-    "min_date": "2019-01-01",
-    "max_date": "2020-12-31",
-    "per_page": 100,
-    "sort": "-contribution_receipt_date"
-}
-
-HEADERS = {
-    "X-Api-Key": API_KEY,
-    "Accept": "application/json"
-}
+_DEFAULT_API_KEY = "Kgkivmpbsy1rehiCuTcd8gVHxzwQFRcSDsrVhQJm"
 
 
-def fetch_page(page_number):
-    """Fetch a single page of data from the FEC API."""
-    print(f"Fetching page {page_number}...")
+@click.command()
+@click.option("--employer", default="TRACTOR SUPPLY", show_default=True, help="Employer name to search.")
+@click.option("--min-date", default="2019-01-01", show_default=True, help="Earliest contribution date (YYYY-MM-DD).")
+@click.option("--max-date", default="2020-12-31", show_default=True, help="Latest contribution date (YYYY-MM-DD).")
+@click.option("--pages", default=2, show_default=True, type=int, help="Max pages to fetch; 0 = all pages.")
+@click.option("--per-page", default=100, show_default=True, type=int, help="Records per page (max 100).")
+@click.option("--api-key", default=_DEFAULT_API_KEY, envvar="FEC_API_KEY", help="OpenFEC API key.")
+@click.option("--no-cache", is_flag=True, help="Skip local cache and force a fresh API request.")
+@click.option("--output-dir", default="output", show_default=True, type=click.Path(), help="Root output directory.")
+def fetch(employer, min_date, max_date, pages, per_page, api_key, no_cache, output_dir):
+    """Fetch FEC Schedule A contributions for EMPLOYER and write JSON + CSV to disk."""
+    client = FECClient(api_key=api_key, no_cache=no_cache)
+    max_pages = pages or None  # 0 → fetch all
 
-    params = PARAMS.copy()
-    params["page"] = page_number
+    click.echo(f"Fetching Schedule A: employer={employer!r}  {min_date} → {max_date}  max_pages={max_pages or 'all'}")
+    results = client.schedule_a_pages(employer, min_date, max_date, max_pages=max_pages, per_page=per_page)
 
-    try:
-        params_str = '&'.join(f'{k}={v}' for k,v in params.items())
-        print(f"Calling FEC API:\nGET {BASE_URL}?{params_str}")
-        response = requests.get(BASE_URL, headers=HEADERS, params=params)
-        response.raise_for_status()
-
-        data = response.json()
-        results = data.get("results", [])
-
-        print(f"Page {page_number}: Retrieved {len(results)} records")
-        print(f"Page {page_number}: Total available: {data.get('pagination', {}).get('count', 'unknown')}")
-
-        return results
-
-    except requests.exceptions.RequestException as e:
-        print(f"ERROR: Error fetching page {page_number}: {e}")
-        raise
-
-
-def main():
-    """Fetch 2 pages of FEC data, combine, and save to CSV."""
-    print("Starting FEC API data fetch, will fetch first 2 pages")
-    print(f"Employer: {PARAMS['contributor_employer']}")
-    print(f"Date range: {PARAMS['min_date']} to {PARAMS['max_date']}")
-
-    # Fetch 2 pages
-    all_results = []
-    for page in range(1, 3):
-        page_results = fetch_page(page)
-        all_results.extend(page_results)
-
-    # Convert to DataFrame
-    if not all_results:
-        print("WARNING: No data retrieved from API")
+    if not results:
+        click.echo("No results returned.")
         return
 
-    df = pd.DataFrame(all_results)
-    print(f"DataFrame shape: {df.shape}")
-    print(f"Columns: {len(df.columns)}")
+    slug = re.sub(r"[^A-Za-z0-9]+", "_", employer).strip("_").upper()
+    out_dir = Path(output_dir) / "schedule_a"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    stem = f"{slug}_{min_date}_{max_date}"
 
-    # Write to CSV
-    df.to_csv(OUTPUT_FILE, index=False)
-    print(f"Data written to: {OUTPUT_FILE}")
+    json_path = out_dir / f"{stem}.json"
+    csv_path = out_dir / f"{stem}.csv"
 
-    # Pretty print first 10 rows
-    print("\n" + "=" * 100)
-    print(f"FIRST 10 ROWS, SOME COLUMNS (see {OUTPUT_FILE})")
-    print("=" * 100)
+    json_path.write_text(json.dumps(results, indent=2))
+    pd.DataFrame(results).to_csv(csv_path, index=False)
 
-    # Show a few columns and rows - find columns containing these keywords
-    cols = "contributor_name contribution_receipt_amount contributor_state contributor_zip".split(" ")
-    print(df[cols].head(10).to_string(index=False))
+    click.echo(f"\nFetched {len(results):,} records.")
+    click.echo(f"  JSON → {json_path}")
+    click.echo(f"  CSV  → {csv_path}")
 
-    print("=" * 100)
-    print(f"\nFull data saved to: {OUTPUT_FILE}")
-    print(f"Total columns in dataset: {len(df.columns)}")
+    df = pd.DataFrame(results)
+    preview_cols = ["contributor_name", "contribution_receipt_amount", "contributor_state", "contributor_zip"]
+    cols = [c for c in preview_cols if c in df.columns]
+    if cols:
+        click.echo(f"\nSample ({', '.join(cols)}):")
+        click.echo(df[cols].head(5).to_string(index=False))
 
 
 if __name__ == "__main__":
-    main()
+    fetch()
