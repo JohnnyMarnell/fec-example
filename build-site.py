@@ -454,6 +454,82 @@ def _dl_icon() -> str:
     )
 
 
+def _table_preview(path: Path, max_rows: int = 10) -> str:
+    """Render an HTML preview of an arbitrary CSV (any columns, not just FEC-shaped)."""
+    try:
+        with open(path) as f:
+            reader = csv.reader(f)
+            rows = list(reader)
+        if not rows:
+            return '<p class="text-slate-400 text-sm">empty</p>'
+        head, body = rows[0], rows[1 : max_rows + 1]
+        th = "".join(
+            f'<th class="px-3 py-2 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">'
+            f'{esc(c)}</th>' for c in head
+        )
+        tr = ""
+        for i, r in enumerate(body):
+            bg = "bg-white" if i % 2 == 0 else "bg-slate-50"
+            cells = "".join(
+                f'<td class="px-3 py-2 text-sm text-slate-700 whitespace-nowrap max-w-[220px] truncate">'
+                f'{esc(str(c)[:80])}</td>' for c in r
+            )
+            tr += f'<tr class="{bg}">{cells}</tr>'
+        return f"""<div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+  <table class="min-w-full divide-y divide-slate-200">
+    <thead class="bg-slate-50"><tr>{th}</tr></thead>
+    <tbody class="divide-y divide-slate-100">{tr}</tbody>
+  </table>
+</div>"""
+    except Exception as e:
+        return f'<p class="text-red-500 text-sm">preview failed: {esc(str(e))}</p>'
+
+
+def _generated_tables_section() -> str:
+    """SAS-parity tables produced by the cross-company notebook, dropped under output/tables/."""
+    if not OUT_TABLES.exists():
+        return ""
+    tables = sorted(p for p in OUT_TABLES.iterdir() if p.suffix in {".csv", ".xlsx"})
+    if not tables:
+        return ""
+    dest = DOCS / "data" / "tables"
+    dest.mkdir(parents=True, exist_ok=True)
+    blocks = ""
+    for src in tables:
+        shutil.copy(src, dest / src.name)
+        size_kb = src.stat().st_size // 1024
+        preview = _table_preview(src) if src.suffix == ".csv" else (
+            '<p class="text-xs text-slate-500">Excel workbook — download to inspect.</p>'
+        )
+        anchor = "tbl-" + src.stem.replace("_", "-")
+        blocks += f"""
+    <section id="{esc(anchor)}" class="mb-10 scroll-mt-10">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h3 class="text-base font-bold text-slate-900 font-mono">{esc(src.name)}</h3>
+          <p class="text-xs text-slate-400 mt-0.5">notebook-generated</p>
+        </div>
+        <a href="tables/{esc(src.name)}" download
+           class="inline-flex items-center gap-1.5 text-xs bg-emerald-600 text-white
+                  px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition-colors">
+          {_dl_icon()} Download ({size_kb} KB)
+        </a>
+      </div>
+      {preview}
+    </section>"""
+    return f"""
+    <div class="mt-12 pt-8 border-t border-slate-200">
+      <h2 class="text-lg font-semibold text-slate-800 mb-1">Generated tables</h2>
+      <p class="text-slate-500 text-sm mb-6">
+        SAS-parity outputs written by
+        <a href="../notebook/cross-company/" class="text-indigo-600 hover:underline">the cross-company notebook</a>
+        — one row per employer for the contributors / contributions families plus
+        contribution-level and contributor-level samples.
+      </p>
+      {blocks}
+    </div>"""
+
+
 def build_data(data_files: list[str]) -> None:
     data_dir = DOCS / "data"
     data_dir.mkdir(exist_ok=True)
@@ -566,6 +642,7 @@ def build_data(data_files: list[str]) -> None:
           </p>
         </div>
         {sections}
+        {_generated_tables_section()}
       </div>
     </div>"""
 

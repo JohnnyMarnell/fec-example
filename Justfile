@@ -39,14 +39,23 @@ fetch-fresh:
 analyze csv="./csv/TractorSupplyFECr.csv":
     uv run main.py "{{csv}}"
 
-# Execute notebook and render to HTML (both committed to git)
+# Execute all notebooks and render each to HTML (executed .ipynb + .html committed to git)
 notebook:
-    uv run jupyter nbconvert --to notebook --execute --inplace notebooks/analysis.ipynb
-    uv run jupyter nbconvert --to html notebooks/analysis.ipynb --output-dir notebooks/
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for nb in notebooks/*.ipynb; do
+        echo "▶ $nb"
+        uv run jupyter nbconvert --to notebook --execute --inplace "$nb"
+        uv run jupyter nbconvert --to html "$nb" --output-dir notebooks/
+    done
 
-# Open notebook for interactive editing
-notebook-edit:
-    uv run jupyter notebook notebooks/analysis.ipynb
+# Open the specified notebook for interactive editing (default: analysis.ipynb)
+notebook-edit nb="notebooks/analysis.ipynb":
+    uv run jupyter notebook "{{nb}}"
+
+# Regenerate the cross-company notebook from its builder script
+notebook-build-cross-company:
+    uv run python tools/build_cross_company_nb.py
 
 # Serve the built site locally — mirrors what GitHub Pages serves from docs/
 serve port="8000":
