@@ -1,6 +1,8 @@
 # fec-example
 
-Example fetching and aggregating FEC data.
+Vibe coded for a friend.
+
+Examples of fetching and aggregating FEC data from gov API.
 
 ## Setup
 
