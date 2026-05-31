@@ -49,6 +49,11 @@
       font-size: .82rem; line-height: 1.6;
     }
     .prose pre code { background: transparent; color: inherit; padding: 0; }
+    .prose pre.filetree {
+      background: #f8fafc; color: #334155;
+      border: 1px solid #e2e8f0; border-left: 3px solid #6366f1;
+    }
+    .mermaid { margin: 1.25rem 0; text-align: center; }
     .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .9rem; }
     .prose th, .prose td {
       border: 1px solid #e2e8f0; padding: .5rem .75rem; text-align: left; vertical-align: top;
@@ -57,7 +62,8 @@
     .prose tr:nth-child(even) td { background: #fafbfc; }
     .prose hr { border: 0; border-top: 1px solid #e2e8f0; margin: 1.75rem 0; }
   </style>
-  
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>document.addEventListener("DOMContentLoaded", () => mermaid.initialize({ startOnLoad: true, theme: "neutral" }));</script>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
   <header class="bg-slate-900 text-white shadow-lg">
@@ -148,53 +154,37 @@ is a focused single-company demo:</p>
 <h2>2 · The SAS pipeline, end to end</h2>
 <p>Source: <a href="https://github.com/"><code>files-from-ftp-server/sas-src/</code></a> in the SAS fork
 (<code>sascsvc19.sas</code>, <code>stats5xle.sas</code>, <code>saspac3xle.sas</code>, <code>sasformats.sas</code>).</p>
-<pre><code>Raw FEC CSVs (79 cols, 10.8M rows across 55 companies)
-    │
-    ▼
-[1] SASPAC      PROC FEDSQL — companies ⋈ AllPacs ⋈ Aristotle ⋈ companyrank
-                10.8M rows × 16 vars
-    │
-    ▼
-[2] SASPAC2     MERGE name_gender BY first;  statename = stnamel(state)
-                10.8M × 19   (+ gender, probability, statename)
-    │
-    ▼
-[3] SASPAC3     mParty assignment;  5-digit zip;  compervar = company-last-zip
-                10.8M × 20   (drops probability/zip; renames contribution → contribsum)
-    │
-    ▼
-[4] SASPAC4     25 party-sum columns:  Asum…ORsum  (one is the amount, rest 0)
-                10.8M × 39
-    │
-    ▼
-[5] CLASS       PROC SUMMARY NWAY CLASS=compervar VAR=contribsum
-                1.03M × 4    (compervar, _TYPE_, _FREQ_, contribsum)
-    │
-    ▼
-[6] CLASS2      PROC SUMMARY NWAY CLASS=compervar VAR=Asum…ORsum
-                1.03M × 28   (per-person totals across all 25 party buckets)
-    │
-    ▼
-[7] STATS       SASPAC3 ⋈ CLASS  BY compervar  IF FIRST.   (drop committee/party)
-                1.03M × 16   (one row per person with demographics + grand total)
-    │
-    ▼
-[8] STATS2      SASPAC4 ⋈ CLASS2 BY compervar  IF FIRST.
-                1.03M × 39   (demographics + 25 party-sums)
-    │
-    ▼
-[9] STATS3      MERGE STATS STATS2;  contribsum = sum(all *sum)
-                1.03M × 41
-    │
-    ▼
-[10] STATS4     ★ THE 60% RULE ★   pCode = first party with party_sum/total ≥ 0.6
-                                    else 'N'.  mParty rolls up to D/R/Other
-                1.03M × 43
-    │
-    ▼
-[11] STATS5     LEFT JOIN Aristotle ON pCode = Code  →  full PARTY name
-                1.03M × 44                                    ← final contributor-level table
-</code></pre>
+<div class="mermaid">flowchart TD
+    RAW["Raw FEC CSVs\n79 cols · 10.8M rows · 55 companies"]
+
+    S1["1 · SASPAC\nFEDSQL join: companies + AllPacs + Aristotle + companyrank\n10.8M rows × 16 vars"]
+    S2["2 · SASPAC2\nMerge name_gender · stnamel state lookup\n10.8M × 19"]
+    S3["3 · SASPAC3\nmParty · zip5 · compervar key\n10.8M × 20"]
+    S4["4 · SASPAC4\n25 party-sum columns: Asum ... ORsum\n10.8M × 39"]
+    S5["5 · CLASS\nGROUP BY compervar, SUM contribsum\n1.03M × 4"]
+    S6["6 · CLASS2\nGROUP BY compervar, SUM all party sums\n1.03M × 28"]
+    S7["7 · STATS\nSASPAC3 + CLASS merged, IF FIRST\n1.03M × 16 — one row per person"]
+    S8["8 · STATS2\nSASPAC4 + CLASS2 merged, IF FIRST\n1.03M × 39 — one row per person"]
+    S9["9 · STATS3\nMerge STATS + STATS2\n1.03M × 41"]
+    S10["10 · STATS4\nTHE 60% RULE\npCode = party if share >= 60%, else N\n1.03M × 43"]
+    S11["11 · STATS5\nJoin Aristotle on pCode — full party name\n1.03M × 44 — final contributor table"]
+
+    RAW --> S1 --> S2 --> S3 --> S4
+    S3 --> S5
+    S4 --> S6
+    S3 & S5 --> S7
+    S4 & S6 --> S8
+    S7 & S8 --> S9
+    S9 --> S10 --> S11
+
+    classDef default fill:#f8fafc,stroke:#94a3b8,color:#1e293b
+    classDef ruleNode fill:#fef9c3,stroke:#d97706,color:#78350f
+    classDef rawNode fill:#dbeafe,stroke:#3b82f6,color:#1e3a8a
+    classDef finalNode fill:#dcfce7,stroke:#16a34a,color:#14532d
+    class S10 ruleNode
+    class RAW rawNode
+    class S11 finalNode
+</div>
 <p>Then <strong>two parallel &quot;publish&quot; passes</strong> (<code>stats5xle.sas</code>, <code>saspac3xle.sas</code>)
 filter by company-vs-agency and pivot the *sum / Dnum / DMnum / DFnum / DUnum…
 matrix into one row per employer. And <code>sascsvc19.sas</code> runs 14 <code>PROC TABULATE</code>
@@ -211,10 +201,34 @@ volume*** went to *X</em>. Otherwise the person is <code>'N'</code> (None / Nonp
 <p>In SAS this is 25 <code>IF</code> statements; in our DuckDB version it collapses to a
 single <code>CASE</code> expression over per-party sums. Same logic, ~95 % less code.</p>
 <h3>2b · <code>compervar</code> — the unique-person key</h3>
-<pre><code>compervar = strip(Company) || ' - ' || strip(Last) || ' - ' || zip5
-                                                              ^^^^
-                                       SUBSTR(zip, 1, 5) — drops the +4 suffix
+<pre><code class="language-sas">compervar = strip(Company) || ' - ' || strip(Last) || ' - ' || zip5
 </code></pre>
+<table>
+<thead>
+<tr>
+  <th>Component</th>
+  <th>Source field</th>
+  <th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>strip(Company)</code></td>
+  <td><code>contributor_employer</code></td>
+  <td>Normalized by <code>$COMPANYF.</code> format (500-row lookup)</td>
+</tr>
+<tr>
+  <td><code>strip(Last)</code></td>
+  <td><code>contributor_last_name</code></td>
+  <td>From the FEC record as-is</td>
+</tr>
+<tr>
+  <td><code>zip5</code></td>
+  <td><code>SUBSTR(zip, 1, 5)</code></td>
+  <td>First 5 digits — drops the ZIP+4 suffix</td>
+</tr>
+</tbody>
+</table>
 <p>Quirks worth preserving:</p>
 <ul>
 <li>Married couples at the same address collapse into one row (acknowledged limitation).</li>
@@ -562,20 +576,20 @@ the SAS agency reports as a separate section.</li>
 to the <strong>SAS line numbers</strong> so a SAS reader can cross-reference.</p>
 <hr />
 <h2>7 · Output artifacts written to disk</h2>
-<pre><code>output/
-├── schedule_a/                                # raw fetch (one per employer)
+<pre class="filetree">output/
+├── schedule_a/            # raw fetch (one file per employer)
+│   ├── TRACTOR_SUPPLY_2019-01-01_2020-12-31.{json,csv}
 │   ├── MICROSOFT_CORPORATION_2019-01-01_2020-12-31.{json,csv}
-│   ├── EXXON_MOBIL_…
 │   └── …
-├── tables/                                    # SAS-parity summaries
-│   ├── company_contributors.csv               # ↔ SAS company_contributors.xlsx
-│   ├── company_contributions.csv              # ↔ SAS company_contributions.xlsx
-│   └── stats5all_sample.csv                   # contributor-level, 50-row sample
+├── tables/                # SAS-parity summaries
+│   ├── company_contributors.csv    ↔ SAS company_contributors.xlsx
+│   ├── company_contributions.csv   ↔ SAS company_contributions.xlsx
+│   └── stats5all_sample.csv        contributor-level, 50-row sample
 └── charts/
     ├── multi_company_party_stack.png
-    ├── monthly_timeseries_&lt;employer&gt;.png
+    ├── monthly_timeseries_<employer>.png
     └── …
-</code></pre>
+</pre>
 <p>The CSVs are then automatically picked up by the existing
 <a href="../source/#build-site-py"><code>build-site.py</code></a> → <a href="../data/">Data tab</a> so anyone
 browsing the site can download them.</p>

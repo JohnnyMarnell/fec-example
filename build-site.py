@@ -69,9 +69,10 @@ def company_from_filename(stem: str) -> str:
     return name.replace("_", " ").strip()
 
 
-HLJS_CSS = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css"
-HLJS_JS  = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"
-TAILWIND = "https://cdn.tailwindcss.com"
+HLJS_CSS  = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css"
+HLJS_JS   = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"
+TAILWIND  = "https://cdn.tailwindcss.com"
+MERMAID_JS = "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────
@@ -152,6 +153,11 @@ def page(title: str, body: str, active: str, depth: int = 1,
       font-size: .82rem; line-height: 1.6;
     }}
     .prose pre code {{ background: transparent; color: inherit; padding: 0; }}
+    .prose pre.filetree {{
+      background: #f8fafc; color: #334155;
+      border: 1px solid #e2e8f0; border-left: 3px solid #6366f1;
+    }}
+    .mermaid {{ margin: 1.25rem 0; text-align: center; }}
     .prose table {{ width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .9rem; }}
     .prose th, .prose td {{
       border: 1px solid #e2e8f0; padding: .5rem .75rem; text-align: left; vertical-align: top;
@@ -566,6 +572,27 @@ def _markdown_to_html(md: str) -> str:
     return md_parser(md)
 
 
+def _postprocess_design_html(raw: str) -> str:
+    """Convert ```mermaid and ```tree fenced blocks into renderable elements."""
+    import re as _re, html as _html
+
+    def _mermaid(m: "_re.Match[str]") -> str:
+        return f'<div class="mermaid">{_html.unescape(m.group(1))}</div>'
+
+    def _filetree(m: "_re.Match[str]") -> str:
+        return f'<pre class="filetree">{_html.unescape(m.group(1))}</pre>'
+
+    raw = _re.sub(
+        r'<pre><code class="language-mermaid">(.*?)</code></pre>',
+        _mermaid, raw, flags=_re.DOTALL,
+    )
+    raw = _re.sub(
+        r'<pre><code class="language-tree">(.*?)</code></pre>',
+        _filetree, raw, flags=_re.DOTALL,
+    )
+    return raw
+
+
 def build_design() -> None:
     design_dir = DOCS / "design"
     design_dir.mkdir(exist_ok=True)
@@ -582,7 +609,12 @@ def build_design() -> None:
             continue
         page_dir = design_dir / slug
         page_dir.mkdir(exist_ok=True)
-        rendered = _markdown_to_html(src.read_text())
+        rendered = _postprocess_design_html(_markdown_to_html(src.read_text()))
+        mermaid_head = (
+            f'<script src="{MERMAID_JS}"></script>\n'
+            f'<script>document.addEventListener("DOMContentLoaded", () => '
+            f'mermaid.initialize({{ startOnLoad: true, theme: "neutral" }}));</script>'
+        )
         body = f"""
     <div class="flex gap-8">
       <aside class="hidden md:block w-56 flex-shrink-0">
@@ -596,7 +628,7 @@ def build_design() -> None:
       </article>
     </div>"""
         (page_dir / "index.html").write_text(
-            page(title, body, "design", depth=2)
+            page(title, body, "design", depth=2, extra_head=mermaid_head)
         )
         print(f"  design/{slug}/index.html")
 

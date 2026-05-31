@@ -46,53 +46,37 @@ The new notebook closes those gaps.
 Source: [`files-from-ftp-server/sas-src/`](https://github.com/) in the SAS fork
 (`sascsvc19.sas`, `stats5xle.sas`, `saspac3xle.sas`, `sasformats.sas`).
 
-```
-Raw FEC CSVs (79 cols, 10.8M rows across 55 companies)
-    │
-    ▼
-[1] SASPAC      PROC FEDSQL — companies ⋈ AllPacs ⋈ Aristotle ⋈ companyrank
-                10.8M rows × 16 vars
-    │
-    ▼
-[2] SASPAC2     MERGE name_gender BY first;  statename = stnamel(state)
-                10.8M × 19   (+ gender, probability, statename)
-    │
-    ▼
-[3] SASPAC3     mParty assignment;  5-digit zip;  compervar = company-last-zip
-                10.8M × 20   (drops probability/zip; renames contribution → contribsum)
-    │
-    ▼
-[4] SASPAC4     25 party-sum columns:  Asum…ORsum  (one is the amount, rest 0)
-                10.8M × 39
-    │
-    ▼
-[5] CLASS       PROC SUMMARY NWAY CLASS=compervar VAR=contribsum
-                1.03M × 4    (compervar, _TYPE_, _FREQ_, contribsum)
-    │
-    ▼
-[6] CLASS2      PROC SUMMARY NWAY CLASS=compervar VAR=Asum…ORsum
-                1.03M × 28   (per-person totals across all 25 party buckets)
-    │
-    ▼
-[7] STATS       SASPAC3 ⋈ CLASS  BY compervar  IF FIRST.   (drop committee/party)
-                1.03M × 16   (one row per person with demographics + grand total)
-    │
-    ▼
-[8] STATS2      SASPAC4 ⋈ CLASS2 BY compervar  IF FIRST.
-                1.03M × 39   (demographics + 25 party-sums)
-    │
-    ▼
-[9] STATS3      MERGE STATS STATS2;  contribsum = sum(all *sum)
-                1.03M × 41
-    │
-    ▼
-[10] STATS4     ★ THE 60% RULE ★   pCode = first party with party_sum/total ≥ 0.6
-                                    else 'N'.  mParty rolls up to D/R/Other
-                1.03M × 43
-    │
-    ▼
-[11] STATS5     LEFT JOIN Aristotle ON pCode = Code  →  full PARTY name
-                1.03M × 44                                    ← final contributor-level table
+```mermaid
+flowchart TD
+    RAW["Raw FEC CSVs\n79 cols · 10.8M rows · 55 companies"]
+
+    S1["1 · SASPAC\nFEDSQL join: companies + AllPacs + Aristotle + companyrank\n10.8M rows × 16 vars"]
+    S2["2 · SASPAC2\nMerge name_gender · stnamel state lookup\n10.8M × 19"]
+    S3["3 · SASPAC3\nmParty · zip5 · compervar key\n10.8M × 20"]
+    S4["4 · SASPAC4\n25 party-sum columns: Asum ... ORsum\n10.8M × 39"]
+    S5["5 · CLASS\nGROUP BY compervar, SUM contribsum\n1.03M × 4"]
+    S6["6 · CLASS2\nGROUP BY compervar, SUM all party sums\n1.03M × 28"]
+    S7["7 · STATS\nSASPAC3 + CLASS merged, IF FIRST\n1.03M × 16 — one row per person"]
+    S8["8 · STATS2\nSASPAC4 + CLASS2 merged, IF FIRST\n1.03M × 39 — one row per person"]
+    S9["9 · STATS3\nMerge STATS + STATS2\n1.03M × 41"]
+    S10["10 · STATS4\nTHE 60% RULE\npCode = party if share >= 60%, else N\n1.03M × 43"]
+    S11["11 · STATS5\nJoin Aristotle on pCode — full party name\n1.03M × 44 — final contributor table"]
+
+    RAW --> S1 --> S2 --> S3 --> S4
+    S3 --> S5
+    S4 --> S6
+    S3 & S5 --> S7
+    S4 & S6 --> S8
+    S7 & S8 --> S9
+    S9 --> S10 --> S11
+
+    classDef default fill:#f8fafc,stroke:#94a3b8,color:#1e293b
+    classDef ruleNode fill:#fef9c3,stroke:#d97706,color:#78350f
+    classDef rawNode fill:#dbeafe,stroke:#3b82f6,color:#1e3a8a
+    classDef finalNode fill:#dcfce7,stroke:#16a34a,color:#14532d
+    class S10 ruleNode
+    class RAW rawNode
+    class S11 finalNode
 ```
 
 Then **two parallel "publish" passes** (`stats5xle.sas`, `saspac3xle.sas`)
@@ -115,11 +99,15 @@ single `CASE` expression over per-party sums. Same logic, ~95 % less code.
 
 ### 2b · `compervar` — the unique-person key
 
-```
+```sas
 compervar = strip(Company) || ' - ' || strip(Last) || ' - ' || zip5
-                                                              ^^^^
-                                       SUBSTR(zip, 1, 5) — drops the +4 suffix
 ```
+
+| Component | Source field | Notes |
+|---|---|---|
+| `strip(Company)` | `contributor_employer` | Normalized by `$COMPANYF.` format (500-row lookup) |
+| `strip(Last)` | `contributor_last_name` | From the FEC record as-is |
+| `zip5` | `SUBSTR(zip, 1, 5)` | First 5 digits — drops the ZIP+4 suffix |
 
 Quirks worth preserving:
 
@@ -293,16 +281,16 @@ to the **SAS line numbers** so a SAS reader can cross-reference.
 
 ## 7 · Output artifacts written to disk
 
-```
+```tree
 output/
-├── schedule_a/                                # raw fetch (one per employer)
+├── schedule_a/            # raw fetch (one file per employer)
+│   ├── TRACTOR_SUPPLY_2019-01-01_2020-12-31.{json,csv}
 │   ├── MICROSOFT_CORPORATION_2019-01-01_2020-12-31.{json,csv}
-│   ├── EXXON_MOBIL_…
 │   └── …
-├── tables/                                    # SAS-parity summaries
-│   ├── company_contributors.csv               # ↔ SAS company_contributors.xlsx
-│   ├── company_contributions.csv              # ↔ SAS company_contributions.xlsx
-│   └── stats5all_sample.csv                   # contributor-level, 50-row sample
+├── tables/                # SAS-parity summaries
+│   ├── company_contributors.csv    ↔ SAS company_contributors.xlsx
+│   ├── company_contributions.csv   ↔ SAS company_contributions.xlsx
+│   └── stats5all_sample.csv        contributor-level, 50-row sample
 └── charts/
     ├── multi_company_party_stack.png
     ├── monthly_timeseries_<employer>.png
