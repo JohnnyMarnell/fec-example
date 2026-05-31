@@ -28,7 +28,7 @@
         <a href="index.html" class="text-lg font-bold tracking-tight hover:text-indigo-300 transition-colors">
           FEC Contribution Analysis
         </a>
-        <p class="text-slate-400 text-xs mt-0.5">OpenFEC · Political contribution explorer · Tractor Supply Co.</p>
+        <p class="text-slate-400 text-xs mt-0.5">OpenFEC · Political contribution explorer</p>
       </div>
       <a href="https://github.com/JohnnyMarnell/fec-example" target="_blank" rel="noopener"
          class="text-slate-400 hover:text-white text-xs flex items-center gap-1.5 mt-1 transition-colors">
@@ -41,7 +41,7 @@
   <main class="max-w-6xl mx-auto px-6 py-10 flex-1">
     
     <div class="mb-10">
-      <h1 class="text-3xl font-bold text-slate-900 mb-2">Tractor Supply Co. · FEC Contributions</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-2">FEC Contribution Analysis · TRACTOR SUPPLY</h1>
       <p class="text-slate-500 max-w-2xl">
         Fetches political contribution records from the
         <a href="https://api.open.fec.gov/" target="_blank" rel="noopener" class="text-indigo-600 hover:underline">OpenFEC API</a>,
@@ -54,14 +54,14 @@
         <a href="notebook/" class="block bg-white rounded-xl border border-slate-200 p-5 shadow-sm
               hover:border-indigo-400 hover:shadow-md transition-all group">
     <div class="text-2xl mb-2">📓</div>
-    <h3 class="font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors">Notebook</h3>
-    <p class="text-sm text-slate-500 mt-1">Full Jupyter analysis with charts, data joins, and the 60% contributor classification rule.</p>
+    <h3 class="font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors">Notebooks</h3>
+    <p class="text-sm text-slate-500 mt-1">1 notebook — full executed analyses with charts, data joins, and the 60% contributor classification rule.</p>
   </a>
         <a href="data/" class="block bg-white rounded-xl border border-slate-200 p-5 shadow-sm
               hover:border-indigo-400 hover:shadow-md transition-all group">
     <div class="text-2xl mb-2">📂</div>
     <h3 class="font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors">Data</h3>
-    <p class="text-sm text-slate-500 mt-1">Browse and download raw API output: Schedule A CSV and JSON files.</p>
+    <p class="text-sm text-slate-500 mt-1">Browse and download raw API output: Schedule A CSVs and JSON files.</p>
   </a>
         <a href="source/" class="block bg-white rounded-xl border border-slate-200 p-5 shadow-sm
               hover:border-indigo-400 hover:shadow-md transition-all group">
@@ -73,19 +73,19 @@
     
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+    <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Companies</p>
+    <p class="text-2xl font-bold text-slate-900 mt-1">1</p>
+    <p class="text-xs text-slate-400 mt-1">TRACTOR SUPPLY</p>
+  </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
     <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Contributions</p>
     <p class="text-2xl font-bold text-slate-900 mt-1">200</p>
-    <p class="text-xs text-slate-400 mt-1">API records fetched (2 pages)</p>
+    <p class="text-xs text-slate-400 mt-1">Total API records across all fetches</p>
   </div>
           <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
     <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Total Amount</p>
     <p class="text-2xl font-bold text-slate-900 mt-1">$14,088</p>
-    <p class="text-xs text-slate-400 mt-1">Sum of contribution amounts</p>
-  </div>
-          <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-    <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Unique Employers</p>
-    <p class="text-2xl font-bold text-slate-900 mt-1">6</p>
-    <p class="text-xs text-slate-400 mt-1">Distinct employer strings</p>
+    <p class="text-xs text-slate-400 mt-1">Sum of all contribution amounts</p>
   </div>
           <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
     <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">States</p>
@@ -95,23 +95,23 @@
         </div>
     <section class="mb-12">
       <h2 class="text-lg font-semibold text-slate-800 mb-4">Results</h2>
-      <div class="mb-6">
+      
       <figure class="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-        <img src="charts/TRACTORSUPPLY_party_breakdown.png" alt="Party breakdown chart"
+        <img src="charts/TRACTORSUPPLY_party_breakdown.png" alt="TRACTORSUPPLY party breakdown chart"
              class="w-full object-contain max-h-[420px]">
         <figcaption class="text-xs text-slate-500 text-center py-2 bg-slate-50 border-t border-slate-100">
-          TRACTORSUPPLY · party breakdown by 60% rule
+          TRACTORSUPPLY · contributor party breakdown by 60% rule
         </figcaption>
-      </figure></div>
+      </figure>
     </section>
     
       <section class="mb-12">
         <h2 class="text-lg font-semibold text-slate-800 mb-3">Pipeline</h2>
         <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm font-mono text-sm text-slate-700 space-y-1">
-          <div><span class="text-green-600 font-bold">just build</span>  <span class="text-slate-400"># fetch → analyze → notebook + HTML</span></div>
-          <div class="pl-4 text-slate-500">↳ api-demo.py fetches OpenFEC Schedule A for TRACTOR SUPPLY (2019–2020)</div>
+          <div><span class="text-green-600 font-bold">just build</span>  <span class="text-slate-400"># fetch → analyze → notebook + site</span></div>
+          <div class="pl-4 text-slate-500">↳ api-demo.py fetches OpenFEC Schedule A for any employer</div>
           <div class="pl-4 text-slate-500">↳ main.py joins party lookups (AllPacs, Aristotle), applies 60% rule</div>
-          <div class="pl-4 text-slate-500">↳ notebooks/analysis.ipynb executes and renders to HTML</div>
+          <div class="pl-4 text-slate-500">↳ notebooks/*.ipynb execute and render to HTML</div>
           <div class="pl-4 text-slate-500">↳ output/charts/ and output/schedule_a/ written to disk</div>
         </div>
       </section>
