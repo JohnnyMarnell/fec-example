@@ -85,119 +85,230 @@
   <main class="max-w-6xl mx-auto px-6 py-10 flex-1">
     
     <div class="mb-10">
-      <h1 class="text-3xl font-bold text-slate-900 mb-2">FEC Contribution Analysis · 4 Companies</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-2">
+        Cross-Company FEC Analysis
+        <span class="text-slate-400 font-normal text-2xl">· 2019-01-01 → 2020-12-31</span>
+      </h1>
       <p class="text-slate-500 max-w-2xl">
-        Fetches political contribution records from the
+        Pulls Schedule A receipts and Schedule B disbursements from the
         <a href="https://api.open.fec.gov/" target="_blank" rel="noopener" class="text-indigo-600 hover:underline">OpenFEC API</a>,
-        aggregates by contributor using the <strong>60% rule</strong> (assign a party if ≥60%
-        of a person's total went to that party), and visualizes the breakdown.
+        joins committee-to-party lookups, classifies contributors with the
+        <strong>60 % rule</strong>, and lines up inflow vs. outflow side by side.
       </p>
+      <p class="text-xs text-slate-400 mt-2 font-mono">Tractor Supply · Microsoft · Exxon Mobil · Walmart · Lockheed Martin</p>
     </div>
     
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-        <a href="notebook/" class="block bg-white rounded-xl border border-slate-200 p-5 shadow-sm
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <a href="notebook/cross-company/" class="block bg-white rounded-xl border border-slate-200 p-5 shadow-sm
               hover:border-indigo-400 hover:shadow-md transition-all group">
     <div class="text-2xl mb-2">📓</div>
-    <h3 class="font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors">Notebooks</h3>
-    <p class="text-sm text-slate-500 mt-1">2 notebooks — full executed analyses with charts, data joins, and the 60% contributor classification rule.</p>
+    <h3 class="font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors">Cross-company</h3>
+    <p class="text-sm text-slate-500 mt-1">2 notebooks: a basic 60 %-rule analysis and a multi-company port of the SAS pipeline (Schedule A inflow + Schedule B outflow + 60 % classification).</p>
   </a>
         <a href="design/sas-port/" class="block bg-white rounded-xl border border-slate-200 p-5 shadow-sm
               hover:border-indigo-400 hover:shadow-md transition-all group">
     <div class="text-2xl mb-2">📐</div>
     <h3 class="font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors">Design</h3>
-    <p class="text-sm text-slate-500 mt-1">Deep dive: porting the SAS pipeline to DuckDB/pandas, with a plan for the next notebook.</p>
+    <p class="text-sm text-slate-500 mt-1">How the SAS pipeline maps to DuckDB + pandas, end to end.</p>
   </a>
         <a href="data/" class="block bg-white rounded-xl border border-slate-200 p-5 shadow-sm
               hover:border-indigo-400 hover:shadow-md transition-all group">
     <div class="text-2xl mb-2">📂</div>
     <h3 class="font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors">Data</h3>
-    <p class="text-sm text-slate-500 mt-1">Browse and download raw API output: Schedule A CSVs and JSON files.</p>
+    <p class="text-sm text-slate-500 mt-1">Schedule A receipts and SAS-parity output tables.</p>
   </a>
         <a href="source/" class="block bg-white rounded-xl border border-slate-200 p-5 shadow-sm
               hover:border-indigo-400 hover:shadow-md transition-all group">
     <div class="text-2xl mb-2">🔍</div>
     <h3 class="font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors">Source</h3>
-    <p class="text-sm text-slate-500 mt-1">Syntax-highlighted Python source and Justfile build recipes.</p>
+    <p class="text-sm text-slate-500 mt-1">Python client, builder script, and Justfile recipes.</p>
   </a>
       </div>
     
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
           <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
     <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Companies</p>
-    <p class="text-2xl font-bold text-slate-900 mt-1">4</p>
-    <p class="text-xs text-slate-400 mt-1">EXXON MOBIL, MICROSOFT, TRACTOR SUPPLY, WALMART</p>
+    <p class="text-2xl font-bold text-slate-900 mt-1">5</p>
+    <p class="text-xs text-slate-400 mt-1">Fortune-500 employers analyzed</p>
   </div>
           <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-    <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Contributions</p>
-    <p class="text-2xl font-bold text-slate-900 mt-1">800</p>
-    <p class="text-xs text-slate-400 mt-1">Total API records across all fetches</p>
+    <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Inflow $</p>
+    <p class="text-2xl font-bold text-slate-900 mt-1">$96,733</p>
+    <p class="text-xs text-slate-400 mt-1">334 unique contributors (60 % rule)</p>
   </div>
           <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-    <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Total Amount</p>
-    <p class="text-2xl font-bold text-slate-900 mt-1">$85,587</p>
-    <p class="text-xs text-slate-400 mt-1">Sum of all contribution amounts</p>
+    <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Outflow $</p>
+    <p class="text-2xl font-bold text-slate-900 mt-1">$871,427</p>
+    <p class="text-xs text-slate-400 mt-1">639 Schedule B disbursements</p>
   </div>
           <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
     <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">States</p>
-    <p class="text-2xl font-bold text-slate-900 mt-1">39</p>
-    <p class="text-xs text-slate-400 mt-1">Contributor states represented</p>
+    <p class="text-2xl font-bold text-slate-900 mt-1">41</p>
+    <p class="text-xs text-slate-400 mt-1">represented across all transactions</p>
   </div>
         </div>
-    <section class="mb-12">
-      <h2 class="text-lg font-semibold text-slate-800 mb-4">Results</h2>
-      
+    
+      <section class="mb-10">
+        <div class="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-xl p-6 shadow-sm">
+          <div class="flex items-baseline justify-between mb-3">
+            <h2 class="text-lg font-semibold text-slate-800">Beyond the original SAS pipeline</h2>
+            <a href="design/sas-port/" class="text-xs text-indigo-600 hover:underline">Design doc →</a>
+          </div>
+          <p class="text-sm text-slate-500 mb-4 max-w-3xl">
+            The SAS pipeline ran <span class="font-mono">sascsvc19.sas</span> against pre-downloaded CSVs and lookup tables.
+            This port keeps the full SAS logic — committee→party join, gender inference,
+            60 % rule, two-track contributor/contribution outputs — and adds four things SAS never had.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+            <div class="bg-white border border-slate-200 rounded-lg p-3">
+              <p class="font-semibold text-slate-800 mb-1">Schedule B outflow</p>
+              <p class="text-xs text-slate-500">Where each corporate PAC ultimately spent the money. $871,427 across 639 disbursements.</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-lg p-3">
+              <p class="font-semibold text-slate-800 mb-1">API-direct party</p>
+              <p class="text-xs text-slate-500">Committee party comes from the embedded API field, with <code class="text-[10px]">/committee/{id}/</code> filling nulls — no static <code class="text-[10px]">AllPacs.csv</code> needed.</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-lg p-3">
+              <p class="font-semibold text-slate-800 mb-1">Candidate enrichment</p>
+              <p class="text-xs text-slate-500"><code class="text-[10px]">/candidate/{id}/</code> resolves recipient party + office. Outflow can be sliced by who actually got the money.</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-lg p-3">
+              <p class="font-semibold text-slate-800 mb-1">Side-by-side companies</p>
+              <p class="text-xs text-slate-500">SAS produced one PROC TABULATE page per employer. Here all 5 employers appear together in stacked bars, time series, and state maps.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <section class="mb-12">
+        <div class="flex items-baseline justify-between mb-3">
+          <h2 class="text-lg font-semibold text-slate-800">Lean by employer</h2>
+          <span class="text-xs text-slate-400">contributors classified by 60 % rule</span>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-semibold text-slate-900 text-sm">Lockheed Martin</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded badge-d font-semibold whitespace-nowrap">
+              Democrat (48%)
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mb-2.5">
+            61 contributors · $11,146
+          </p>
+          <div class="flex w-full h-2 rounded-full overflow-hidden bg-slate-100"><div style="width:47.5%" class="bg-blue-500"></div><div style="width:6.6%" class="bg-red-500"></div><div style="width:45.9%" class="bg-slate-400"></div></div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-semibold text-slate-900 text-sm">Walmart</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded badge-n font-semibold whitespace-nowrap">
+              Mixed (61% N)
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mb-2.5">
+            62 contributors · $5,505
+          </p>
+          <div class="flex w-full h-2 rounded-full overflow-hidden bg-slate-100"><div style="width:9.7%" class="bg-blue-500"></div><div style="width:29.0%" class="bg-red-500"></div><div style="width:61.3%" class="bg-slate-400"></div></div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-semibold text-slate-900 text-sm">Microsoft</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded badge-n font-semibold whitespace-nowrap">
+              Mixed (58% N)
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mb-2.5">
+            71 contributors · $14,050
+          </p>
+          <div class="flex w-full h-2 rounded-full overflow-hidden bg-slate-100"><div style="width:36.6%" class="bg-blue-500"></div><div style="width:5.6%" class="bg-red-500"></div><div style="width:57.7%" class="bg-slate-400"></div></div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-semibold text-slate-900 text-sm">Exxon Mobil</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded badge-r font-semibold whitespace-nowrap">
+              Republican (93%)
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mb-2.5">
+            87 contributors · $51,944
+          </p>
+          <div class="flex w-full h-2 rounded-full overflow-hidden bg-slate-100"><div style="width:4.6%" class="bg-blue-500"></div><div style="width:93.1%" class="bg-red-500"></div><div style="width:2.3%" class="bg-slate-400"></div></div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-semibold text-slate-900 text-sm">Tractor Supply</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded badge-r font-semibold whitespace-nowrap">
+              Republican (75%)
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mb-2.5">
+            53 contributors · $14,088
+          </p>
+          <div class="flex w-full h-2 rounded-full overflow-hidden bg-slate-100"><div style="width:18.9%" class="bg-blue-500"></div><div style="width:75.5%" class="bg-red-500"></div><div style="width:5.7%" class="bg-slate-400"></div></div>
+        </div></div>
+      </section>
+    
+      <section class="mb-12">
+        <h2 class="text-lg font-semibold text-slate-800 mb-4">Findings</h2>
+        
       <figure class="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-        <img src="charts/TRACTORSUPPLY_party_breakdown.png" alt="TRACTORSUPPLY party breakdown chart"
-             class="w-full object-contain max-h-[420px]">
-        <figcaption class="text-xs text-slate-500 text-center py-2 bg-slate-50 border-t border-slate-100">
-          TRACTORSUPPLY · contributor party breakdown by 60% rule
+        <img src="charts/cross_company_party_stack.png" alt="Cross-company party breakdown"
+             class="w-full object-contain max-h-[480px]">
+        <figcaption class="px-4 py-2 bg-slate-50 border-t border-slate-100">
+          <span class="text-sm font-semibold text-slate-700">Cross-company party breakdown</span>
+          <span class="text-xs text-slate-500"> · Unique contributors classified by the 60 % rule, side by side.</span>
+        </figcaption>
+      </figure>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <figure class="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
+        <img src="charts/cross_company_outflow_by_party.png" alt="Outflow by recipient candidate party"
+             class="w-full object-contain max-h-[300px]">
+        <figcaption class="px-4 py-2 bg-slate-50 border-t border-slate-100">
+          <span class="text-sm font-semibold text-slate-700">Outflow by recipient candidate party</span>
+          <span class="text-xs text-slate-500"> · Schedule B disbursements sliced by /candidate/-resolved recipient party.</span>
         </figcaption>
       </figure>
       <figure class="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-        <img src="charts/cross_company_committee_types.png" alt="cross company committee types.png party breakdown chart"
-             class="w-full object-contain max-h-[420px]">
-        <figcaption class="text-xs text-slate-500 text-center py-2 bg-slate-50 border-t border-slate-100">
-          cross company committee types.png · contributor party breakdown by 60% rule
+        <img src="charts/cross_company_schedule_b.png" alt="Top recipients per PAC"
+             class="w-full object-contain max-h-[300px]">
+        <figcaption class="px-4 py-2 bg-slate-50 border-t border-slate-100">
+          <span class="text-sm font-semibold text-slate-700">Top recipients per PAC</span>
+          <span class="text-xs text-slate-500"> · Where each corporate PAC actually sent the money (Schedule B).</span>
         </figcaption>
       </figure>
       <figure class="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-        <img src="charts/cross_company_monthly.png" alt="cross company monthly.png party breakdown chart"
-             class="w-full object-contain max-h-[420px]">
-        <figcaption class="text-xs text-slate-500 text-center py-2 bg-slate-50 border-t border-slate-100">
-          cross company monthly.png · contributor party breakdown by 60% rule
+        <img src="charts/cross_company_monthly.png" alt="Monthly inflow by party"
+             class="w-full object-contain max-h-[300px]">
+        <figcaption class="px-4 py-2 bg-slate-50 border-t border-slate-100">
+          <span class="text-sm font-semibold text-slate-700">Monthly inflow by party</span>
+          <span class="text-xs text-slate-500"> · 2020 election surge by party across each employer.</span>
         </figcaption>
       </figure>
       <figure class="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-        <img src="charts/cross_company_party_stack.png" alt="cross company party stack.png party breakdown chart"
-             class="w-full object-contain max-h-[420px]">
-        <figcaption class="text-xs text-slate-500 text-center py-2 bg-slate-50 border-t border-slate-100">
-          cross company party stack.png · contributor party breakdown by 60% rule
+        <img src="charts/cross_company_top_states.png" alt="Top contributing states"
+             class="w-full object-contain max-h-[300px]">
+        <figcaption class="px-4 py-2 bg-slate-50 border-t border-slate-100">
+          <span class="text-sm font-semibold text-slate-700">Top contributing states</span>
+          <span class="text-xs text-slate-500"> · Geographic distribution of contributions across all employers.</span>
         </figcaption>
       </figure>
       <figure class="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-        <img src="charts/cross_company_schedule_b.png" alt="cross company schedule b.png party breakdown chart"
-             class="w-full object-contain max-h-[420px]">
-        <figcaption class="text-xs text-slate-500 text-center py-2 bg-slate-50 border-t border-slate-100">
-          cross company schedule b.png · contributor party breakdown by 60% rule
+        <img src="charts/cross_company_committee_types.png" alt="Recipient committee types"
+             class="w-full object-contain max-h-[300px]">
+        <figcaption class="px-4 py-2 bg-slate-50 border-t border-slate-100">
+          <span class="text-sm font-semibold text-slate-700">Recipient committee types</span>
+          <span class="text-xs text-slate-500"> · Mix of PAC types, candidate committees, party committees.</span>
         </figcaption>
-      </figure>
-      <figure class="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-        <img src="charts/cross_company_top_states.png" alt="cross company top states.png party breakdown chart"
-             class="w-full object-contain max-h-[420px]">
-        <figcaption class="text-xs text-slate-500 text-center py-2 bg-slate-50 border-t border-slate-100">
-          cross company top states.png · contributor party breakdown by 60% rule
-        </figcaption>
-      </figure>
-    </section>
+      </figure></div>
+      </section>
     
       <section class="mb-12">
         <h2 class="text-lg font-semibold text-slate-800 mb-3">Pipeline</h2>
         <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm font-mono text-sm text-slate-700 space-y-1">
-          <div><span class="text-green-600 font-bold">just build</span>  <span class="text-slate-400"># fetch → analyze → notebook + site</span></div>
-          <div class="pl-4 text-slate-500">↳ api-demo.py fetches OpenFEC Schedule A for any employer</div>
-          <div class="pl-4 text-slate-500">↳ main.py joins party lookups (AllPacs, Aristotle), applies 60% rule</div>
-          <div class="pl-4 text-slate-500">↳ notebooks/*.ipynb execute and render to HTML</div>
-          <div class="pl-4 text-slate-500">↳ output/charts/ and output/schedule_a/ written to disk</div>
+          <div><span class="text-green-600 font-bold">just build</span>  <span class="text-slate-400"># prewarm → analyze → notebooks → site</span></div>
+          <div class="pl-4 text-slate-500">↳ prewarm-cache hits Schedule A + B + /committee/ for every employer (idempotent)</div>
+          <div class="pl-4 text-slate-500">↳ notebooks/cross-company.ipynb runs the SAS-port pipeline, writes tables + charts</div>
+          <div class="pl-4 text-slate-500">↳ build-site.py renders this page from the latest outputs</div>
         </div>
       </section>
   </main>

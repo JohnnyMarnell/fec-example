@@ -201,92 +201,285 @@ def page(title: str, body: str, active: str, depth: int = 1,
 
 # ── Homepage ───────────────────────────────────────────────────────────────
 
-def build_index(charts: list[str], data_files: list[str], notebooks: list[Path]) -> None:
-    csvs = [f for f in data_files if f.endswith(".csv")]
-
-    # Aggregate stats across all CSVs
-    total_records = total_amt = 0
-    all_states: set[str] = set()
-    companies_found: list[str] = []
-    seen_companies: set[str] = set()
-    for filename in csvs:
-        company = company_from_filename(Path(filename).stem)
-        if company not in seen_companies:
-            companies_found.append(company)
-            seen_companies.add(company)
+def _read_summary() -> dict:
+    p = OUT_TABLES / "summary.json"
+    if p.exists():
         try:
-            with open(OUT_SCHEDULE_A / filename) as f:
-                rows = list(csv.DictReader(f))
-            total_records += len(rows)
-            total_amt += sum(float(r.get("contribution_receipt_amount", 0) or 0) for r in rows)
-            all_states.update(r.get("contributor_state", "") for r in rows if r.get("contributor_state"))
+            return json.loads(p.read_text())
         except Exception:
-            pass
+            return {}
+    return {}
 
+
+def _company_tilts() -> list[dict]:
+    """Per-company D/R/N share + dominant lean from company_contributors.csv."""
+    p = OUT_TABLES / "company_contributors.csv"
+    if not p.exists():
+        return []
+    out = []
+    with open(p) as f:
+        for r in csv.DictReader(f):
+            try:
+                d = int(r.get("Dnum") or 0)
+                rep = int(r.get("Rnum") or 0)
+                o = int(r.get("Onum") or 0)
+                total = d + rep + o
+                if total == 0:
+                    continue
+                if d >= rep and d >= o:
+                    lean, color = f"Democrat ({d/total*100:.0f}%)", "badge-d"
+                elif rep >= d and rep >= o:
+                    lean, color = f"Republican ({rep/total*100:.0f}%)", "badge-r"
+                else:
+                    lean, color = f"Mixed ({o/total*100:.0f}% N)", "badge-n"
+                out.append({
+                    "company":  r.get("Company", ""),
+                    "people":   total,
+                    "dollars":  float(r.get("contribsum") or 0),
+                    "lean":     lean,
+                    "color":    color,
+                    "d_share":  d / total,
+                    "r_share":  rep / total,
+                    "o_share":  o / total,
+                })
+            except (ValueError, KeyError):
+                continue
+    return out
+
+
+def _tilt_bar(d: float, r: float, o: float) -> str:
+    """Three-color horizontal share bar; widths sum to 100%."""
+    dp, rp, op_ = d * 100, r * 100, o * 100
+    return (
+        '<div class="flex w-full h-2 rounded-full overflow-hidden bg-slate-100">'
+        f'<div style="width:{dp:.1f}%" class="bg-blue-500"></div>'
+        f'<div style="width:{rp:.1f}%" class="bg-red-500"></div>'
+        f'<div style="width:{op_:.1f}%" class="bg-slate-400"></div>'
+        '</div>'
+    )
+
+
+# Featured chart order — hero first, then 2-col grid (most interesting first).
+_CHART_ORDER = [
+    ("cross_company_party_stack.png",   "Cross-company party breakdown",
+                                        "Unique contributors classified by the 60 % rule, side by side.", True),
+    ("cross_company_outflow_by_party.png", "Outflow by recipient candidate party",
+                                        "Schedule B disbursements sliced by /candidate/-resolved recipient party.", False),
+    ("cross_company_schedule_b.png",    "Top recipients per PAC",
+                                        "Where each corporate PAC actually sent the money (Schedule B).", False),
+    ("cross_company_monthly.png",       "Monthly inflow by party",
+                                        "2020 election surge by party across each employer.", False),
+    ("cross_company_top_states.png",    "Top contributing states",
+                                        "Geographic distribution of contributions across all employers.", False),
+    ("cross_company_committee_types.png", "Recipient committee types",
+                                        "Mix of PAC types, candidate committees, party committees.", False),
+]
+
+
+def build_index(charts: list[str], data_files: list[str], notebooks: list[Path]) -> None:
+    chart_set = set(charts)
+    summary = _read_summary()
+    tilts = _company_tilts()
+
+    # Headline numbers — prefer summary.json, fall back to the schedule_a CSVs.
+    if summary:
+        n_companies = len(summary.get("companies") or [])
+        inflow      = summary.get("inflow_dollars", 0)
+        outflow     = summary.get("outflow_dollars", 0)
+        n_contribs  = summary.get("unique_contributors", 0)
+        n_states    = summary.get("states", 0)
+    else:
+        # Fallback (single-notebook era)
+        csvs = [f for f in data_files if f.endswith(".csv")]
+        inflow = 0.0
+        all_states: set[str] = set()
+        companies_found: list[str] = []
+        seen: set[str] = set()
+        for filename in csvs:
+            cname = company_from_filename(Path(filename).stem)
+            if cname not in seen:
+                companies_found.append(cname); seen.add(cname)
+            try:
+                with open(OUT_SCHEDULE_A / filename) as f:
+                    for r in csv.DictReader(f):
+                        inflow += float(r.get("contribution_receipt_amount", 0) or 0)
+                        st = r.get("contributor_state")
+                        if st:
+                            all_states.add(st)
+            except Exception:
+                pass
+        n_companies = len(companies_found)
+        outflow     = 0
+        n_contribs  = 0
+        n_states    = len(all_states)
+
+    # ── Quick-link cards ──────────────────────────────────────────────────
     nb_count = len(notebooks)
     nb_label = f"{nb_count} notebook{'s' if nb_count != 1 else ''}"
-    company_label = ", ".join(companies_found) if companies_found else "—"
+    nb_desc  = (
+        f"{nb_label}: a basic 60 %-rule analysis and a multi-company port of the SAS "
+        f"pipeline (Schedule A inflow + Schedule B outflow + 60 % classification)."
+    )
+    quick_links = f"""
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        {link_card("notebook/cross-company/", "Cross-company", nb_desc, "📓")}
+        {link_card("design/sas-port/",        "Design",        "How the SAS pipeline maps to DuckDB + pandas, end to end.", "📐")}
+        {link_card("data/",                   "Data",          "Schedule A receipts and SAS-parity output tables.", "📂")}
+        {link_card("source/",                 "Source",        "Python client, builder script, and Justfile recipes.", "🔍")}
+      </div>"""
 
-    stats_html = ""
-    if total_records:
-        stats_html = f"""
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          {stat_card("Companies", str(len(companies_found)), company_label)}
-          {stat_card("Contributions", f"{total_records:,}", "Total API records across all fetches")}
-          {stat_card("Total Amount", f"${total_amt:,.0f}", "Sum of all contribution amounts")}
-          {stat_card("States", str(len(all_states)), "Contributor states represented")}
+    # ── Stat tiles ────────────────────────────────────────────────────────
+    stats_html = f"""
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+          {stat_card("Companies",     str(n_companies),
+                     "Fortune-500 employers analyzed")}
+          {stat_card("Inflow $",      f"${inflow:,.0f}",
+                     f"{n_contribs:,} unique contributors (60 % rule)")}
+          {stat_card("Outflow $",     f"${outflow:,.0f}",
+                     f"{summary.get('outflow_records', 0):,} Schedule B disbursements")}
+          {stat_card("States",        str(n_states),
+                     "represented across all transactions")}
         </div>"""
 
-    chart_imgs = ""
-    for chart in sorted(charts):
-        company_display = chart.replace("_party_breakdown.png", "").replace("_", " ")
-        chart_imgs += f"""
+    # ── What's new beyond the SAS pipeline ────────────────────────────────
+    beyond_sas_html = f"""
+      <section class="mb-10">
+        <div class="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-xl p-6 shadow-sm">
+          <div class="flex items-baseline justify-between mb-3">
+            <h2 class="text-lg font-semibold text-slate-800">Beyond the original SAS pipeline</h2>
+            <a href="design/sas-port/" class="text-xs text-indigo-600 hover:underline">Design doc →</a>
+          </div>
+          <p class="text-sm text-slate-500 mb-4 max-w-3xl">
+            The SAS pipeline ran <span class="font-mono">sascsvc19.sas</span> against pre-downloaded CSVs and lookup tables.
+            This port keeps the full SAS logic — committee→party join, gender inference,
+            60 % rule, two-track contributor/contribution outputs — and adds four things SAS never had.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+            <div class="bg-white border border-slate-200 rounded-lg p-3">
+              <p class="font-semibold text-slate-800 mb-1">Schedule B outflow</p>
+              <p class="text-xs text-slate-500">Where each corporate PAC ultimately spent the money. ${outflow:,.0f} across {summary.get('outflow_records', 0)} disbursements.</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-lg p-3">
+              <p class="font-semibold text-slate-800 mb-1">API-direct party</p>
+              <p class="text-xs text-slate-500">Committee party comes from the embedded API field, with <code class="text-[10px]">/committee/{{id}}/</code> filling nulls — no static <code class="text-[10px]">AllPacs.csv</code> needed.</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-lg p-3">
+              <p class="font-semibold text-slate-800 mb-1">Candidate enrichment</p>
+              <p class="text-xs text-slate-500"><code class="text-[10px]">/candidate/{{id}}/</code> resolves recipient party + office. Outflow can be sliced by who actually got the money.</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-lg p-3">
+              <p class="font-semibold text-slate-800 mb-1">Side-by-side companies</p>
+              <p class="text-xs text-slate-500">SAS produced one PROC TABULATE page per employer. Here all {n_companies} employers appear together in stacked bars, time series, and state maps.</p>
+            </div>
+          </div>
+        </div>
+      </section>"""
+
+    # ── Per-company tilt strip ────────────────────────────────────────────
+    tilts_html = ""
+    if tilts:
+        cards = ""
+        for t in tilts:
+            cards += f"""
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-semibold text-slate-900 text-sm">{esc(t['company'])}</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded {esc(t['color'])} font-semibold whitespace-nowrap">
+              {esc(t['lean'])}
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mb-2.5">
+            {t['people']} contributors · ${t['dollars']:,.0f}
+          </p>
+          {_tilt_bar(t['d_share'], t['r_share'], t['o_share'])}
+        </div>"""
+        tilts_html = f"""
+      <section class="mb-12">
+        <div class="flex items-baseline justify-between mb-3">
+          <h2 class="text-lg font-semibold text-slate-800">Lean by employer</h2>
+          <span class="text-xs text-slate-400">contributors classified by 60 % rule</span>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">{cards}</div>
+      </section>"""
+
+    # ── Charts: hero + supporting grid ────────────────────────────────────
+    hero_html = ""
+    grid_imgs = ""
+    for fname, title, caption, is_hero in _CHART_ORDER:
+        if fname not in chart_set:
+            continue
+        fig = f"""
       <figure class="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-        <img src="charts/{esc(chart)}" alt="{esc(company_display)} party breakdown chart"
-             class="w-full object-contain max-h-[420px]">
-        <figcaption class="text-xs text-slate-500 text-center py-2 bg-slate-50 border-t border-slate-100">
-          {esc(company_display)} · contributor party breakdown by 60% rule
+        <img src="charts/{esc(fname)}" alt="{esc(title)}"
+             class="w-full object-contain {'max-h-[480px]' if is_hero else 'max-h-[300px]'}">
+        <figcaption class="px-4 py-2 bg-slate-50 border-t border-slate-100">
+          <span class="text-sm font-semibold text-slate-700">{esc(title)}</span>
+          <span class="text-xs text-slate-500"> · {esc(caption)}</span>
         </figcaption>
       </figure>"""
+        if is_hero:
+            hero_html += fig
+        else:
+            grid_imgs += fig
 
-    nb_desc = f"{nb_label} — full executed analyses with charts, data joins, and the 60% contributor classification rule."
-    quick_links = f"""
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-        {link_card("notebook/", "Notebooks", nb_desc, "📓")}
-        {link_card("design/sas-port/", "Design", "Deep dive: porting the SAS pipeline to DuckDB/pandas, with a plan for the next notebook.", "📐")}
-        {link_card("data/",     "Data",      "Browse and download raw API output: Schedule A CSVs and JSON files.", "📂")}
-        {link_card("source/",   "Source",    "Syntax-highlighted Python source and Justfile build recipes.", "🔍")}
-      </div>"""
+    charts_section = ""
+    if hero_html or grid_imgs:
+        charts_section = f"""
+      <section class="mb-12">
+        <h2 class="text-lg font-semibold text-slate-800 mb-4">Findings</h2>
+        {hero_html}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">{grid_imgs}</div>
+      </section>"""
+    elif charts:
+        # Unknown chart names — fall back to a generic grid
+        charts_section = '<section class="mb-12"><h2 class="text-lg font-semibold text-slate-800 mb-4">Charts</h2>'
+        for fname in sorted(charts):
+            charts_section += f'<img src="charts/{esc(fname)}" class="w-full mb-4 rounded-xl border border-slate-200">'
+        charts_section += "</section>"
+    else:
+        charts_section = (
+            '<p class="text-slate-400 text-sm mb-12">'
+            'No charts yet — run <code>just build</code> first.</p>'
+        )
 
     pipeline_html = """
       <section class="mb-12">
         <h2 class="text-lg font-semibold text-slate-800 mb-3">Pipeline</h2>
         <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm font-mono text-sm text-slate-700 space-y-1">
-          <div><span class="text-green-600 font-bold">just build</span>  <span class="text-slate-400"># fetch → analyze → notebook + site</span></div>
-          <div class="pl-4 text-slate-500">↳ api-demo.py fetches OpenFEC Schedule A for any employer</div>
-          <div class="pl-4 text-slate-500">↳ main.py joins party lookups (AllPacs, Aristotle), applies 60% rule</div>
-          <div class="pl-4 text-slate-500">↳ notebooks/*.ipynb execute and render to HTML</div>
-          <div class="pl-4 text-slate-500">↳ output/charts/ and output/schedule_a/ written to disk</div>
+          <div><span class="text-green-600 font-bold">just build</span>  <span class="text-slate-400"># prewarm → analyze → notebooks → site</span></div>
+          <div class="pl-4 text-slate-500">↳ prewarm-cache hits Schedule A + B + /committee/ for every employer (idempotent)</div>
+          <div class="pl-4 text-slate-500">↳ notebooks/cross-company.ipynb runs the SAS-port pipeline, writes tables + charts</div>
+          <div class="pl-4 text-slate-500">↳ build-site.py renders this page from the latest outputs</div>
         </div>
       </section>"""
 
-    title_companies = f" · {company_label}" if len(companies_found) == 1 else f" · {len(companies_found)} Companies"
+    # ── Title ─────────────────────────────────────────────────────────────
+    if summary and len(summary.get("company_display") or []) >= 2:
+        company_line = " · ".join(summary["company_display"])
+    elif tilts:
+        company_line = " · ".join(t["company"] for t in tilts)
+    else:
+        company_line = ""
+
     body = f"""
     <div class="mb-10">
-      <h1 class="text-3xl font-bold text-slate-900 mb-2">FEC Contribution Analysis{esc(title_companies)}</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-2">
+        Cross-Company FEC Analysis
+        <span class="text-slate-400 font-normal text-2xl">· {summary.get('min_date', '2019-01-01')} → {summary.get('max_date', '2020-12-31')}</span>
+      </h1>
       <p class="text-slate-500 max-w-2xl">
-        Fetches political contribution records from the
+        Pulls Schedule A receipts and Schedule B disbursements from the
         <a href="https://api.open.fec.gov/" target="_blank" rel="noopener" class="text-indigo-600 hover:underline">OpenFEC API</a>,
-        aggregates by contributor using the <strong>60% rule</strong> (assign a party if ≥60%
-        of a person's total went to that party), and visualizes the breakdown.
+        joins committee-to-party lookups, classifies contributors with the
+        <strong>60 % rule</strong>, and lines up inflow vs. outflow side by side.
       </p>
+      {f'<p class="text-xs text-slate-400 mt-2 font-mono">{esc(company_line)}</p>' if company_line else ''}
     </div>
     {quick_links}
     {stats_html}
-    <section class="mb-12">
-      <h2 class="text-lg font-semibold text-slate-800 mb-4">Results</h2>
-      {chart_imgs or '<p class="text-slate-400 text-sm">No charts yet — run <code>just build</code> first.</p>'}
-    </section>
+    {beyond_sas_html}
+    {tilts_html}
+    {charts_section}
     {pipeline_html}"""
 
     (DOCS / "index.html").write_text(page("Home", body, "home", depth=0))
@@ -312,10 +505,27 @@ def link_card(href: str, title: str, desc: str, icon: str) -> str:
 
 # ── Notebooks ──────────────────────────────────────────────────────────────
 
+_USERNAME_PATH_RE = None  # lazy
+
+def _scrub_username(html: str) -> str:
+    """Replace absolute paths under /Users/<actual-user>/ or /home/<user>/ with ~/.
+
+    Defensive belt-and-braces; the notebook also prints relative paths now, but
+    any leaked /Users/.../ string in cell output would land in the rendered HTML
+    unless we strip it here.
+    """
+    global _USERNAME_PATH_RE
+    if _USERNAME_PATH_RE is None:
+        import re as _re
+        # /Users/<word>/ or /home/<word>/ followed by anything
+        _USERNAME_PATH_RE = _re.compile(r"(/Users|/home)/([A-Za-z0-9_.\-]+)/")
+    return _USERNAME_PATH_RE.sub("~/", html)
+
+
 def _inline_notebook(nb_path: Path) -> tuple[str, str]:
     """Return (extra_head_styles, body_content) extracted from a Jupyter HTML export."""
     import re as _re
-    raw = nb_path.read_text()
+    raw = _scrub_username(nb_path.read_text())
     head_end = raw.find("</head>")
     nb_styles = "\n".join(_re.findall(r"<style[^>]*>.*?</style>", raw[:head_end + 7], _re.DOTALL))
     body_match = _re.search(r"<body[^>]*>(.*)</body>", raw, _re.DOTALL)
@@ -336,7 +546,9 @@ def build_notebooks(notebooks: list[Path]) -> None:
         slug_dir = nb_dir / slug
         slug_dir.mkdir(exist_ok=True)
 
-        shutil.copy(nb_path, slug_dir / "notebook_content.html")
+        (slug_dir / "notebook_content.html").write_text(
+            _scrub_username(nb_path.read_text())
+        )
 
         nb_styles, nb_body = _inline_notebook(nb_path)
 

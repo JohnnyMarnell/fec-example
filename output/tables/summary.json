@@ -1,0 +1,27 @@
+{
+  "companies": [
+    "TRACTOR SUPPLY",
+    "MICROSOFT",
+    "EXXON MOBIL",
+    "WALMART",
+    "LOCKHEED MARTIN"
+  ],
+  "company_display": [
+    "Tractor Supply",
+    "Microsoft",
+    "Exxon Mobil",
+    "Walmart",
+    "Lockheed Martin"
+  ],
+  "total_transactions": 1000,
+  "unique_contributors": 334,
+  "inflow_dollars": 96733.01999999999,
+  "outflow_dollars": 871427.45,
+  "outflow_records": 639,
+  "outflow_committees": 4,
+  "states": 41,
+  "candidates_enriched": 20,
+  "committee_lookups": 0,
+  "min_date": "2019-01-01",
+  "max_date": "2020-12-31"
+}

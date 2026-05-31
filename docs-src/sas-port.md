@@ -196,7 +196,7 @@ need a static lookup at all. We still fall back to `AllPacs.xslx.csv` for the
 | `/schedules/schedule_a/?contributor_employer=X` | Per-employer individual contributions (the SAS input) | 2 pages × 100 / employer | **shipped** — §3 |
 | `/committee/{id}/` | Authoritative party / type / designation for committees the embedded Schedule A field left null | 1 call per "fell-through" committee, top 8 | **shipped** — §13 |
 | `/schedules/schedule_b/?committee_id=X` | "Where did the Tractor Supply PAC spend its money?" | 2 pages × 1 top committee / employer | **shipped** — §12 |
-| `/candidate/{id}/` | Resolve `candidate_id` → candidate party (for direct-to-candidate contributions) | Cached, lazy | available on `FECClient`, not yet wired into notebook |
+| `/candidate/{id}/` | Authoritative party / office / state for candidates the Schedule B PACs ultimately backed — lets us slice *outflow by recipient candidate party* | Top-20 candidates by $ across all Schedule B records | **shipped** — §14 |
 
 Everything goes through the existing [`FECClient`](/source/#fec_client-py), so
 the disk cache (`cache/*.json` + `cache/index.json`) absorbs all subsequent

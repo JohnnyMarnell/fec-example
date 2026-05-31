@@ -6,6 +6,7 @@ Hits every endpoint the notebook will need:
   1. /schedules/schedule_a/ — one per (employer, page)
   2. /schedules/schedule_b/ — one per (top-recipient committee_id, page)
   3. /committee/{id}/        — one per top-N "fell-through" committee
+  4. /candidate/{id}/        — one per top-N Schedule B recipient candidate
 
 Idempotent: anything already on disk is served from cache (free, no API call).
 Tolerant: any one failure is logged and skipped; the script keeps going so the
@@ -41,6 +42,7 @@ MIN_DATE          = "2019-01-01"
 MAX_DATE          = "2020-12-31"
 PAGES_PER_COMPANY = 2
 TOP_FELL_THROUGH  = 8
+TOP_CANDIDATES    = 20
 
 _DEFAULT_API_KEY = "Kgkivmpbsy1rehiCuTcd8gVHxzwQFRcSDsrVhQJm"
 
@@ -75,10 +77,14 @@ def fetch_schedule_a(client: FECClient) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True)
 
 
-def fetch_schedule_b_for_top_recipients(client: FECClient, raw: pd.DataFrame) -> None:
-    """Phase 2: for each company, find its top recipient and fetch its Schedule B."""
+def fetch_schedule_b_for_top_recipients(client: FECClient, raw: pd.DataFrame) -> list[dict]:
+    """Phase 2: for each company, find its top recipient and fetch its Schedule B.
+
+    Returns the combined Schedule B record list so phase 4 can walk candidates.
+    """
+    sb_records: list[dict] = []
     if raw.empty:
-        return
+        return sb_records
     # Aggregate per (company, committee_id) and take the top.
     g = (
         raw.assign(
@@ -102,7 +108,41 @@ def fetch_schedule_b_for_top_recipients(client: FECClient, raw: pd.DataFrame) ->
             records = client.schedule_b_pages(
                 cid, MIN_DATE, MAX_DATE, max_pages=PAGES_PER_COMPANY,
             )
+            sb_records.extend(records)
             print(f"   ✓ {len(records):,} disbursements")
+        except Exception as e:
+            print(f"   ! {type(e).__name__}: {e}")
+    return sb_records
+
+
+def fetch_candidate_lookups(client: FECClient, sb_records: list[dict]) -> None:
+    """Phase 4: top-N candidates by $ across all Schedule B records — look them up."""
+    if not sb_records:
+        print("(no Schedule B records — nothing to enrich)")
+        return
+    sb = pd.DataFrame(sb_records)
+    if "candidate_id" not in sb.columns:
+        print("(Schedule B sample has no candidate_id column)")
+        return
+    top = (
+        sb[sb["candidate_id"].notna()]
+        .groupby("candidate_id")["disbursement_amount"].sum()
+        .nlargest(TOP_CANDIDATES)
+    )
+    if top.empty:
+        print("(no candidate_id values to enrich)")
+        return
+    for cand_id, total in top.items():
+        print(f"• /candidate/{cand_id}/   ${total:,.0f} received")
+        try:
+            data = client.candidate(cand_id)
+            hits = data.get("results") or []
+            if hits:
+                h = hits[0]
+                print(f"   ✓ {h.get('name','?'):<35.35s}  party={h.get('party') or '—'}  "
+                      f"office={h.get('office_full','—'):<10.10s}  state={h.get('state','—')}")
+            else:
+                print("   ✓ (no metadata returned)")
         except Exception as e:
             print(f"   ! {type(e).__name__}: {e}")
 
@@ -140,7 +180,7 @@ def main() -> None:
     print(f"  companies  : {', '.join(COMPANIES)}")
     print(f"  pages each : {PAGES_PER_COMPANY}")
 
-    section("1/3  Schedule A — per-employer individual contributions")
+    section("1/4  Schedule A — per-employer individual contributions")
     raw = fetch_schedule_a(client)
     if raw.empty:
         print("\nNo Schedule A data fetched — aborting.")
@@ -149,11 +189,14 @@ def main() -> None:
           f"{raw['company'].nunique()} companies · "
           f"{raw['committee_id'].nunique():,} distinct committees")
 
-    section("2/3  Schedule B — disbursements from each company's top recipient")
-    fetch_schedule_b_for_top_recipients(client, raw)
+    section("2/4  Schedule B — disbursements from each company's top recipient")
+    sb_records = fetch_schedule_b_for_top_recipients(client, raw)
 
-    section("3/3  /committee/{id}/ — fill in null-party committees")
+    section("3/4  /committee/{id}/ — fill in null-party committees")
     fetch_committee_lookups(client, raw)
+
+    section("4/4  /candidate/{id}/ — enrich Schedule B recipients with party + office")
+    fetch_candidate_lookups(client, sb_records)
 
     print("\n✓ Cache pre-warm complete. Run `just notebook` next.")
 

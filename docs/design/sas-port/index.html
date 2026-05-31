@@ -469,9 +469,9 @@ need a static lookup at all. We still fall back to <code>AllPacs.xslx.csv</code>
 </tr>
 <tr>
   <td><code>/candidate/{id}/</code></td>
-  <td>Resolve <code>candidate_id</code> → candidate party (for direct-to-candidate contributions)</td>
-  <td>Cached, lazy</td>
-  <td>available on <code>FECClient</code>, not yet wired into notebook</td>
+  <td>Authoritative party / office / state for candidates the Schedule B PACs ultimately backed — lets us slice <em>outflow by recipient candidate party</em></td>
+  <td>Top-20 candidates by $ across all Schedule B records</td>
+  <td><strong>shipped</strong> — §14</td>
 </tr>
 </tbody>
 </table>
