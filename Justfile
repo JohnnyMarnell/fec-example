@@ -49,8 +49,8 @@ notebook:
         uv run jupyter nbconvert --to html "$nb" --output-dir notebooks/
     done
 
-# Open the specified notebook for interactive editing (default: analysis.ipynb)
-notebook-edit nb="notebooks/analysis.ipynb":
+# Open the specified notebook for interactive editing (default: basic-example.ipynb)
+notebook-edit nb="notebooks/basic-example.ipynb":
     uv run jupyter notebook "{{nb}}"
 
 # Regenerate the cross-company notebook from its builder script

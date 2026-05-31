@@ -36,7 +36,7 @@ just analyze csv/MyCompanyFECr.csv
 # Notebook — execute all cells and render to HTML (both committed to git)
 just notebook
 # Interactive editing
-just notebook-edit   # or: uv run jupyter notebook notebooks/analysis.ipynb
+just notebook-edit   # or: uv run jupyter notebook notebooks/basic-example.ipynb
 ```
 
 There is no test suite and no linter configured.
@@ -59,11 +59,11 @@ Click command. Uses `FECClient`. Writes combined results to:
 - `output/schedule_a/<EMPLOYER_SLUG>_<min-date>_<max-date>.json`
 - `output/schedule_a/<EMPLOYER_SLUG>_<min-date>_<max-date>.csv`
 
-### `notebooks/analysis.ipynb` — interactive notebook
+### `notebooks/basic-example.ipynb` — interactive notebook
 
 Same pipeline as `main.py` but structured as cells with inline `display()` output and
 `%matplotlib inline` charts. `just notebook` executes it in-place (updating outputs in the
-`.ipynb`) and renders `notebooks/analysis.html`; both are committed to git. The cwd-fix
+`.ipynb`) and renders `notebooks/basic-example.html`; both are committed to git. The cwd-fix
 cell at the top handles being launched from either `notebooks/` or the project root.
 
 ### `main.py` — analysis CLI
