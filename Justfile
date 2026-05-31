@@ -64,3 +64,7 @@ notebook-build-cross-company:
 serve port="8000":
     @echo "http://localhost:{{port}}  (Ctrl-C to stop)"
     uv run python -m http.server {{port}} --directory docs
+
+# HMR-style dev server — watch sources, rebuild incrementally, auto-reload browser.
+dev port="8000":
+    uv run python tools/dev_watch.py {{port}}
