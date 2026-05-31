@@ -1,6 +1,12 @@
 # FEC data tools
 # Requires: just (https://github.com/casey/just)
 
+# Default fetch parameters — override with: just --set EMPLOYER "WALMART" fetch
+EMPLOYER := "TRACTOR SUPPLY"
+MIN_DATE  := "2019-01-01"
+MAX_DATE  := "2020-12-31"
+PAGES     := "2"
+
 default:
     @just --list
 
@@ -8,16 +14,21 @@ default:
 install:
     uv sync
 
-# Run the full pipeline: fetch data → analyze CSV → execute notebook + render HTML
-build: fetch analyze notebook
+# Run the full pipeline: fetch → analyze → notebook + HTML
+# Pass --no-cache to bypass local API cache: just build --no-cache
+build *flags:
+    just fetch {{flags}}
+    just analyze
+    just notebook
 
 # Fetch Schedule A contributions (cached by default)
-fetch employer="TRACTOR SUPPLY" min-date="2019-01-01" max-date="2020-12-31" pages="2":
-    uv run api-demo.py --employer "{{employer}}" --min-date "{{min-date}}" --max-date "{{max-date}}" --pages {{pages}}
+# Pass --no-cache to force a fresh API request: just fetch --no-cache
+fetch *flags:
+    uv run api-demo.py --employer "{{EMPLOYER}}" --min-date "{{MIN_DATE}}" --max-date "{{MAX_DATE}}" --pages {{PAGES}} {{flags}}
 
 # Fetch without cache (force fresh API request)
-fetch-fresh employer="TRACTOR SUPPLY" min-date="2019-01-01" max-date="2020-12-31" pages="2":
-    uv run api-demo.py --employer "{{employer}}" --min-date "{{min-date}}" --max-date "{{max-date}}" --pages {{pages}} --no-cache
+fetch-fresh:
+    just fetch --no-cache
 
 # Analyze a company's contribution CSV
 analyze csv="./csv/TractorSupplyFECr.csv":

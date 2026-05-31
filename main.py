@@ -11,7 +11,8 @@ import pandas as pd
 
 @click.command()
 @click.argument("csv_path", default="./csv/TractorSupplyFECr.csv", required=False)
-def analyze(csv_path):
+@click.option("--show", is_flag=True, help="Open interactive chart window (blocks until closed).")
+def analyze(csv_path, show):
     """Aggregate and visualize FEC contributions from CSV_PATH.
 
     CSV_PATH defaults to ./csv/TractorSupplyFECr.csv.
@@ -160,10 +161,10 @@ def analyze(csv_path):
     click.echo(f"Avg txns per person:    {len(saspac3) / total_people:.1f}")
     click.echo("=" * 70)
 
-    _show_charts(company_name, contrib_stats)
+    _show_charts(company_name, contrib_stats, show=show)
 
 
-def _show_charts(company_name, contrib_stats):
+def _show_charts(company_name, contrib_stats, show=False):
     """Pie charts: party breakdown by contributor count and dollar amount."""
     color_map = {'D': '#3498db', 'R': '#e74c3c', 'N': '#95a5a6', 'I': '#f39c12', 'L': '#9b59b6', 'G': '#27ae60'}
     party_full = {
@@ -192,8 +193,15 @@ def _show_charts(company_name, contrib_stats):
     ax2.set_title('Dollar Amounts by Party')
 
     plt.tight_layout()
-    click.echo("\nOpening chart window...")
-    plt.show()
+
+    slug = re.sub(r"[^A-Za-z0-9]+", "_", company_name).strip("_")
+    out_path = Path("output/charts") / f"{slug}_party_breakdown.png"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    click.echo(f"\nChart saved → {out_path}")
+
+    if show:
+        plt.show()
 
 
 if __name__ == "__main__":
