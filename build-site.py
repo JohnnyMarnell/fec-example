@@ -90,8 +90,8 @@ def nav(active: str, depth: int) -> str:
         "notebook": (f"{b}notebook/",           "Notebooks"),
         "design":   (f"{b}design/sas-port/",    "Design"),
         "data":     (f"{b}data/",               "Data"),
-        "source":   (f"{b}source/",             "Source"),
         "sql":      (f"{b}sql/",               "SQL"),
+        "source":   (f"{b}source/",             "Source"),
     }
     links = []
     for key, (href, label) in items.items():
