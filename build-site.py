@@ -16,6 +16,7 @@ ROOT = Path(__file__).parent
 DOCS = ROOT / "docs"
 OUT_CHARTS = ROOT / "output" / "charts"
 OUT_SCHEDULE_A = ROOT / "output" / "schedule_a"
+OUT_TABLES = ROOT / "output" / "tables"
 NOTEBOOKS_DIR = ROOT / "notebooks"
 DOCS_SRC = ROOT / "docs-src"
 
@@ -486,25 +487,22 @@ def build_data(data_files: list[str]) -> None:
         if "csv" in files:
             dl_links += (
                 f'<a href="{esc(files["csv"])}" download '
-                f'class="inline-flex items-center gap-1 text-xs font-medium '
-                f'text-indigo-600 hover:text-indigo-800 transition-colors">'
+                f'class="inline-flex items-center gap-0.5 text-xs text-indigo-500 hover:text-indigo-700 transition-colors">'
                 f'{_dl_icon()} csv</a>'
             )
         if "json" in files:
             dl_links += (
                 f'<a href="{esc(files["json"])}" download '
-                f'class="inline-flex items-center gap-1 text-xs font-medium '
-                f'text-slate-400 hover:text-slate-700 transition-colors">'
+                f'class="inline-flex items-center gap-0.5 text-xs text-slate-400 hover:text-slate-600 transition-colors">'
                 f'{_dl_icon()} json</a>'
             )
-        sidebar_items += f"""
-      <div class="mb-4">
-        <a href="#{esc(anchor)}"
-           class="block text-sm font-medium text-slate-700 hover:text-indigo-600 transition-colors leading-snug mb-1.5">
-          {esc(company)}
-        </a>
-        <div class="flex items-center gap-3 pl-0.5">{dl_links}</div>
-      </div>"""
+        sidebar_items += (
+            f'<div class="flex items-center justify-between gap-2 py-1">'
+            f'<a href="#{esc(anchor)}" class="text-xs text-slate-600 hover:text-indigo-600 transition-colors truncate">'
+            f'{esc(company.lower())}</a>'
+            f'<div class="flex items-center gap-2 flex-shrink-0">{dl_links}</div>'
+            f'</div>'
+        )
 
     # ── Main sections ──────────────────────────────────────────────────────
     sections = ""
@@ -554,8 +552,8 @@ def build_data(data_files: list[str]) -> None:
     <div class="flex gap-8">
       <aside class="hidden md:block w-52 flex-shrink-0">
         <div class="sticky top-6">
-          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Files</p>
-          {sidebar_items}
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Files</p>
+          <div class="divide-y divide-slate-100">{sidebar_items}</div>
         </div>
       </aside>
       <div class="flex-1 min-w-0">
