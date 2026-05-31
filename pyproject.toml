@@ -8,6 +8,7 @@ dependencies = [
     "click>=8.0.0",
     "duckdb>=0.9.0",
     "gender-guesser>=0.4.0",
+    "livereload>=2.7.0",
     "matplotlib>=3.8.0",
     "mistune>=3.2.1",
     "notebook>=7.0.0",

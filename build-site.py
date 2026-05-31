@@ -127,6 +127,14 @@ def page(title: str, body: str, active: str, depth: int = 1,
     .badge-d {{ background: #dbeafe; color: #1d4ed8; }}
     .badge-r {{ background: #fee2e2; color: #b91c1c; }}
     .badge-n {{ background: #f3f4f6; color: #6b7280; }}
+    /* Force monospace on all code/highlight blocks (nbconvert's Pygments output
+       uses font-family: inherit, which otherwise picks up the body sans-serif). */
+    pre, code, .highlight, .highlight pre, .highlight code,
+    .jp-RenderedHTMLCommon pre, .jp-RenderedHTMLCommon code,
+    .jp-RenderedMarkdown pre, .jp-RenderedMarkdown code,
+    [data-mime-type="text/markdown"] pre, [data-mime-type="text/markdown"] code {{
+      font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace !important;
+    }}
     /* Markdown prose blocks (Design page) */
     .prose h1 {{ font-size: 1.875rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem; }}
     .prose h2 {{ font-size: 1.4rem; font-weight: 700; color: #0f172a;
