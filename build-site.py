@@ -84,7 +84,7 @@ def nav(active: str, depth: int) -> str:
     b = "../" * depth
     items = {
         "home":     (f"{b}index.html",         "Home"),
-        "notebook": (f"{b}notebook/",           "Notebook"),
+        "notebook": (f"{b}notebook/",           "Notebooks"),
         "design":   (f"{b}design/sas-port/",    "Design"),
         "data":     (f"{b}data/",               "Data"),
         "source":   (f"{b}source/",             "Source"),
