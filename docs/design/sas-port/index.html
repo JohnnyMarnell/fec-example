@@ -108,7 +108,7 @@ and re-implementing it correctly means understanding every join and every
 threshold. Code follows in a second pass; this is the contract.</p>
 <hr />
 <h2>1 · Where we are today</h2>
-<p>The existing notebook (<code>notebooks/analysis.ipynb</code> → <a href="../notebook/">Notebook tab</a>)
+<p>The existing notebook (<code>notebooks/analysis.ipynb</code> → <a href="../../notebook/">Notebook tab</a>)
 is a focused single-company demo:</p>
 <table>
 <thead>
@@ -470,7 +470,7 @@ need a static lookup at all. We still fall back to <code>AllPacs.xslx.csv</code>
 </tr>
 </tbody>
 </table>
-<p>Everything goes through the existing <a href="../source/#fec_client-py"><code>FECClient</code></a>, so
+<p>Everything goes through the existing <a href="../../source/#fec_client-py"><code>FECClient</code></a>, so
 the disk cache (<code>cache/*.json</code> + <code>cache/index.json</code>) absorbs all subsequent
 runs at zero cost.</p>
 <h3>5b · Static lookups, bundled in <code>csv/</code></h3>
@@ -592,7 +592,7 @@ to the <strong>SAS line numbers</strong> so a SAS reader can cross-reference.</p
     └── …
 </pre>
 <p>The CSVs are then automatically picked up by the existing
-<a href="../source/#build-site-py"><code>build-site.py</code></a> → <a href="../data/">Data tab</a> so anyone
+<a href="../../source/#build-site-py"><code>build-site.py</code></a> → <a href="../../data/">Data tab</a> so anyone
 browsing the site can download them.</p>
 <hr />
 <h2>8 · Risks &amp; open questions before we write code</h2>
@@ -634,11 +634,11 @@ SAS code resolved (PR/VI/etc.). Cheap to add back if needed.</li>
 </tr>
 <tr>
   <td>Existing single-company notebook</td>
-  <td><a href="../notebook/"><code>notebooks/analysis.ipynb</code></a></td>
+  <td><a href="../../notebook/"><code>notebooks/analysis.ipynb</code></a></td>
 </tr>
 <tr>
   <td>Existing pipeline</td>
-  <td><a href="../source/">Source tab</a> (<code>main.py</code>, <code>api-demo.py</code>, <code>fec_client.py</code>)</td>
+  <td><a href="../../source/">Source tab</a> (<code>main.py</code>, <code>api-demo.py</code>, <code>fec_client.py</code>)</td>
 </tr>
 <tr>
   <td>60 % rule (SAS)</td>

@@ -718,8 +718,8 @@ def _markdown_to_html(md: str) -> str:
     return md_parser(md)
 
 
-def _postprocess_design_html(raw: str) -> str:
-    """Convert ```mermaid and ```tree fenced blocks into renderable elements."""
+def _postprocess_design_html(raw: str, depth: int = 2) -> str:
+    """Convert fenced blocks and rewrite root-relative links for the page depth."""
     import re as _re, html as _html
 
     def _mermaid(m: "_re.Match[str]") -> str:
@@ -736,6 +736,10 @@ def _postprocess_design_html(raw: str) -> str:
         r'<pre><code class="language-tree">(.*?)</code></pre>',
         _filetree, raw, flags=_re.DOTALL,
     )
+    # Rewrite root-relative links written as /path/ in markdown to correct
+    # relative paths based on this page's depth (works locally and when served).
+    prefix = "../" * depth
+    raw = _re.sub(r'href="/((?!/)[^"]*)"', lambda m: f'href="{prefix}{m.group(1)}"', raw)
     return raw
 
 
@@ -755,7 +759,8 @@ def build_design() -> None:
             continue
         page_dir = design_dir / slug
         page_dir.mkdir(exist_ok=True)
-        rendered = _postprocess_design_html(_markdown_to_html(src.read_text()))
+        depth = 2
+        rendered = _postprocess_design_html(_markdown_to_html(src.read_text()), depth=depth)
         mermaid_head = (
             f'<script src="{MERMAID_JS}"></script>\n'
             f'<script>document.addEventListener("DOMContentLoaded", () => '
@@ -774,7 +779,7 @@ def build_design() -> None:
       </article>
     </div>"""
         (page_dir / "index.html").write_text(
-            page(title, body, "design", depth=2, extra_head=mermaid_head)
+            page(title, body, "design", depth=depth, extra_head=mermaid_head)
         )
         print(f"  design/{slug}/index.html")
 

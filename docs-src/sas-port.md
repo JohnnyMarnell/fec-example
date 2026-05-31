@@ -16,7 +16,7 @@ threshold. Code follows in a second pass; this is the contract.
 
 ## 1 · Where we are today
 
-The existing notebook (`notebooks/analysis.ipynb` → [Notebook tab](../notebook/))
+The existing notebook (`notebooks/analysis.ipynb` → [Notebook tab](/notebook/))
 is a focused single-company demo:
 
 | Stage | Today |
@@ -198,7 +198,7 @@ need a static lookup at all. We still fall back to `AllPacs.xslx.csv` for the
 | `/schedules/schedule_b/?committee_id=X` *(optional)* | "Where did the Tractor Supply PAC spend its money?" | 1 page for the top 3 committees per company |
 | `/candidates/?candidate_id=X` *(optional)* | Resolve `candidate_id` → candidate party (some contributions earmark a candidate) | Cached |
 
-Everything goes through the existing [`FECClient`](../source/#fec_client-py), so
+Everything goes through the existing [`FECClient`](/source/#fec_client-py), so
 the disk cache (`cache/*.json` + `cache/index.json`) absorbs all subsequent
 runs at zero cost.
 
@@ -298,7 +298,7 @@ output/
 ```
 
 The CSVs are then automatically picked up by the existing
-[`build-site.py`](../source/#build-site-py) → [Data tab](../data/) so anyone
+[`build-site.py`](/source/#build-site-py) → [Data tab](/data/) so anyone
 browsing the site can download them.
 
 ---
@@ -330,8 +330,8 @@ browsing the site can download them.
 |---|---|
 | Original SAS code | `../sas-fork/files-from-ftp-server/sas-src/sascsvc19.sas` (and friends) |
 | SAS docs | `../sas-fork/README.md`, `../sas-fork/SAS_OUTPUTS.md`, `../sas-fork/CLAUDE.md` |
-| Existing single-company notebook | [`notebooks/analysis.ipynb`](../notebook/) |
-| Existing pipeline | [Source tab](../source/) (`main.py`, `api-demo.py`, `fec_client.py`) |
+| Existing single-company notebook | [`notebooks/analysis.ipynb`](/notebook/) |
+| Existing pipeline | [Source tab](/source/) (`main.py`, `api-demo.py`, `fec_client.py`) |
 | 60 % rule (SAS) | `sascsvc19.sas:534-562` |
 | Person key (SAS) | `sascsvc19.sas:103` |
 | Excel output writer (SAS) | `stats5xle.sas`, `saspac3xle.sas` |
