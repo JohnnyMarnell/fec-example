@@ -64,14 +64,22 @@ fec-example/
 ├── main.py                  # CLI: 60%-rule analysis of one CSV (Tractor Supply demo)
 ├── fec_client.py            # disk-cached OpenFEC client (schedule_a/b, /committee/, /candidate/)
 ├── build-site.py            # static GitHub Pages site generator (docs/)
-├── csv/                     # bundled lookup tables (AllPacs, Aristotle, demo CSV)
+├── csv/                     # bundled lookup tables + sas-fork imports
+│   ├── AllPacs.xslx.csv       # committee_id → party (35K rows, SAS-fork import)
+│   ├── Aristotle1.xlsx.csv    # 25 party codes → full party name (SAS-fork import)
+│   ├── Fortune500_2021.xlsx.csv  # Rank + Company + Employees (SAS-fork import)
+│   ├── GovernmentAgencies.xlsx{,.csv}  # federal agency name mapping (SAS-fork import)
+│   ├── boards_roster.xlsx.csv # 285 board members across 18 BOD files (SAS-fork import)
+│   ├── bod/                   # raw board-of-directors xlsx files <500KB each (13 of 18)
+│   └── TractorSupplyFECr.csv  # demo CSV for main.py
 ├── notebooks/
 │   ├── basic-example.ipynb  # single-employer demo + party pie charts
 │   └── cross-company.ipynb  # multi-company SAS-port pipeline + Schedule B + candidate enrichment
 ├── tools/
 │   ├── build_cross_company_nb.py  # builder for the cross-company notebook (single source of truth)
 │   ├── prewarm_cache.py           # idempotent fetch of every endpoint the notebook needs
-│   └── dev_watch.py               # `just dev` — HMR-style file-watch + browser auto-reload
+│   ├── dev_watch.py               # `just dev` — HMR-style file-watch + browser auto-reload
+│   └── import_sas_data.py         # `just import-sas-data` — pull small files from ../sas-fork into csv/
 ├── docs-src/
 │   └── sas-port.md          # design doc — how the SAS pipeline maps to DuckDB + pandas
 ├── output/
@@ -112,6 +120,27 @@ just notebook                                        # execute + render all note
 The notebook is committed pre-executed (with outputs); `just notebook` re-runs it.
 
 ---
+
+## SAS-fork data imported into `csv/`
+
+Beyond `AllPacs` / `Aristotle` (already used by the notebook), `csv/` now also
+bundles three small datasets pulled from the private sas-fork repo via
+`git lfs pull`:
+
+| File | What it is | Size | Source |
+|---|---|---|---|
+| `Fortune500_2021.xlsx.csv` | 500 rows × 3 cols — Rank, Company Name, Employees | 39 KB | sas-fork Fortune 500 list |
+| `GovernmentAgencies.xlsx{,.csv}` | 38-sheet workbook of federal-agency rosters + flat agency-code index | 47 KB | sas-fork Government Agencies |
+| `boards_roster.xlsx.csv` | 285 board members across 18 Fortune-500 boards | 25 KB | sas-fork bod-xlsx/ |
+| `bod/<Company>BOD.xlsx` | Per-member FEC contribution sheets (the small ones only — files > 500 KB stay in sas-fork) | 1.5 MB total (13 of 18) | sas-fork bod-xlsx/ |
+
+Re-import (after `git lfs pull` in `../sas-fork`):
+
+```bash
+just import-sas-data
+```
+
+The roster CSV walks **all 18** BOD files in sas-fork (even the large ones we don't copy), so it has full coverage regardless of which raw XLSX files live in our repo.
 
 ## FEC API endpoints used
 

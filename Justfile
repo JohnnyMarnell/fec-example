@@ -60,6 +60,11 @@ notebook-edit nb="notebooks/basic-example.ipynb":
 notebook-build-cross-company:
     uv run python tools/build_cross_company_nb.py
 
+# Re-import small data files from the sibling sas-fork repo (Fortune 500, agencies, BODs).
+# Run after `git lfs pull` in ../sas-fork. Idempotent — overwrites existing csv/ entries.
+import-sas-data:
+    uv run python tools/import_sas_data.py
+
 # Serve the built site locally — mirrors what GitHub Pages serves from docs/
 serve port="8000":
     @echo "http://localhost:{{port}}  (Ctrl-C to stop)"

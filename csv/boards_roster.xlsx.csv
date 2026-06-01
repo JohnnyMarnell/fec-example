@@ -1,0 +1,291 @@
+Company,Board,Exec,Employer,Fname,MI,Lname,source_file
+Alphabet Inc,Y,Y,Alphabet Inc,Larry,,Page,Alphabet_GoogleBOD.xlsx
+Alphabet Inc,Y,Y,Alphabet Inc,Sergey,,Brin,Alphabet_GoogleBOD.xlsx
+Alphabet Inc,Y,Y,Alphabet Inc,Sundar,,Pichai,Alphabet_GoogleBOD.xlsx
+Alphabet Inc,Y,N,Former President of Stamford University,John,L.,Hennessy†,Alphabet_GoogleBOD.xlsx
+Alphabet Inc,Y,N,"Linus Pauling Professor of Chemical Engineering, Bioengineering and Biochemistry at California Institute of Technology",Frances,H.,Arnold,Alphabet_GoogleBOD.xlsx
+Alphabet Inc,Y,N,General Partner and Chairman of Kleiner Perkins,L.,John,Doerr,Alphabet_GoogleBOD.xlsx
+Alphabet Inc,Y,N,President and Chief Executive Officer of TIAA(1),Roger,W.,Ferguson,Alphabet_GoogleBOD.xlsx
+Alphabet Inc,Y,N,Former Executive Vice President and Chief Financial Officer of Pixar,Ann,,Mather,Alphabet_GoogleBOD.xlsx
+Alphabet Inc,Y,N,Former Chief Executive Officer and President of Ford Motor Company,Alan,R.,Mulally,Alphabet_GoogleBOD.xlsx
+Alphabet Inc,Y,N,Managing Partner of Sherpalo Ventures,K.,Ram,Shriram,Alphabet_GoogleBOD.xlsx
+Alphabet Inc,Y,N,Former Executive Vice President and Chief Financial Officer of Gilead Sciences,Robin,L.,Washington,Alphabet_GoogleBOD.xlsx
+Amazon,Y,Y,Amazon,Jeffrey,P,Bezos,AmazonBOD.xlsx
+Amazon,Y,Y,Amazon,Keith,B,Alexander,AmazonBOD.xlsx
+Amazon,Y,N,Wilmer Cutler Pickering,Jamie,S,Gorelick,AmazonBOD.xlsx
+Amazon,Y,N,MIT,Daniel,P,Huttenlocher,AmazonBOD.xlsx
+Amazon,Y,N,MTV,Judith,A,McGrath,AmazonBOD.xlsx
+Amazon,Y,N,Pepsico,Indra,K,Nooyi,AmazonBOD.xlsx
+Amazon,Y,N,.,Jonathan,J,Rubinstein,AmazonBOD.xlsx
+Amazon,Y,N,.,Thomas,O,Ryder,AmazonBOD.xlsx
+Amazon,Y,N,.,Patricia,Q,Stonesifer,AmazonBOD.xlsx
+Amazon,Y,N,,Wendell,P,Weeks,AmazonBOD.xlsx
+Amazon,N,Y,Amazon,Brian,T,Olsavsky,AmazonBOD.xlsx
+Amazon,Y,Y,Amazon,David,H,Clark,AmazonBOD.xlsx
+Amazon,Y,Y,Amazon,Andrew,R,Jassy,AmazonBOD.xlsx
+Amazon,Y,Y,Amazon,David,A,Zapolsky,AmazonBOD.xlsx
+AmeriasourceBergen,Y,Y,AmeriasourceBergen,Steven,H,Collis,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,N,Retired,Jane,E,Henney,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,N,Walgreens Boots Alliance ,Ornella,,Barra,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,N,Retired,D,Mark,Durcan,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,N,Retired,Richard,W,Gochnauer,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,N,Retired,Lon ,R,Greenberg,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,N,Constellation Energy Resources,Kathleen,W,Hyle,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,N,Arrow Electronics,Michael,J,Long,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,N,Harvard Business School,Henry,W,McGee,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,N,Retired,Dennis,M,Nally,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,Y,AmeriasourceBergen,Robert,P,Mauch,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,Y,AmeriasourceBergen,James ,F,Cleary,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,Y,AmeriasourceBergen,John,G,Chou,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,Y,AmeriasourceBergen,Gina,K,Clark,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,Y,AmeriasourceBergen,Silvana,,Battaglia,AmerisourceBergenBOD.xlsx
+AmeriasourceBergen,Y,Y,AmeriasourceBergen,Leslie,,Donato,AmerisourceBergenBOD.xlsx
+Apple,Y,Y,Apple,Timothy,D ,Cook,AppleBOD.xlsx
+Apple,Y,Y,Apple,Luca,,Maestri,AppleBOD.xlsx
+Apple,N,Y,Apple,Kate,L ,Adams,AppleBOD.xlsx
+Apple,N,Y,Apple,Deidre,,O'brien,AppleBOD.xlsx
+Apple,N,Y,Apple,Jeff,,Williams,AppleBOD.xlsx
+Apple,Y,N,Retired Boeing,James,A. ,Bell,AppleBOD.xlsx
+Apple,Y,N,Climate Reality Project,Albert,A. ,Gore,AppleBOD.xlsx
+Apple,Y,N,Grameen America LLC,Andrea,,Jung,AppleBOD.xlsx
+Apple,Y,N,Calico,Art,,Levinson,AppleBOD.xlsx
+Apple,Y,N,The College Futures Foundation,Monica,,Lozano,AppleBOD.xlsx
+Apple,Y,N,Retired Northrop Grumman,Ron,,Sugar,AppleBOD.xlsx
+Apple,Y,N,Retired Blackrock,Sue,L ,Wagner,AppleBOD.xlsx
+BankofAmerica,Y,Y,BOA CHAIRMAN & CEO,Brian ,T. ,Moynihan,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"LEAD INDEPENDENT DIRECTOR, former COO HCA, BOD Duke U, ",Jack ,O. ,"Bovender, Jr.",BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"LEAD INDEPENDENT DIRECTOR SUCCESSOR, former Treasurer Pepsico, CFO & Controller",Lionel ,L. ,Nowell III,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director, former chairman of Deloitte, former directory Albertsons",Sharon ,L. ,Allen,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director,Former Member, Federal Reserve Board of Governors",Susan, S. ,Bies,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director,Former Executive Vice Chairman, MBNA Corporation",Frank, P. ,"Bramble, Sr.",BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director, Former Chairman and Global Head of Private Wealth Management, Deutsche Bank",Pierre, J.P. ,de Weck,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director,President and Chief Executive Officer, Carnival",Arnold ,W. ,Donald,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director,Former Chairman and Chief Executive Officer, The Cardea Group, LLC; Former President and Chief Executive Officer, BAE",Linda ,P. ,Hudson,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director, Chief Executive Officer, College Futures Foundation; Former Chairman, US Hispanic Media Inc.",Monica ,C., Lozano,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director,Former Chairman, President, and Chief Executive Officer, Eversource Energy",Thomas ,J. ,May,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director, Former Chief Executive Officer and President, ITT Inc.",Denise ,L. ,Ramos,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director, President, Bowdoin College",Clayton, S. ,Rose,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director, Former Chairman, President, and Chief Executive Officer, DIRECTV; Lead Director, Kimberly-Clark Corporation",Michael ,D. ,White,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director, Former Vice Chairman and Senior Executive Vice President of CIBC; Former Chairman, Hydro One Limited",Thomas, D. ,Woods,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director, Former Chief Executive Officer, AmerisourceBergen",R. ,David ,Yost,BankofAmericaBOD.xlsx
+BankofAmerica,Y,N,"Director, Vice President for Research and E. A. Griswold Professor of Geophysics, MIT",Maria ,T. ,Zuber,BankofAmericaBOD.xlsx
+BankofAmerica,N,Y,President of Business Banking,Raul ,A. ,Anaya,BankofAmericaBOD.xlsx
+BankofAmerica,N,Y,Chief Operations and Technology Officer,Catherine ,P., Bessant,BankofAmericaBOD.xlsx
+BankofAmerica,N,Y,Chief Human Resources Officer,Sheri,B,Bronstein,BankofAmericaBOD.xlsx
+BankofAmerica,N,Y,Chief Financial Officer,Paul ,,Donofrio,BankofAmericaBOD.xlsx
+BankofAmerica,N,Y,Chief Operating Officer,Thomas ,K., Montag,BankofAmericaBOD.xlsx
+BankofAmerica,N,Y,Chief Administrative Officer,Andrea ,B. ,Smith,BankofAmericaBOD.xlsx
+BankofAmerica,N,Y,"President, Merrill Lynch Wealth Management",Andy ,,Sieg,BankofAmericaBOD.xlsx
+CVS,Y,N,Retired Chiquita,Fernando,,Aguirre,CVSBOD.xlsx
+CVS,Y,N,Nelson Mullins Riley and Scarborough LLP,C,David,Brown,CVSBOD.xlsx
+CVS,Y,N,"Mills College, Ely Lily",Alecia,A,DeCoudreaux,CVSBOD.xlsx
+CVS,Y,N,Consonance Capital Partners LLC,Nancy-Ann,M,DeParle,CVSBOD.xlsx
+CVS,Y,N,Centerview Capital Technology Fund,David ,W,Dorman,CVSBOD.xlsx
+CVS,Y,N,Polo Jeans,Roger,N,Farah,CVSBOD.xlsx
+CVS,Y,N,Bank of America,Anne,M,Finucane,CVSBOD.xlsx
+CVS,Y,N,Retired Becton Dickinson,Edward,J,Ludwig,CVSBOD.xlsx
+CVS,Y,Y,CVS,Karen,S,Lynch,CVSBOD.xlsx
+CVS,Y,Y,Retired PCS Health Systems Inc,Jean-Pierre,,Millon,CVSBOD.xlsx
+CVS,Y,N,Bloomberg L.P.,Mary,L,Schapiro,CVSBOD.xlsx
+CVS,Y,N,Retired Johnson & Johnson,William,C,Weldon,CVSBOD.xlsx
+CVS,Y,N,Retired Applied Biosystems Inc.,Tony,L,White,CVSBOD.xlsx
+CVS,Y,Y,CVS,Larry,J,Merlo,CVSBOD.xlsx
+CVS,Y,Y,CVS,Eva,C,Boratto,CVSBOD.xlsx
+CVS,Y,Y,CVS,Alan,M,Lotvin,CVSBOD.xlsx
+CVS,Y,Y,CVS,Jonathon,C,Roberts,CVSBOD.xlsx
+Cardinal Health Inc.,Y,Y,Retired,Colleen ,F,Arnold,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,N,Retired,Carrie,S,Cox,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,N,Retired,Calvin,,Darden,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,N,NewSpring Health Capital II LP,Bruce ,L,Downey,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,N,Retired,Patricia,A,Hemmingway Hall,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,N,Retired,Akhil,,Johri,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,N,Ingredion,Gregory,B,Kenny,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,N,Retired,Nancy,,Killefer,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,N,Retired,J,Michael,Losh,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,N,Retired,Dean,A,Scarborough,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,N,Retired,John,H,Weiland,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,Y,Cardinal Health Inc.,Michael,C,Kaufmann,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,Y,Cardinal Health Inc.,Jason,M,Hollar,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,Y,Cardinal Health Inc.,Victor,L,Crawford,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,Y,Cardinal Health Inc.,Stephen,M,Mason,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,Y,Cardinal Health Inc.,Jessica,L ,Mayer,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,Y,Cardinal Health Inc.,David,C,Evans,Cardinal Health BOD.xlsx
+Cardinal Health Inc.,Y,Y,Cardinal Health Inc.,Jorge,M,Gomez,Cardinal Health BOD.xlsx
+Cigna,Y,Y,Cigna,David, M. ,Cordani,CignaBOD.xlsx
+Cigna,Y,N,Former Chief Executive Officer of Sysco Corp,William, J. ,DeLaney,CignaBOD.xlsx
+Cigna,Y,N,"Former Chairman, President and Chief Executive Officer of Aramark ",Eric ,J.,Foss,CignaBOD.xlsx
+Cigna,Y,N,"President and Chief Executive
+Officer of The 5Ps, LLC",Elder ,,"Granger , MD, MG, USA (Retired)",CignaBOD.xlsx
+Cigna,Y,N,Former President and Chief Executive Officer of AT&T Advertising & Publishing – East,Isaiah,,"Harris, Jr",CignaBOD.xlsx
+Cigna,Y,N,"Chief Executive Officer of NetApp, Inc.",George ,,Kurian,CignaBOD.xlsx
+Cigna,Y,N,"Chairman, President and Chief Executive Officer of Graybar Electric Company, Inc.",Kathleen ,M. ,Mazzarella,CignaBOD.xlsx
+Cigna,Y,N,"Director, Duke University-Robert J. Margolis, MD, Center for Health Policy",Mark ,B. ,"McClellan, MD, PhD",CignaBOD.xlsx
+Cigna,Y,N,"Former President of Visa, Inc.",John ,M. ,Partridge,CignaBOD.xlsx
+Cigna,Y,N,"Former CFO, the We Company, Former Chief Financial Officer of Baker Hughes Company",Kimberly ,A. ,Ross,CignaBOD.xlsx
+Cigna,Y,N,"Former Executive Chairman, President and Chief Executive Officer of VF Corporation",Eric ,C. ,Wiseman,CignaBOD.xlsx
+Cigna,Y,N,Former President and Chief Executive Officer of The Economic Club of Chicago,Donna ,F. ,Zarcone,CignaBOD.xlsx
+Citigroup,Y,N,"Former President and Chief Executive Officer, BMO Financial Corporation, and Former U.S. Country Head, BMO Financial Group, Director Diebold Nixdorf, Inc",Ellen ,M. ,Costello,CitigroupBOD.xlsx
+Citigroup,Y,N,"Former Senior Deputy Comptroller for Bank Supervision Policy and Chief National Bank Examiner, Office of the Comptroller of the Currency",Grace ,E. ,Dailey,CitigroupBOD.xlsx
+Citigroup,Y,N,Chair,Barbara ,J. ,Desoer,CitigroupBOD.xlsx
+Citigroup,Y,N,Chair,John, C. ,Dugan,CitigroupBOD.xlsx
+Citigroup,Y,Y,Chief Executive Officer,Jane ,N. ,Fraser,CitigroupBOD.xlsx
+Citigroup,Y,N,"Co-Founder and Partner Atrevida Partners, LLC",Duncan ,P. ,Hennes,CitigroupBOD.xlsx
+Citigroup,Y,N,"Dean Emeritus and W. R. Berkley Professor of Economics and Finance, New York University, Leonard N. Stern School of Business",Peter, B., Henry,CitigroupBOD.xlsx
+Citigroup,Y,N,"Former Assistant Secretary for Intelligence and Analysis, U.S. Department of the Treasury, and National Intelligence Manager for Threat Finance, Office of the Director of National Intelligence",S. ,Leslie, Ireland,CitigroupBOD.xlsx
+Citigroup,Y,N,"Former President and Managing Director, Pacific Investment Management Company LLC (PIMCO)",Lew ,W. (Jay) ,"Jacobs, IV",CitigroupBOD.xlsx
+Citigroup,Y,N,"Founder, Chairman and CEO, Ampere Computing",Renée ,J., James,CitigroupBOD.xlsx
+Citigroup,Y,N,Operating Partner General Atlantic LLC,Gary ,M. ,Reiner,CitigroupBOD.xlsx
+Citigroup,Y,N,"Former Superintendent of Banks, State of New York",Diana ,L. ,Taylor,CitigroupBOD.xlsx
+Citigroup,Y,N,Former Chairman and CEO Ernst & Young,James ,S. ,Turley,CitigroupBOD.xlsx
+Citigroup,Y,N,"Former Chairman Carver Bancorp, Inc.",Deborah ,C. ,Wright,CitigroupBOD.xlsx
+Citigroup,Y,N,Former Chief Executive Officer and Chairman of the Executive Board Aegon NV,Alexander ,R. ,Wynaendts,CitigroupBOD.xlsx
+Citigroup,Y,N,"Director, Center for the Study of Globalization and Professor in the Field of International Economics and Politics, Yale University",Ernesto Zedillo ,,Ponce de Leon,CitigroupBOD.xlsx
+Citigroup,N,Y,Former chief executive officer of Citigroup,Michael ,,Corbat,CitigroupBOD.xlsx
+Citigroup,N,Y,Chief Financial Officer,Mark ,,Mason,CitigroupBOD.xlsx
+Citigroup,N,Y,Chief Executive Officer Institutional Clients Group,Paco ,,Ybarra,CitigroupBOD.xlsx
+Citigroup,N,Y,Head of Enterprise Operations & Technology,Michael ,,Whitaker,CitigroupBOD.xlsx
+Cost Co,Y,N,"Previous President and Chief Operating Officer of The Blackstone Group,",Hamilton,E.,James,CostcoBOD.xlsx
+Cost Co,Y,N,Chief Executive Officer and founder of Raftr,Susan,L.,Decker,CostcoBOD.xlsx
+Cost Co,Y,N,"Venture Partner at Sway Ventures, Previous President and Chief Executive Officer of Emotient, Inc.",Kenneth,D.,Denman,CostcoBOD.xlsx
+Cost Co,Y,Y,Cost Co,Richard,A.,Galanti,CostcoBOD.xlsx
+Cost Co,Y,Y,Cost Co,W.,Craig,Jelinek,CostcoBOD.xlsx
+Cost Co,Y,N,"Previous Interim Chief Executive Officer of The Nature Conservancy and Previous  Secretary of the
+Interior under President Barack Obama",Sally,,Jewell,CostcoBOD.xlsx
+Cost Co,Y,N,Vice Chairman of the Board of Directors of Berkshire Hathaway Inc,Charles,T.,Munger,CostcoBOD.xlsx
+Cost Co,Y,N,"Co-founder of the Raikes Foundation, previous Chief Executive Officer of the Bill & Melinda
+Gates Foundation",Jeffrey,S.,Raikes,CostcoBOD.xlsx
+Cost Co,Y,N,"Chairman of Trilogy International Partners, Inc, Previous Chairman and a director of T-Mobile USA, & director of Columbia
+Sportswear Company",John,W,Stanton,CostcoBOD.xlsx
+Cost Co,Y,N,"Chief Executive Officer and Chairman of the Grand Reserve Inn and was the Executive Chairman of Frontier
+Communications, ",Mary Agnes,(Maggie),Wilderotter,CostcoBOD.xlsx
+Exxon Mobil,Y,Y,Exxon Mobil,Darren,W,Woods,ExxonMobileBOD.xlsx
+Exxon Mobil,N,Y,Exxon Mobil,Andrew, P., Swiger,ExxonMobileBOD.xlsx
+Exxon Mobil,N,Y,Exxon Mobil,Neil,A.,Chapman,ExxonMobileBOD.xlsx
+Exxon Mobil,N,Y,Exxon Mobil,Jack,P,Williams,ExxonMobileBOD.xlsx
+Exxon Mobil,N,Y,Exxon Mobil,Neil,W,Duffin,ExxonMobileBOD.xlsx
+Exxon Mobil,Y,N,Woods Hole Oceanographic Institution,Susan ,K ,Avery,ExxonMobileBOD.xlsx
+Exxon Mobil,Y,N,WellPoint (now Anthem),Angela,F,Braly,ExxonMobileBOD.xlsx
+Exxon Mobil,Y,N,VEON Ltd,Ursula, M, Burns,ExxonMobileBOD.xlsx
+Exxon Mobil,Y,N ,Merck & Co,Kenneth, C., Frazier,ExxonMobileBOD.xlsx
+Exxon Mobil,Y,N,State Street,Joseph, L., Hooley,ExxonMobileBOD.xlsx
+Exxon Mobil,Y,N,METLIFE INC.,Steven, A,". Kandarian,",ExxonMobileBOD.xlsx
+Exxon Mobil,Y,N,Atairos Group Inc.,Michael, J., Angelakis,ExxonMobileBOD.xlsx
+Exxon Mobil,Y,N,Caterpillar,Douglas,R,Oberhelman,ExxonMobileBOD.xlsx
+Exxon Mobil,Y,N,IBM,Samuel,J,Palmisano,ExxonMobileBOD.xlsx
+Exxon Mobil,Y,N,Inclusive Capital LP,Jeffrey,W,Ubben,ExxonMobileBOD.xlsx
+Exxon Mobil,Y,N,Petronas,Wan ,,Zulkiflee,ExxonMobileBOD.xlsx
+FORD,Y,N,"President Kimberly Casiano & Associates,",Kimberly,A,Casiano,FORDBOD.xlsx
+FORD,Y,N,Retired Executive Chairman of the Board Director PG&E Corporation ,Anthony, F.," Earley, Jr",FORDBOD.xlsx
+FORD,Y,Y,"A Director of Corporate Strategy, Ford Motor Company",Alexandra,Ford ,English,FORDBOD.xlsx
+FORD,Y,Y,"President and Chief Executive Officer, Ford Motor Company",James, D.," Farley, Jr",FORDBOD.xlsx
+FORD,Y,Y,"A Director of Investor Relations, Ford Motor Company",Henry,, Ford III,FORDBOD.xlsx
+FORD,Y,Y,Executive Chairman and Chairman of the Board Ford Motor Company,William, Clay," Ford, Jr",FORDBOD.xlsx
+FORD,Y,N,"General Partner, Greylock Partners",William, W., Helman IV,FORDBOD.xlsx
+FORD,Y,N,"Former Chairman, Atlantic Council and Former Chairman, Huntsman Cancer Foun",Jon, M.," Huntsman, Jr",FORDBOD.xlsx
+FORD,Y,N,"Chairman, Velocitas Partners LLC",William, E,. Kennard,FORDBOD.xlsx
+FORD,Y,N,"Retired Chairman and Chief Executive Officer, KeyCorp",Beth, E., Mooney,FORDBOD.xlsx
+FORD,Y,N,"Executive Chairman, Barrick Gold Corporation",John, L., Thornton,FORDBOD.xlsx
+FORD,Y,N,"Retired Chairman and Chief Executive Officer, KPMG, LLP and retired Chairman of KPMG International",John ,B., Veihmeyer,FORDBOD.xlsx
+FORD,Y,N,"Former Executive Vice President & Chief Marketing Officer, Salesforce",Lynn, M., Vojvodich,FORDBOD.xlsx
+FORD,Y,N,"Co-Chief Executive Officer and Co-Chairman of the Board of Directors, Evercore Partners Inc.",John, S., Weinberg,FORDBOD.xlsx
+FORD,N,Y,Chief Financial Officer,John, T., Lawler,FORDBOD.xlsx
+FORD,N,Y,Chief Product Platform & Operations Officer,Hau ,,Thai-Tang,FORDBOD.xlsx
+FORD,N,Y,President Americas and International Markets,Ashwani ,‘‘Kumar’’, Galhotra,FORDBOD.xlsx
+FORD,N,Y,Former Presidernt and CEO,James, P., Hackett,FORDBOD.xlsx
+FORD,N,Y,Former Chief Financial Officer,Tim,,Stone,FORDBOD.xlsx
+Fannie Mae,N,Y,President & Interim CFO,David, C., Benson,FannieMaeBOD.xlsx
+Fannie Mae,Y,N,Independent Director,Christopher ,J. ,Brummer ,FannieMaeBOD.xlsx
+Fannie Mae,Y,N,Independent Director,Simon ,,Johnson,FannieMaeBOD.xlsx
+Fannie Mae,Y,Y,Chairman,Sheila ,Colleen, Bair,FannieMaeBOD.xlsx
+Fannie Mae,Y,Y,Chief Executive Officer & Director,Hugh ,R. ,Frater,FannieMaeBOD.xlsx
+Fannie Mae,Y,N,Independent Director,Robert ,H. ,Herz,FannieMaeBOD.xlsx
+Fannie Mae,Y,N,Independent Director,Amy ,E. ,Alving,FannieMaeBOD.xlsx
+Fannie Mae,Y,N,Independent Director,Diane ,C. ,Nordin,FannieMaeBOD.xlsx
+Fannie Mae,Y,N,Independent Director,Renée ,Lewis ,Glover,FannieMaeBOD.xlsx
+Fannie Mae,Y,N,Independent Director,Michael, J. ,Heid,FannieMaeBOD.xlsx
+Fannie Mae,Y,N,Independent Director,Antony ,Peter ,Jenkins,FannieMaeBOD.xlsx
+Fannie Mae,Y,N,Independent Director,Manuel, Sánchez ,Rodríguez,FannieMaeBOD.xlsx
+Fannie Mae,Y,N,Independent Director,Karin ,J. ,Kimbrough,FannieMaeBOD.xlsx
+Fannie Mae,N,Y,Chief Administrative Officer & Executive VP,Jeffery ,R., Hayward,FannieMaeBOD.xlsx
+Fannie Mae,N,Y,Senior Vice President,Douglas, G. ,Duncan,FannieMaeBOD.xlsx
+Fannie Mae,N,Y,Chief Risk Officer & Executive Vice President,Ryan ,A., Zanin,FannieMaeBOD.xlsx
+Fannie Mae,N,Y,Senior Vice President,Richard ,Scott ,Blackley,FannieMaeBOD.xlsx
+Fannie Mae,N,Y,Senior Vice President & Controller,Chryssa ,C. ,Halley,FannieMaeBOD.xlsx
+Fannie Mae,N,Y,"Secretary, Executive VP & General Counsel",Stergios ,,Theologides,FannieMaeBOD.xlsx
+Kroger,Y,N,Director Emeritus of McKinsey & Company,Nora ,A. ,Aufreiter,KrogerBOD.xlsx
+Kroger,Y,N,Executive Vice President and Chief Supply Chain Officer at Dell Technologies,Kevin ,M. ,Brown,KrogerBOD.xlsx
+Kroger,Y,N,"Retired, Former President of MGA Entertainment, Inc. and previous roles in Walt Disney, Pepsico, Bear Stearns",Anne ,,Gates,KrogerBOD.xlsx
+Kroger,Y,N,"Retired, Former CFO Macys",Karen ,M. ,Hoguet,KrogerBOD.xlsx
+Kroger,Y,Y,Chairman of the Board Kroger & Executive Officer,W. ,Rodney ,McMullen,KrogerBOD.xlsx
+Kroger,Y,N,Formerly Chairman and Chief Executive Officer of First Service Networks,Clyde ,R. ,Moore,KrogerBOD.xlsx
+Kroger,Y,N,"Formerly President of North America for Unilever,",J. ,Amanda ,Sourry Knox (Amanda Sourry),KrogerBOD.xlsx
+Kroger,Y,N,Chairman and Chief Executive Officer of International Paper,Mark ,S. ,Sutton,KrogerBOD.xlsx
+Kroger,Y,N,"Retired, Chief Executive Officer and a Director of Conduent Incorporated, Previous Chief Executive Officer of Xerox Business Services",Ashok ,,Vemuri,KrogerBOD.xlsx
+Kroger,Y,Y,Senior Vice President and Chief Financial Officer,Gary,, Millerchip,KrogerBOD.xlsx
+Kroger,Y,Y,Senior Vice President and Chief Merchandising & Marketing Officer,Stuart ,W. ,Aitken,KrogerBOD.xlsx
+Kroger,Y,Y,Senior Vice President and Chief Information Officer,Yael ,,Cosset,KrogerBOD.xlsx
+Kroger,Y,Y,Executive Vice President and Chief Operating Officer,Michael,J. ,Donnelly,KrogerBOD.xlsx
+McKessen,Y,N,Retired,Dominic,J,Caruso,McKessenBOD.xlsx
+McKessen,Y,N,Retired,Donald,R,Knauss,McKessenBOD.xlsx
+McKessen,Y,N,Medtronic PLC,Bradley,E,Lerman,McKessenBOD.xlsx
+McKessen,Y,N,Retired,Linda,P,Mantia,McKessenBOD.xlsx
+McKessen,Y,N,Cisco Systems,Maria,,Martinez,McKessenBOD.xlsx
+McKessen,Y,N,Retired,Edward,A,Mueller,McKessenBOD.xlsx
+McKessen,Y,N,AMN Healthcare Services,Susan,R,Salka,McKessenBOD.xlsx
+McKessen,Y,Y,McKesson,Brian,S,Tyler,McKessenBOD.xlsx
+McKessen,Y,N,Ford Motor Company,Kenneth,E,Washington,McKessenBOD.xlsx
+McKessen,Y,Y,McKessen,Britt,J,Vitalone,McKessenBOD.xlsx
+McKessen,Y,Y,McKessen,Lori,A,Schechter,McKessenBOD.xlsx
+McKessen,Y,Y,McKessen,Thomas,L,Rodgers,McKessenBOD.xlsx
+McKessen,Y,Y,McKessen,Tracey,L,Faber,McKessenBOD.xlsx
+Walmart,Y,N, Madrone Capital Partners,Gregory,B,Penner,WalmartBOD.xlsx
+Walmart,Y,N,NBC Universal,Cesar,,Conde,WalmartBOD.xlsx
+Walmart,Y,N,KPMG,Timothy,Patrick,Flynn,WalmartBOD.xlsx
+Walmart,Y,N,Nextdoor,Sarah ,J,Friar,WalmartBOD.xlsx
+Walmart,Y,N,Morgan Stanley,Carla ,A,Harris,WalmartBOD.xlsx
+Walmart,Y,N,Lumi Labs,Marissa,A,Mayer,WalmartBOD.xlsx
+Walmart,Y,N,Global Infrastructure Partners,Thomas ,W ,Horton,WalmartBOD.xlsx
+Walmart,Y,Y,Walmart,Carl ,Douglas,McMillon,WalmartBOD.xlsx
+Walmart,Y,N,PepsiCo,Steven ,S,Reinemund,WalmartBOD.xlsx
+Walmart,Y,N,ATT Warner Media,Randall,L,Stevenson,WalmartBOD.xlsx
+Walmart,Y,N,Walmart Retired,Samuel,Robson,Walton,WalmartBOD.xlsx
+Walmart,Y,N,"Runaway Group, Game Composites, LLC",Steuart,L,Walton,WalmartBOD.xlsx
+Walmart,y,Y,Walmart,Dan,,Bartlett,WalmartBOD.xlsx
+Walmart,y,Y,Walmart,Rachel,,Brand,WalmartBOD.xlsx
+Walmart,y,Y,Walmart,M ,Brett ,Biggs,WalmartBOD.xlsx
+Walmart,y,Y,Walmart,John,,Furner,WalmartBOD.xlsx
+Walmart,y,Y,Walmart,Suresh,,Kumar,WalmartBOD.xlsx
+Walmart,y,Y,Walmart,Judith ,,McKenna,WalmartBOD.xlsx
+Walmart,y,Y,Walmart,Kathryn,,McLay,WalmartBOD.xlsx
+Wells Fargo,Y,N,"Retired Vice Chairman and former Chief Financial Officer, Bank of America Corporation",Charles ,H. ,Noski,WellsFargoBOD.xlsx
+Wells Fargo,Y,N,"Co-CEO, Bregal Investments, Inc.; Former Vice Chairman, JPMorgan Chase & Co",Steven,D.,Black,WellsFargoBOD.xlsx
+Wells Fargo,Y,N,"Retired Chairman, President, and CEO, Edison International",Theodore,F.,"Craver, Jr",WellsFargoBOD.xlsx
+Wells Fargo,Y,N,"Retired Vice Chairman, Wholesale Banking, U.S. Bancorp",Richard,B.,"Payne, Jr",WellsFargoBOD.xlsx
+Wells Fargo,Y,Y,CEO & President Wells Fargo & Company,Charles,W.,Scharf,WellsFargoBOD.xlsx
+Wells Fargo,Y,N,"Retired Vice Chairman and Co-Chief Operating Officer, SunTrust Banks, Inc.",Mark,A.,Chancy,WellsFargoBOD.xlsx
+Wells Fargo,Y,N,"Senior Advisor, Permira; Chairman, DiversiTech Corporation and Cambrex Corporation",Wayne,M.,Hewett,WellsFargoBOD.xlsx
+Wells Fargo,Y,N,"Retired Principal, PricewaterhouseCoopers LLP, and former Vice Chairman, Global Advisory Services, PwC Intl.",Juan,A.,Pujadas,WellsFargoBOD.xlsx
+Wells Fargo,Y,N,"President, Kilovolt Consulting Inc.; Major General (retired), U.S. Air",Suzanne,M.,Vautrinot,WellsFargoBOD.xlsx
+Wells Fargo,Y,N,"Principal, Abraham Clark Consulting, LLC; retired Sr. VP, Global Public Policy and External Relations, and Chief Sustainability Officer, Kellogg Company",Celeste,A.,Clark,WellsFargoBOD.xlsx
+Wells Fargo,Y,N,"Retired Executive Vice President and head of Global Employee Benefits business, MetLife, Inc.",Maria,R.,Morris,WellsFargoBOD.xlsx
+Wells Fargo,Y,N,"Retired Chairman and CEO, Staples, Inc.",Ronald,L.,Sargent,WellsFargoBOD.xlsx
+Wells Fargo,N,Y,"Senior EVP, Chief Financial Officer",Michael,P.,Santomassimo,WellsFargoBOD.xlsx
+Wells Fargo,N,Y,Senior EVP and Former Chief Financial Officer,John,R.,Shrewsberry,WellsFargoBOD.xlsx
+Wells Fargo,N,Y,"Senior EVP, CEO of Consumer & Small Business Banking",Mary,T.,Mack,WellsFargoBOD.xlsx
+Wells Fargo,N,Y,"Senior EVP, Head of Operations",Lester,J.,Owens,WellsFargoBOD.xlsx
+Wells Fargo,N,Y,"Senior EVP, Chief Operating Officer",Scott,E.,Powell,WellsFargoBOD.xlsx
+Berkshire Hathaway,Y,N,The Howard G. Buffett Foundation,Howard,G,Buffett,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,N,Retired,Stephen,B,Burke,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,N,General Catalyst,Kenneth,I,Chenault,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,N,Raftr,Susan,L ,Decker,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,N,First Manhattan Co.,David,S,Gottesman,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,N,AELF,Charlotte,,Guyman,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,N,Retired,Thomas,S,Murphy,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,N,,Ronald,L,Olson,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,Y,,Walter,,Scott,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,Y,"Eagle Capital Partners LP,",Meryl,B,Witmer,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,Y,Berkshire Hathaway,Warren,E,Buffett,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,Y,Berkshire Hathaway,Charles,T,Munger,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,Y,Berkshire Hathaway,Gregory,E,Abel,berkshirehatthawaybod.xlsx
+Berkshire Hathaway,Y,Y,Berkshire Hathaway,Marc,D,Hamburg,berkshirehatthawaybod.xlsx
+,,,Berkshire Hathaway,Ajit,,Jain,berkshirehatthawaybod.xlsx
